@@ -1,16 +1,41 @@
-# watchers
+# Watchers
 
-A new Flutter project.
+👁️ Watchers é um aplicativo que envolve rede social, avaliação de séries, busca de títulos mais populares e muito mais!
 
-## Getting Started
+## 🧩 Principais funcionalidades
 
-This project is a starting point for a Flutter application.
+**Como utilizador do Watchers, você pode:**
+- Personalizar o seu perfil da forma que preferir;
+- Catalogar as séries que você já assistiu;
+- Avaliar as séries que você mais gostou - e também aquelas que detestou;
+- Resenhar os títulos cuja opinião você deseja compartilhar;
+- Conhecer pessoas com gostos semelhantes aos seus;
+- Ver a opinião de pessoas sobre os mais variados programas;
+- Buscar as séries que você já ouviu falar e adicioná-las em sua _watchlist_ pessoal;
+- E MUITO MAIS!
 
-A few resources to get you started if this is your first Flutter project:
+## 👨‍💻 Tecnologias utilizadas
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**Durante o desenvolvimento do Watchers, nossa equipe dispôs de uma ampla gama de tecnologias, veja.**
+Design
+- [Figma](https://www.figma.com/)
+- [Stitch With Google](stitch.withgoogle.com)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Ferramentas de desenvolvimento
+- [Visual Studio Code](code.visualstudio.com)
+- [Postman](https://www.postman.com/)
+- [Git](https://git-scm.com/)
+- [GitHub](https://github.com)
+
+FrontEnd
+- [Dart (Flutter)](https://flutter.dev/)
+
+BackEnd
+- [Express - JS](https://expressjs.com/)
+
+Dados e APIs externas
+- [TMDB](https://developer.themoviedb.org/docs/getting-started)
+
+Organização da equipe
+- [Trello](www.trello.com)
+- [Whattsapp](https://www.whatsapp.com/?lang=pt_BR)
