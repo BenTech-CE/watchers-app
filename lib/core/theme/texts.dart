@@ -8,6 +8,18 @@ import 'package:watchers/core/theme/colors.dart';
 // 3. Verificar se a fontFamily está sendo aplicada corretamente
 // 4. Verificar as cores dos textos (associar com colors.dart)
 
+const TextTheme textTheme = TextTheme(
+  displayLarge: tsTitleLargeBright,
+  displayMedium: tsTitleLarge,
+  displaySmall: tsTitleMedium,
+  headlineMedium: tsTitleSmall,
+  bodyLarge: tsBodyLarge,
+  bodyMedium: tsBodyMedium,
+  bodySmall: tsBodySmall,
+  labelLarge: tsLabelLarge,
+  labelMedium: tsLabelMedium,
+  labelSmall: tsLabelSmall,
+);
 
 const TextStyle tsTitleLargeBright = TextStyle(
   fontFamily: 'Montserrat',
