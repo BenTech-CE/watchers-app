@@ -1,89 +1,105 @@
-
 import 'package:flutter/material.dart';
 import 'package:watchers/core/theme/colors.dart';
 
-// TODO:
-// 1. Verificar tamanhos das fontes
-// 2. Verificar o DropShadow da fonte brilhante
-// 3. Verificar se a fontFamily está sendo aplicada corretamente
-// 4. Verificar as cores dos textos (associar com colors.dart)
+/// Centraliza todos os estilos de texto do aplicativo para fácil acesso e manutenção.
+class AppTextStyles {
+  // Estilo base privado para definir a fonte padrão.
+  static const TextStyle _base = TextStyle(
+    fontFamily: 'Montserrat',
+  );
 
-const TextTheme textTheme = TextTheme(
-  displayLarge: tsTitleLargeBright,
-  displayMedium: tsTitleLarge,
-  displaySmall: tsTitleMedium,
-  headlineMedium: tsTitleSmall,
-  bodyLarge: tsBodyLarge,
-  bodyMedium: tsBodyMedium,
-  bodySmall: tsBodySmall,
-  labelLarge: tsLabelLarge,
-  labelMedium: tsLabelMedium,
-  labelSmall: tsLabelSmall,
+  // Efeito de brilho/sombra padrão para ser reutilizado.
+  static const List<Shadow> _brightShadows = [
+    Shadow(
+      blurRadius: 4,
+      color: Colors.white,
+    ),
+  ];
+
+  // --- ESTILOS DE TÍTULO ---
+
+  static final TextStyle titleLarge = _base.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: tColorPrimary, // Cor explícita para títulos
+  );
+
+  static final TextStyle titleLargeBright = titleLarge.copyWith(
+    color: tColorPrimary,
+    shadows: _brightShadows,
+  );
+
+  static final TextStyle titleMedium = _base.copyWith(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: tColorPrimary,
+  );
+
+  static final TextStyle titleSmall = _base.copyWith(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: tColorSecondary, // Cor secundária para subtítulos
+  );
+
+// estando certo mas a sua dpi dimiunuindo confia pois eu vou arrumar minha dpi // e vou deixar ela igual a sua disse onde arruma dpimandar
+  // --- ESTILOS DE CORPO ---
+
+  static final TextStyle bodyLarge = _base.copyWith(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+  );
+
+  static final TextStyle bodyLargeBright = bodyLarge.copyWith(
+    color: tColorPrimary,
+    shadows: _brightShadows,
+  );
+
+
+  static final TextStyle bodyMedium = _base.copyWith(
+    fontSize: 12,
+    fontWeight: FontWeight.normal,
+  );
+
+  static final TextStyle bodySmall = _base.copyWith(
+    fontSize: 10,
+    fontWeight: FontWeight.normal,
+  );
+
+
+  // --- ESTILOS DE LABEL ---
+
+  static final TextStyle labelLarge = _base.copyWith(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+  );
+  
+  static final TextStyle labelLargeBright = labelLarge.copyWith(
+    color: tColorPrimary,
+    shadows: _brightShadows,
+  );
+
+  static final TextStyle labelMedium = _base.copyWith(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static final TextStyle labelSmall = _base.copyWith(
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+  );
+}
+
+// TextTheme principal
+/// OBS.: Estilos sem cor explícita herdarão a cor do tema.
+final TextTheme appTextTheme = TextTheme(
+  displayLarge: AppTextStyles.titleLarge,
+  displayMedium: AppTextStyles.titleMedium,
+  displaySmall: AppTextStyles.titleSmall,
+  headlineMedium: AppTextStyles.titleSmall,
+  bodyLarge: AppTextStyles.bodyLarge,
+  bodyMedium: AppTextStyles.bodyMedium,
+  bodySmall: AppTextStyles.bodySmall,
+  labelLarge: AppTextStyles.labelLarge,
+  labelMedium: AppTextStyles.labelMedium,
+  labelSmall: AppTextStyles.labelSmall,
 );
-
-const TextStyle tsTitleLargeBright = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 22,
-  fontWeight: FontWeight.bold,
-  color: tColorPrimary,
-  shadows: [Shadow(
-    blurRadius: 2,
-    color: Colors.white,
-  ),],
-);
-
-const TextStyle tsTitleLarge = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 22,
-  fontWeight: FontWeight.bold,
-  color: tColorPrimary
-);
-
-const TextStyle tsTitleMedium = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 18,
-  fontWeight: FontWeight.w600,
-);
-
-const TextStyle tsTitleSmall = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 16,
-  fontWeight: FontWeight.w500,
-);
-
-const TextStyle tsBodyLarge = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 14,
-  fontWeight: FontWeight.normal,
-);
-
-const TextStyle tsBodyMedium = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 12,
-  fontWeight: FontWeight.normal,
-);
-
-const TextStyle tsBodySmall = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 10,
-  fontWeight: FontWeight.normal,
-);
-
-const TextStyle tsLabelLarge = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 14,
-  fontWeight: FontWeight.w500,
-);
-
-const TextStyle tsLabelMedium = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 12,
-  fontWeight: FontWeight.w500,
-);
-
-const TextStyle tsLabelSmall = TextStyle(
-  fontFamily: 'Montserrat',
-  fontSize: 10,
-  fontWeight: FontWeight.w500,
-);
-

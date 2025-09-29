@@ -10,6 +10,6 @@ class AppTheme {
       seedColor: colorPrimary,
       brightness: Brightness.dark,
     ),
-    textTheme: textTheme,
+    textTheme: appTextTheme,
   );
 }
