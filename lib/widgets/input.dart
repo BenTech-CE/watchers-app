@@ -1,37 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:watchers/core/theme/colors.dart';
+import 'package:watchers/core/theme/texts.dart';
 
-class InputGlass extends StatelessWidget {
-  final String title;
+class TextInputWidget extends StatelessWidget {
+  final String label;
   final String hint; 
-  const InputGlass({super.key, required this.title, required this.hint});
+  final IconData? icon;
+  final TextEditingController controller;
+  final TextInputType? keyboardType;
+  final FormFieldValidator<String>? validator;
+  final bool autocorrect; 
+  final bool isPassword;
+  
+  const TextInputWidget({
+    required this.label, 
+    this.hint = "", 
+    this.icon, 
+    required this.controller, 
+    this.keyboardType = TextInputType.text, 
+    this.validator,
+    this.autocorrect = false,
+    this.isPassword = false
+  });
+  
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: controller,
+        autocorrect: autocorrect,
+        obscureText: isPassword,
+        validator: validator,
+        decoration: InputDecoration(
+          label: Text(label, style: AppTextStyles.labelLarge,),
+          hint: Text(hint, style: AppTextStyles.labelMedium,),
+          prefixIcon: icon != null ? Icon(icon) : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ),
-        TextField(
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.1),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide.none,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: colorPrimary,
+              width: 2.0,
             ),
-            hintText: hint,
-            hintStyle: TextStyle(color: Colors.white70),
           ),
-          style: TextStyle(color: Colors.white),
+          filled: true,
+          fillColor: tiColorPrimary
         ),
-      ],
+      ),
     );
   }
 }
