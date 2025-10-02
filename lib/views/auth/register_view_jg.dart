@@ -27,6 +27,10 @@ class LoginViewJg extends StatelessWidget {
       showPassword = value ?? false;
     }
 
+    final _usernameController = TextEditingController();
+    final _emailController = TextEditingController();
+    final _passController = TextEditingController();
+
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.black,
@@ -86,9 +90,9 @@ class LoginViewJg extends StatelessWidget {
                           spacing: 16,
                           children: [
                             Text("Para cadastrar-se, preencha os campos abaixo:", style: AppTextStyles.bodyLargeBright,),
-                            InputGlass(title: "Nome de Usuário", hint: "Digite um nome de usuário bem legal"),
-                            InputGlass(title: "E-mail", hint: "Digite seu melhor e-mail"),
-                            InputGlass(title: "Senha", hint: "Digite uma senha muito forte"),
+                            TextInputWidget(label: "Nome de Usuário", hint: "Digite um nome de usuário bem legal", controller: _usernameController,),
+                            TextInputWidget(label: "E-mail", hint: "Digite seu melhor e-mail", controller: _emailController,),
+                            TextInputWidget(label: "Senha", hint: "Digite uma senha muito forte", controller: _passController,),
                             Row(
                               children: [
                                 Text("Mostrar senha", style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),),
