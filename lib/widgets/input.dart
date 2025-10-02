@@ -13,7 +13,7 @@ class TextInputWidget extends StatelessWidget {
   final bool isPassword;
   
   const TextInputWidget({
-    required this.label, 
+    this.label = "", 
     this.hint = "", 
     this.icon, 
     required this.controller, 

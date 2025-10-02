@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
+import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 
 class LoginViewMael extends StatelessWidget {
@@ -9,7 +10,7 @@ class LoginViewMael extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Colors.black,
+      backgroundColor: bgColor,
       body: SizedBox(
         height: double.maxFinite,
         child: Stack(

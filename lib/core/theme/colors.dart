@@ -12,4 +12,4 @@ const tColorSecondary = Color.fromARGB(255, 180, 180, 180);
 // TEXT INPUT COLORS
 const tiColorPrimary = Colors.transparent;
 
-const colorBackground = Color(0x0ff00000);
+const bgColor = Color(0xFF000000);
