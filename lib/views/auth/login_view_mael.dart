@@ -21,14 +21,14 @@ class LoginViewMael extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: [
                     Colors.black,
-                    Colors.transparent, 
                     Colors.transparent,
-                    Colors.black
+                    Colors.transparent,
+                    Colors.black,
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   stops: const [0.05, 0.4, 0.7, 1],
-                )
+                ),
               ),
               child: Image.network(
                 "https://cdn.polyspeak.ai/speakmaster/4747b3658f61e5da7f14fddc670a15df.webp",
@@ -53,13 +53,19 @@ class LoginViewMael extends StatelessWidget {
                   width: double.maxFinite,
                   child: Container(
                     alignment: Alignment.topCenter,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 24,
+                    ),
                     child: Column(
                       children: [
-                        Text("Liquid Glass Sample", style: ThemeData.dark().textTheme.displayLarge,),
-                        FlutterLogo(size: 100,),
+                        Text(
+                          "Liquid Glass Sample",
+                          style: ThemeData.dark().textTheme.displayLarge,
+                        ),
+                        FlutterLogo(size: 100),
                       ],
-                    ) ,
+                    ),
                   ),
                 ),
               ),
