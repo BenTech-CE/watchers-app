@@ -48,14 +48,14 @@ class LoginViewJg extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           Colors.black,
-                          Colors.transparent, 
                           Colors.transparent,
-                          Colors.black
+                          Colors.transparent,
+                          Colors.black,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         stops: const [0.05, 0.4, 0.7, 1],
-                      )
+                      ),
                     ),
                     child: Image.network(
                       "https://cdn.polyspeak.ai/speakmaster/4747b3658f61e5da7f14fddc670a15df.webp",
@@ -69,45 +69,77 @@ class LoginViewJg extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 150,),
-                        Text("Seja bem-vindo ao", style: Theme.of(context).textTheme.displayMedium,),
-                        Text("Watchers", style: AppTextStyles.titleLargeBright,),
-                        Text("Cadastre-se e comece a produzir suas críticas!", style: Theme.of(context).textTheme.displaySmall,)
+                        SizedBox(height: 150),
+                        Text(
+                          "Seja bem-vindo ao",
+                          style: Theme.of(context).textTheme.displayMedium,
+                        ),
+                        Text("Watchers", style: AppTextStyles.titleLargeBright),
+                        Text(
+                          "Cadastre-se e comece a produzir suas críticas!",
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
               Container(
-                    alignment: Alignment.center,
-                    child: LiquidGlass(
-                      settings: LiquidGlassSettings(
-              
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          spacing: 16,
+                alignment: Alignment.center,
+                child: LiquidGlass(
+                  settings: LiquidGlassSettings(
+                    blur: 4,
+                    glassColor: Colors.white.withAlpha(25),
+                    ambientStrength: 0.5,
+                    lightIntensity: 1,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      spacing: 16,
+                      children: [
+                        Text(
+                          "Para cadastrar-se, preencha os campos abaixo:",
+                          style: AppTextStyles.bodyLargeBright,
+                        ),
+                        TextInputWidget(
+                          label: "Nome de Usuário",
+                          hint: "Digite um nome de usuário bem legal",
+                          controller: _usernameController,
+                        ),
+                        TextInputWidget(
+                          label: "E-mail",
+                          hint: "Digite seu melhor e-mail",
+                          controller: _emailController,
+                        ),
+                        TextInputWidget(
+                          label: "Senha",
+                          hint: "Digite uma senha muito forte",
+                          controller: _passController,
+                        ),
+                        Row(
                           children: [
-                            Text("Para cadastrar-se, preencha os campos abaixo:", style: AppTextStyles.bodyLargeBright,),
-                            TextInputWidget(label: "Nome de Usuário", hint: "Digite um nome de usuário bem legal", controller: _usernameController,),
-                            TextInputWidget(label: "E-mail", hint: "Digite seu melhor e-mail", controller: _emailController,),
-                            TextInputWidget(label: "Senha", hint: "Digite uma senha muito forte", controller: _passController,),
-                            Row(
-                              children: [
-                                Text("Mostrar senha", style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),),
-                                Checkbox(value: showPassword, onChanged: (value) => togglePasswordVisibility(value)),
-                              ],
+                            Text(
+                              "Mostrar senha",
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
-                            
+                            Checkbox(
+                              value: showPassword,
+                              onChanged: (value) =>
+                                  togglePasswordVisibility(value),
+                            ),
                           ],
                         ),
-                      ),
-                      shape: LiquidRoundedRectangle(
-                        borderRadius: Radius.circular(16),
-                      ),
+                      ],
                     ),
                   ),
+                  shape: LiquidRoundedRectangle(
+                    borderRadius: Radius.circular(16),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
