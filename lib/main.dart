@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/register_view_jg.dart';
 import 'package:watchers/views/auth/login_view_mael.dart';
+import 'package:watchers/views/auth/supabase_test.dart';
 
-void main() {
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://rifsqeyjlvjmzhgmckqu.supabase.co',
+    anonKey: 'sb_publishable_fZNUvwbb3NgXkifW0fJ9Aw_QdSHQine',
+  );
+
   runApp(const MyApp());
 }
 
@@ -31,6 +38,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return LoginViewJg();
+    return SupabaseTestView();
   }
 }
