@@ -31,10 +31,10 @@ class _SupabaseTestViewState extends State<SupabaseTestView> {
       }
 
       final existingData = await supabase
-        .from('profiles')
-        .select("username")
-        .eq('username', _usernameController.text)
-        .maybeSingle();
+          .from('profiles')
+          .select("username")
+          .eq('username', _usernameController.text)
+          .maybeSingle();
 
       if (existingData != null) {
         throw AuthException('Usuário já registrado com esse nome de usuário.');
@@ -85,14 +85,14 @@ class _SupabaseTestViewState extends State<SupabaseTestView> {
 
   void _autenticarComGoogle() async {
     try {
-      const iosClientId = '276021947227-63ngg60sc0au2na9d5jg8qkfn2kir54r.apps.googleusercontent.com';
+      // const iosClientId = '276021947227-63ngg60sc0au2na9d5jg8qkfn2kir54r.apps.googleusercontent.com';
       final scopes = ['email', 'profile'];
 
       final googleSignIn = GoogleSignIn.instance;
 
-      await googleSignIn.initialize(
-        clientId: iosClientId,
-      );
+      // await googleSignIn.initialize(
+      //   clientId: iosClientId,
+      // );
 
       final googleUser = await googleSignIn.authenticate();
 
@@ -173,10 +173,12 @@ class _SupabaseTestViewState extends State<SupabaseTestView> {
               onPressed: _autenticarComGoogle,
               child: Text("Google"),
             ),
-            _session != null ? FilledButton(
-              onPressed: _sairConta,
-              child: Text("Sair da Conta"),
-            ) : Container(),
+            _session != null
+                ? FilledButton(
+                    onPressed: _sairConta,
+                    child: Text("Sair da Conta"),
+                  )
+                : Container(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -196,9 +198,7 @@ class _SupabaseTestViewState extends State<SupabaseTestView> {
                     : Container(),
               ],
             ),
-            Text(
-              "User: ${_user?.userMetadata?["username"]} (${_user?.id})",
-            ),
+            Text("User: ${_user?.userMetadata?["username"]} (${_user?.id})"),
           ],
         ),
       ),
