@@ -1,8 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:watchers/core/providers/auth_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/core/validators/validators.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -229,6 +232,58 @@ class _LoginViewMaelState extends State<LoginViewMael>
     }
   }
 
+  Future<void> _handleLogin() async {
+    final authProvider = context.read<AuthProvider>();
+    
+    final success = await authProvider.signIn(
+      email: _emailController.text,
+      password: _passController.text,
+    );
+
+    if (success && mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login')),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    final authProvider = context.read<AuthProvider>();
+
+    final success = await authProvider.signInWithGoogle();
+
+    if (success && mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login com Google')),
+      );
+    }
+  }
+
+  /*Future<void> _handleRegister() async {
+    final authProvider = context.read<AuthProvider>();
+    
+    final success = await authProvider.signUp(
+      email: _emailController.text.trim(),
+      password: _passController.text,
+      username: _usernameController.text.trim(),
+    );
+
+    if (success && mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Erro ao cadastrar'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }*/
+
   @override
   Widget build(BuildContext context) {
     // Check keyboard visibility
@@ -354,16 +409,25 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                           TextInputWidget(
                                             label: "Digite seu e-mail",
                                             controller: _emailController,
+                                            validator: FormValidators.validateEmail,
                                           ),
                                           TextInputWidget(
                                             label: "Digite sua senha",
                                             controller: _passController,
                                             isPassword: true,
+                                            validator: FormValidators.notNull
                                           ),
                                           SizedBox(height: 8),
-                                          ElevatedButton(
-                                            onPressed: () {},
-                                            child: Text("Entrar"),
+                                          SizedBox(
+                                            height: 40,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                if (_formKey.currentState!.validate()) {
+                                                  _handleLogin();
+                                                }
+                                              },
+                                              child: Text("Entrar"),
+                                            ),
                                           ),
                                           Row(
                                             mainAxisAlignment:
@@ -396,9 +460,30 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                               ),
                                             ],
                                           ),
-                                          OutlinedButton(
-                                            onPressed: () {},
-                                            child: Text("Continuar com Google"),
+                                          SizedBox(
+                                            height: 40,
+                                            child: OutlinedButton(
+                                              onPressed: _handleGoogleSignIn,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 18,
+                                                    width: 18,
+                                                    child: Image.asset(
+                                                      "assets/images/google.png",
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text("Continuar com o Google", style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700
+                                                  ),)
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),

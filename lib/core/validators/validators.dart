@@ -3,6 +3,7 @@ class FormValidators { // Classe de validadores de formulário
   // Validador de nulidade
   static String? notNull(String? value){
     if (value == null || value.isEmpty) return "Campo obrigatório";
+    return null;
   }
 
   // Validador de nome de usuário

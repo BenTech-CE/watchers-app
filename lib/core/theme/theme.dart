@@ -13,7 +13,7 @@ class AppTheme {
     textTheme: appTextTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+        padding: EdgeInsets.zero,
         backgroundColor: colorPrimary,
         foregroundColor: tColorPrimary,
         textStyle: AppTextStyles.bodyMedium.copyWith(
@@ -25,7 +25,7 @@ class AppTheme {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+        padding: EdgeInsets.zero,
         side: const BorderSide(color: bgColorButton, width: 1),
         foregroundColor: tColorPrimary,
         backgroundColor: bgColorButton,

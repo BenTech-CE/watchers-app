@@ -31,13 +31,13 @@ class TextInputWidget extends StatefulWidget {
 class _TextInputWidgetState extends State<TextInputWidget> {
   bool showPassword = true;
   bool _isFocused = false;
+  AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       curve: Curves.easeOut,
-      height: 55,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: _isFocused
@@ -64,6 +64,18 @@ class _TextInputWidgetState extends State<TextInputWidget> {
           autocorrect: widget.autocorrect,
           obscureText: widget.isPassword ? showPassword : false,
           validator: widget.validator,
+          autovalidateMode: _autovalidateMode,
+          onChanged: (value) {
+            // Após a primeira validação (erro), revalida automaticamente
+            if (_autovalidateMode == AutovalidateMode.disabled && widget.validator != null) {
+              final error = widget.validator!(value);
+              if (error != null) {
+                setState(() {
+                  _autovalidateMode = AutovalidateMode.onUserInteraction;
+                });
+              }
+            }
+          },
           decoration: InputDecoration(
             label: Text(widget.label),
             hint: Text(
@@ -98,6 +110,18 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: colorPrimary, width: 2.0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.red.shade400, width: 2.0),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.red.shade600, width: 2.0),
+            ),
+            errorStyle: AppTextStyles.labelSmall.copyWith(
+              color: Colors.red.shade400,
+              height: 0.8,
             ),
             filled: true,
             fillColor: tiColorPrimary,

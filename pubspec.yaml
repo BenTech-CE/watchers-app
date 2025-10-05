@@ -34,6 +34,7 @@ dependencies:
   google_sign_in: ^7.2.0
   liquid_glass_renderer: ^0.1.1-dev.10
   supabase_flutter: ^2.10.2
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/images/
     - assets/logo/
 
   # An image asset can refer to one or more resolution-specific "variants", see

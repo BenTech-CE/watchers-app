@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:watchers/core/providers/auth_provider.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/register_view_jg.dart';
 import 'package:watchers/views/auth/login_view_mael.dart';
 import 'package:watchers/views/auth/supabase_test.dart';
+import 'package:watchers/views/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,26 +35,45 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Watchers',
-      theme: AppTheme.theme,
-      home: const MyHomePage(),
-    );
+  Future<bool> checkSession() async {
+    final session = Supabase.instance.client.auth.currentSession;
+    return session != null;
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return LoginViewMael();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Watchers',
+        theme: AppTheme.theme,
+        routes: {
+          '/login': (context) => const LoginViewMael(),
+          '/register': (context) => const LoginViewMael(),
+          '/home': (context) => const HomePage(),
+        },
+        home: FutureBuilder<bool>(
+          future: checkSession(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            // Se estiver logado, vai pra Home; senão, pra Login
+            if (snapshot.data == true) {
+              return const HomePage();
+            } else {
+              return const LoginViewMael();
+            }
+          }
+        ),
+      ),
+    );
   }
 }
