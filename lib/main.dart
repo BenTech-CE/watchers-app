@@ -7,6 +7,7 @@ import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/register_view_jg.dart';
 import 'package:watchers/views/auth/login_view_mael.dart';
+import 'package:watchers/views/auth/register_view_mael.dart';
 import 'package:watchers/views/auth/supabase_test.dart';
 import 'package:watchers/views/home_page.dart';
 
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.theme,
         routes: {
           '/login': (context) => const LoginViewMael(),
-          '/register': (context) => const LoginViewMael(),
+          '/register': (context) => const RegisterViewMael(),
           '/home': (context) => const HomePage(),
         },
         home: FutureBuilder<bool>(

@@ -9,169 +9,14 @@ import 'package:watchers/core/validators/validators.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-// class LoginViewMael extends StatelessWidget {
-//   const LoginViewMael({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     bool showPassword = false;
-//     void togglePasswordVisibility(bool? value) {
-//       showPassword = value ?? false;
-//     }
-
-//     final _formKey = GlobalKey<FormState>();
-//     final _emailController = TextEditingController();
-//     final _passController = TextEditingController();
-
-//     return Scaffold(
-//       extendBody: true,
-//       backgroundColor: Colors.black,
-//       body: SizedBox(
-//         height: double.maxFinite,
-//         child: Stack(
-//           alignment: Alignment.topCenter,
-//           children: [
-//             Container(
-//               foregroundDecoration: BoxDecoration(
-//                 gradient: LinearGradient(
-//                   colors: [
-//                     Colors.black,
-//                     Colors.transparent,
-//                     Colors.transparent,
-//                     Colors.black,
-//                   ],
-//                   begin: Alignment.topCenter,
-//                   end: Alignment.bottomCenter,
-//                   stops: const [0.05, 0.4, 0.9, 1],
-//                 ),
-//               ),
-//               child: Image.network(
-//                 "https://cdn.polyspeak.ai/speakmaster/4747b3658f61e5da7f14fddc670a15df.webp",
-//                 width: double.infinity,
-//                 fit: BoxFit.contain,
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.only(top: 24.0),
-//               child: Container(
-//                 alignment: Alignment.bottomCenter,
-//                 decoration: BoxDecoration(
-//                   gradient: LinearGradient(
-//                     colors: [
-//                       Colors.transparent,
-//                       Colors.transparent,
-//                       Colors.black,
-//                       Colors.black,
-//                       Colors.black,
-//                     ],
-//                     begin: Alignment.topCenter,
-//                     end: Alignment.bottomCenter,
-//                   ),
-//                 ),
-//                 child: Transform.translate(
-//                   offset: const Offset(0, 12),
-//                   child: LiquidGlass(
-//                     settings: LiquidGlassSettings(
-//                       blur: 4,
-//                       glassColor: Colors.white.withAlpha(1),
-//                       ambientStrength: 0.5,
-//                       lightIntensity: 0.8,
-//                     ),
-//                     shape: LiquidRoundedRectangle(
-//                       borderRadius: Radius.circular(16),
-//                     ),
-//                     child: SizedBox(
-//                       height: 500,
-//                       width: double.maxFinite,
-//                       child: Container(
-//                         alignment: Alignment.topCenter,
-//                         padding: const EdgeInsets.symmetric(
-//                           horizontal: 32,
-//                           vertical: 26,
-//                         ),
-//                         child: Form(
-//                           key: _formKey,
-//                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.stretch,
-//                             mainAxisAlignment: MainAxisAlignment.start,
-//                             spacing: 12,
-//                             children: [
-//                               Text(
-//                                 "Bem vindo de volta",
-//                                 style: AppTextStyles.titleLarge,
-//                               ),
-//                               Text(
-//                                 "Faça login e acesse sua conta",
-//                                 style: AppTextStyles.bodyLarge.copyWith(
-//                                   color: tColorTertiary,
-//                                 ),
-//                               ),
-//                               SizedBox(height: 8),
-//                               TextInputWidget(
-//                                 label: "Digite seu e-mail",
-//                                 controller: _emailController,
-//                               ),
-//                               TextInputWidget(
-//                                 label: "Digite sua senha",
-//                                 controller: _passController,
-//                                 isPassword: true,
-//                               ),
-//                               SizedBox(height: 8),
-//                               ElevatedButton(
-//                                 onPressed: () {},
-//                                 child: Text("Entrar"),
-//                               ),
-//                               Row(
-//                                 mainAxisAlignment: MainAxisAlignment.center,
-//                                 children: [
-//                                   Text(
-//                                     "Não possui uma conta? ",
-//                                     style: AppTextStyles.labelMedium.copyWith(
-//                                       color: tColorTertiary,
-//                                     ),
-//                                   ),
-//                                   GestureDetector(
-//                                     onTap: () {
-//                                       Navigator.pushNamed(context, '/register');
-//                                     },
-//                                     child: Text(
-//                                       "Cadastrar",
-//                                       style: AppTextStyles.labelMedium.copyWith(
-//                                         color: colorTertiary,
-//                                         fontWeight: FontWeight.w600,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                               OutlinedButton(
-//                                 onPressed: () {},
-//                                 child: Text("Continuar com Google"),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class LoginViewMael extends StatefulWidget {
-  const LoginViewMael({super.key});
+class RegisterViewMael extends StatefulWidget {
+  const RegisterViewMael({super.key});
 
   @override
-  State<LoginViewMael> createState() => _LoginViewMaelState();
+  State<RegisterViewMael> createState() => _RegisterViewMaelState();
 }
 
-class _LoginViewMaelState extends State<LoginViewMael>
+class _RegisterViewMaelState extends State<RegisterViewMael>
     with SingleTickerProviderStateMixin {
   bool showPassword = false;
   bool _isKeyboardVisible = false;
@@ -183,6 +28,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
+  final _usernameController = TextEditingController();
 
   @override
   void initState() {
@@ -213,6 +59,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
     _controller.dispose();
     _emailController.dispose();
     _passController.dispose();
+    _usernameController.dispose();
     super.dispose();
   }
 
@@ -232,25 +79,6 @@ class _LoginViewMaelState extends State<LoginViewMael>
     }
   }
 
-  Future<void> _handleLogin() async {
-    final authProvider = context.read<AuthProvider>();
-    
-    if (authProvider.isLoading) return;
-
-    final success = await authProvider.signIn(
-      email: _emailController.text,
-      password: _passController.text,
-    );
-
-    if (success && mounted) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login')),
-      );
-    }
-  }
-
   Future<void> _handleGoogleSignIn() async {
     final authProvider = context.read<AuthProvider>();
 
@@ -267,8 +95,10 @@ class _LoginViewMaelState extends State<LoginViewMael>
     }
   }
 
-  /*Future<void> _handleRegister() async {
+  Future<void> _handleRegister() async {
     final authProvider = context.read<AuthProvider>();
+
+    if (authProvider.isLoading) return;
     
     final success = await authProvider.signUp(
       email: _emailController.text.trim(),
@@ -286,7 +116,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
         ),
       );
     }
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -316,7 +146,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: [0.05, 0.4, _isKeyboardVisible ? 0.8 : 0.9, 1],
+                  stops: [0.05, 0.4, _isKeyboardVisible ? 0.5 : 0.6, 1],
                 ),
               ),
               child: Image.network(
@@ -373,7 +203,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
                         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                         child: SingleChildScrollView(
                           child: Container(
-                            height: 500,
+                            height: 560,
                             width: double.maxFinite,
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.1),
@@ -401,7 +231,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                         spacing: 12,
                                         children: [
                                           Text(
-                                            "Bem vindo de volta",
+                                            "Bem vindo",
                                             style: AppTextStyles.titleLarge,
                                           ),
                                           Text(
@@ -412,6 +242,11 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                                 ),
                                           ),
                                           SizedBox(height: 8),
+                                          TextInputWidget(
+                                            label: "Digite seu nome de usuário",
+                                            controller: _usernameController,
+                                            validator: FormValidators.validateUsername,
+                                          ),
                                           TextInputWidget(
                                             label: "Digite seu e-mail",
                                             controller: _emailController,
@@ -429,7 +264,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                             child: ElevatedButton(
                                               onPressed: () {
                                                 if (_formKey.currentState!.validate()) {
-                                                  _handleLogin();
+                                                  _handleRegister();
                                                 }
                                               },
                                               child: authProvider.isLoading ? SizedBox.square(dimension: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text("Entrar"),
@@ -440,7 +275,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                "Não possui uma conta? ",
+                                                "Já possui uma conta? ",
                                                 style: AppTextStyles.labelMedium
                                                     .copyWith(
                                                       color: tColorTertiary,
@@ -450,11 +285,11 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                                 onTap: () {
                                                   Navigator.pushNamed(
                                                     context,
-                                                    '/register',
+                                                    '/login',
                                                   );
                                                 },
                                                 child: Text(
-                                                  "Cadastrar",
+                                                  "Fazer login",
                                                   style: AppTextStyles
                                                       .labelMedium
                                                       .copyWith(
