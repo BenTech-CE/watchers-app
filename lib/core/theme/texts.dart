@@ -4,22 +4,17 @@ import 'package:watchers/core/theme/colors.dart';
 /// Centraliza todos os estilos de texto do aplicativo para fácil acesso e manutenção.
 class AppTextStyles {
   // Estilo base privado para definir a fonte padrão.
-  static const TextStyle _base = TextStyle(
-    fontFamily: 'Montserrat',
-  );
+  static const TextStyle _base = TextStyle(fontFamily: 'Montserrat');
 
   // Efeito de brilho/sombra padrão para ser reutilizado.
   static const List<Shadow> _brightShadows = [
-    Shadow(
-      blurRadius: 4,
-      color: Colors.white,
-    ),
+    Shadow(blurRadius: 4, color: Colors.white),
   ];
 
   // --- ESTILOS DE TÍTULO ---
 
   static final TextStyle titleLarge = _base.copyWith(
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: FontWeight.bold,
     color: tColorPrimary, // Cor explícita para títulos
   );
@@ -41,7 +36,7 @@ class AppTextStyles {
     color: tColorSecondary, // Cor secundária para subtítulos
   );
 
-// estando certo mas a sua dpi dimiunuindo confia pois eu vou arrumar minha dpi // e vou deixar ela igual a sua disse onde arruma dpimandar
+  // estando certo mas a sua dpi dimiunuindo confia pois eu vou arrumar minha dpi // e vou deixar ela igual a sua disse onde arruma dpimandar
   // --- ESTILOS DE CORPO ---
 
   static final TextStyle bodyLarge = _base.copyWith(
@@ -54,7 +49,6 @@ class AppTextStyles {
     shadows: _brightShadows,
   );
 
-
   static final TextStyle bodyMedium = _base.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.normal,
@@ -65,14 +59,13 @@ class AppTextStyles {
     fontWeight: FontWeight.normal,
   );
 
-
   // --- ESTILOS DE LABEL ---
 
   static final TextStyle labelLarge = _base.copyWith(
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
-  
+
   static final TextStyle labelLargeBright = labelLarge.copyWith(
     color: tColorPrimary,
     shadows: _brightShadows,

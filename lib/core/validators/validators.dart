@@ -3,6 +3,7 @@ class FormValidators { // Classe de validadores de formulário
   // Validador de nulidade
   static String? notNull(String? value){
     if (value == null || value.isEmpty) return "Campo obrigatório";
+    return null;
   }
 
   // Validador de nome de usuário
@@ -10,7 +11,7 @@ class FormValidators { // Classe de validadores de formulário
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
     }
-    if (value.length < 3) {
+    if (value.length <= 3) {
       return 'Seu nome de usuário deve ter mais de 3 caracteres';
     }
     //Verificar se já existe o Username no banco de dados.

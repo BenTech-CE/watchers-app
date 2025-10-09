@@ -11,5 +11,30 @@ class AppTheme {
       brightness: Brightness.dark,
     ),
     textTheme: appTextTheme,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        backgroundColor: colorPrimary,
+        foregroundColor: tColorPrimary,
+        textStyle: AppTextStyles.bodyMedium.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        side: const BorderSide(color: bgColorButton, width: 1),
+        foregroundColor: tColorPrimary,
+        backgroundColor: bgColorButton,
+        textStyle: AppTextStyles.bodyMedium.copyWith(
+          fontWeight: FontWeight.w600,
+          color: tColorQuarternary,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    ),
   );
 }
