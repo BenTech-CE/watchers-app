@@ -3,12 +3,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/auth_provider.dart';
-import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/theme/theme.dart';
-import 'package:watchers/views/auth/register_view_jg.dart';
-import 'package:watchers/views/auth/login_view_mael.dart';
-import 'package:watchers/views/auth/register_view_mael.dart';
-import 'package:watchers/views/auth/supabase_test.dart';
+import 'package:watchers/views/auth/login_view.dart';
+import 'package:watchers/views/auth/register_view.dart';
 import 'package:watchers/views/home_page.dart';
 
 Future<void> main() async {
@@ -44,16 +41,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
-        ),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
       child: MaterialApp(
         title: 'Watchers',
         theme: AppTheme.theme,
         routes: {
-          '/login': (context) => const LoginViewMael(),
+          '/login': (context) => const LoginView(),
           '/register': (context) => const RegisterViewMael(),
           '/home': (context) => const HomePage(),
         },
@@ -70,9 +63,9 @@ class MyApp extends StatelessWidget {
             if (snapshot.data == true) {
               return const HomePage();
             } else {
-              return const LoginViewMael();
+              return const LoginView();
             }
-          }
+          },
         ),
       ),
     );

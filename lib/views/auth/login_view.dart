@@ -164,14 +164,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 //   }
 // }
 
-class LoginViewMael extends StatefulWidget {
-  const LoginViewMael({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<LoginViewMael> createState() => _LoginViewMaelState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewMaelState extends State<LoginViewMael>
+class _LoginViewState extends State<LoginView>
     with SingleTickerProviderStateMixin {
   bool showPassword = false;
   bool _isKeyboardVisible = false;
@@ -234,7 +234,7 @@ class _LoginViewMaelState extends State<LoginViewMael>
 
   Future<void> _handleLogin() async {
     final authProvider = context.read<AuthProvider>();
-    
+
     if (authProvider.isLoading) return;
 
     final success = await authProvider.signIn(
@@ -246,7 +246,9 @@ class _LoginViewMaelState extends State<LoginViewMael>
       Navigator.pushReplacementNamed(context, '/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login')),
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Erro ao fazer login'),
+        ),
       );
     }
   }
@@ -262,7 +264,11 @@ class _LoginViewMaelState extends State<LoginViewMael>
       Navigator.pushReplacementNamed(context, '/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login com Google')),
+        SnackBar(
+          content: Text(
+            authProvider.errorMessage ?? 'Erro ao fazer login com Google',
+          ),
+        ),
       );
     }
   }
@@ -415,24 +421,35 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                           TextInputWidget(
                                             label: "Digite seu e-mail",
                                             controller: _emailController,
-                                            validator: FormValidators.validateEmail,
+                                            validator:
+                                                FormValidators.validateEmail,
                                           ),
                                           TextInputWidget(
                                             label: "Digite sua senha",
                                             controller: _passController,
                                             isPassword: true,
-                                            validator: FormValidators.notNull
+                                            validator: FormValidators.notNull,
                                           ),
                                           SizedBox(height: 8),
                                           SizedBox(
                                             height: 40,
                                             child: ElevatedButton(
                                               onPressed: () {
-                                                if (_formKey.currentState!.validate()) {
+                                                if (_formKey.currentState!
+                                                    .validate()) {
                                                   _handleLogin();
                                                 }
                                               },
-                                              child: authProvider.isLoading ? SizedBox.square(dimension: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text("Entrar"),
+                                              child: authProvider.isLoading
+                                                  ? SizedBox.square(
+                                                      dimension: 18,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            color: Colors.white,
+                                                            strokeWidth: 2,
+                                                          ),
+                                                    )
+                                                  : Text("Entrar"),
                                             ),
                                           ),
                                           Row(
@@ -483,10 +500,14 @@ class _LoginViewMaelState extends State<LoginViewMael>
                                                     ),
                                                   ),
                                                   SizedBox(width: 8),
-                                                  Text("Continuar com o Google", style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w700
-                                                  ),)
+                                                  Text(
+                                                    "Continuar com o Google",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             ),

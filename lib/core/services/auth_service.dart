@@ -19,8 +19,8 @@ class AuthService {
   final GoogleSignIn _googleSignIn;
 
   AuthService({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client,
-        _googleSignIn = GoogleSignIn.instance;
+    : _supabase = supabase ?? Supabase.instance.client,
+      _googleSignIn = GoogleSignIn.instance;
 
   /// Retorna o cliente Supabase
   SupabaseClient get client => _supabase;
@@ -143,7 +143,7 @@ class AuthService {
 
       final authorization =
           await googleUser.authorizationClient.authorizationForScopes(scopes) ??
-              await googleUser.authorizationClient.authorizeScopes(scopes);
+          await googleUser.authorizationClient.authorizeScopes(scopes);
 
       final idToken = googleUser.authentication.idToken;
       if (idToken == null) {
@@ -215,9 +215,7 @@ class AuthService {
   /// Throws [AuthServiceException] se houver erro
   Future<void> updatePassword(String newPassword) async {
     try {
-      await _supabase.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
+      await _supabase.auth.updateUser(UserAttributes(password: newPassword));
     } on AuthException catch (e) {
       throw AuthServiceException(e.message, code: e.statusCode);
     } catch (e) {
