@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:watchers/core/theme/texts.dart';
@@ -56,28 +57,36 @@ class _WatchedSeriesState extends State<WatchedSeries> {
         child: Padding(
           padding: EdgeInsetsGeometry.all(sizePadding),
           child: Column(
-            spacing: sizeSpacing,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text("Quais séries você já assistiu?", style: AppTextStyles.titleMedium,),
-              Text("As selecionadas vão para o seu perfil!", style: AppTextStyles.labelLarge.copyWith(color: tColorSecondary),),
-              
-              // TODO - Campo de Busca.
-              TextInputWidget(
-                label: "Busca",
-                hint: "Procure séries que você já assistiu ou está assistindo...", 
-                controller: _searchController,
-                icon: Icons.search,
-
+              SizedBox(
+                width: 138,
+                height: 28,
+                child: SvgPicture.asset("assets/logo/logowatchers.svg"),
               ),
-
+              const SizedBox(height: sizeSpacing),
+              Text("Quais séries você já assistiu?", style: AppTextStyles.titleMedium.copyWith(fontWeight: FontWeight.w500, color: tColorPrimary),),
+              Text("As selecionadas vão para o seu perfil!", style: AppTextStyles.labelLarge.copyWith(color: tColorSecondary),),
+              const SizedBox(height: sizeSpacing),
+              // TODO - Campo de Busca.
+              GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: TextInputWidget(
+                  label: "Procure séries que você já assistiu...",
+                  controller: _searchController,
+                  icon: Icons.search,
+                  labelAsHint: true,
+                  hintStyle: AppTextStyles.labelLarge.copyWith(color: tColorSecondary, fontSize: 14)
+                ),
+              ),
+              const SizedBox(height: sizeSpacing),
               // Grade de séries
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
-                    crossAxisSpacing: sizeSpacing,
-                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 23,
+                    mainAxisSpacing: 23,
                     childAspectRatio: 2 / 3,
                   ),
                   itemCount: _allSeries.length,
@@ -113,19 +122,19 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                   backgroundColor: Colors.grey.shade800,
                   side: BorderSide(color: Colors.grey.shade800),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton(
                 onPressed: () { /* Lógica para continuar com as séries selecionadas */ },
                 child: const Text('Continuar'),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.blue,
+                  foregroundColor: tColorPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
               ),
             ),

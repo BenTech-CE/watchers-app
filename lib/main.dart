@@ -7,6 +7,7 @@ import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/login_view.dart';
 import 'package:watchers/views/auth/register_view.dart';
 import 'package:watchers/views/home_page.dart';
+import 'package:watchers/views/intro/watched_series.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginView(),
           '/register': (context) => const RegisterViewMael(),
           '/home': (context) => const HomePage(),
+          '/onboarding/watched': (context) => const WatchedSeries(),
         },
         home: FutureBuilder<bool>(
           future: checkSession(),

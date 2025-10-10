@@ -11,6 +11,8 @@ class TextInputWidget extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final bool autocorrect;
   final bool isPassword;
+  final bool labelAsHint;
+  final TextStyle? hintStyle;
 
   const TextInputWidget({
     super.key,
@@ -22,6 +24,8 @@ class TextInputWidget extends StatefulWidget {
     this.validator,
     this.autocorrect = false,
     this.isPassword = false,
+    this.labelAsHint = false,
+    this.hintStyle,
   });
 
   @override
@@ -77,10 +81,10 @@ class _TextInputWidgetState extends State<TextInputWidget> {
             }
           },
           decoration: InputDecoration(
-            label: Text(widget.label),
+            label: widget.labelAsHint ? null : Text(widget.label),
             hint: Text(
-              widget.hint,
-              style: AppTextStyles.labelMedium.copyWith(
+              widget.labelAsHint ? widget.label : widget.hint,
+              style: widget.hintStyle ?? AppTextStyles.labelMedium.copyWith(
                 color: tColorQuarternary,
               ),
             ),

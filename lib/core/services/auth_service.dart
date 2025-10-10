@@ -132,12 +132,7 @@ class AuthService {
   /// Throws [AuthServiceException] se houver erro
   Future<UserModel> signInWithGoogle({String? iosClientId}) async {
     try {
-      const defaultIosClientId =
-          '276021947227-63ngg60sc0au2na9d5jg8qkfn2kir54r.apps.googleusercontent.com';
-      final clientId = iosClientId ?? defaultIosClientId;
       final scopes = ['email', 'profile'];
-
-      await _googleSignIn.initialize(clientId: clientId);
 
       final googleUser = await _googleSignIn.authenticate();
 
