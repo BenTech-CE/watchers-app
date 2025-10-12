@@ -260,8 +260,13 @@ class _LoginViewState extends State<LoginView>
 
     final success = await authProvider.signInWithGoogle();
 
-    if (success && mounted) {
-      Navigator.pushReplacementNamed(context, '/home');
+    if (success && mounted && authProvider.user != null) {
+      // se a conta foi criada há menos de 3 minutos, é um novo usuário (POG)
+      if (authProvider.user!.createdAt.difference(DateTime.now()).inMinutes.abs() < 3) {
+        Navigator.pushReplacementNamed(context, '/onboarding/watched');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
