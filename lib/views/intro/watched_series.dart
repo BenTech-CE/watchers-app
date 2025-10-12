@@ -109,36 +109,38 @@ class _WatchedSeriesState extends State<WatchedSeries> {
 
       
     // Botões inferiores
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-        child: Row(
-          children: [
-             Expanded(
-              child: OutlinedButton(
-                onPressed: () { /* Lógica para pular */ },
-                child: const Text('Pular'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.grey.shade800,
-                  side: BorderSide(color: Colors.grey.shade800),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          child: Row(
+            children: [
+               Expanded(
+                child: OutlinedButton(
+                  onPressed: () { /* Lógica para pular */ },
+                  child: const Text('Pular'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.grey.shade800,
+                    side: BorderSide(color: Colors.grey.shade800),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () { /* Lógica para continuar com as séries selecionadas */ },
-                child: const Text('Continuar'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: tColorPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () { /* Lógica para continuar com as séries selecionadas */ },
+                  child: const Text('Continuar'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: tColorPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

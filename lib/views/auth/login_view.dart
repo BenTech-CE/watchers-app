@@ -470,7 +470,7 @@ class _LoginViewState extends State<LoginView>
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  Navigator.pushNamed(
+                                                  Navigator.pushReplacementNamed(
                                                     context,
                                                     '/register',
                                                   );
