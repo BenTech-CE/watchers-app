@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:watchers/core/providers/auth_provider.dart';
+import 'package:watchers/core/providers/auth/auth_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,13 +41,16 @@ class _HomePageState extends State<HomePage> {
                   },
                   icon: Icon(Icons.copy),
                   iconSize: 24,
-                )
+                ),
               ],
             ),
-            ElevatedButton(onPressed: () {
-              authInfo.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
-            }, child: const Text('Sair'))
+            ElevatedButton(
+              onPressed: () {
+                authInfo.signOut();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              child: const Text('Sair'),
+            ),
           ],
         ),
       ),

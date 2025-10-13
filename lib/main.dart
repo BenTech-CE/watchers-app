@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:watchers/core/providers/auth_provider.dart';
+import 'package:watchers/core/providers/auth/auth_provider.dart';
+import 'package:watchers/core/providers/series/series_provider.dart';
+import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/login_view.dart';
 import 'package:watchers/views/auth/register_view.dart';
@@ -41,8 +43,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthService authService = AuthService();
+
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) => SeriesProvider(authService: authService),
+        ),
+      ],
       child: MaterialApp(
         title: 'Watchers',
         theme: AppTheme.theme,
@@ -63,7 +72,7 @@ class MyApp extends StatelessWidget {
 
             // Se estiver logado, vai pra Home; senão, pra Login
             if (snapshot.data == true) {
-              return const HomePage();
+              return const WatchedSeries();
             } else {
               return const LoginView();
             }

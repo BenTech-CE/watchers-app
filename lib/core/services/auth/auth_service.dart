@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../models/user_model.dart';
+import '../../models/auth/user_model.dart';
 
 /// Exceção personalizada para erros de autenticação
 class AuthServiceException implements Exception {

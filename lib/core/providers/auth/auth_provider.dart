@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/user_model.dart';
-import '../services/auth_service.dart';
+import '../../models/auth/user_model.dart';
+import '../../services/auth/auth_service.dart';
 
 /// Estados de autenticação
 enum AuthStatus {
