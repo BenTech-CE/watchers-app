@@ -33,7 +33,7 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
   bool _isSearching = false;
 
   // Set para armazenar o id das séries selecionadas
-  final Set<SerieModel> _selectedSeriesIds = {};
+  final Set<SerieModel> _selectedSeries = {};
   final int _maxSelection = 3;
 
   final TextEditingController _searchController = TextEditingController();
@@ -125,10 +125,13 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
 
   void _toggleSeriesSelection(SerieModel series) {
     setState(() {
-      if (_selectedSeriesIds.contains(series)) {
-        _selectedSeriesIds.remove(series);
-      } else if (_selectedSeriesIds.length < _maxSelection) {
-        _selectedSeriesIds.add(series);
+      bool exists = _selectedSeries.any(
+        (seriesItem) => seriesItem.id == series.id,
+      );
+      if (exists) {
+        _selectedSeries.removeWhere((seriesItem) => seriesItem.id == series.id);
+      } else if (_selectedSeries.length < _maxSelection) {
+        _selectedSeries.add(series);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -181,39 +184,43 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
                 ),
                 itemCount: _maxSelection,
                 itemBuilder: (context, index) {
-                  final selectedIds = _selectedSeriesIds.toList();
-                  final hasImage = index < selectedIds.length;
-                  final imageUrl = hasImage ? selectedIds[index].posterUrl : '';
+                  final selectedSeries = _selectedSeries.toList();
+                  final hasImage = index < selectedSeries.length;
+                  final imageUrl = hasImage
+                      ? selectedSeries[index].posterUrl
+                      : '';
 
                   return ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: hasImage
-                    ? SeriesCard(series: selectedIds[index], isSelected: false, onTap: () => _toggleSeriesSelection(selectedIds[index]))
-                    : Container(
-                      color: bColorPrimary,
-                      child: Center(
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: ShapeDecoration(
-                            color: Color(0x1e787880),
-                            shape: CircleBorder(),
-                            shadows: [
-                              BoxShadow(
-                                color: Color(0x3F000000),
-                                blurRadius: 4,
-                                offset: Offset(0, 4),
-                                spreadRadius: 0,
-                              )
-                            ],
+                    borderRadius: BorderRadius.circular(15),
+                    child: hasImage
+                        ? SeriesCard(
+                            series: selectedSeries[index],
+                            isSelected: false,
+                            onTap: () =>
+                                _toggleSeriesSelection(selectedSeries[index]),
+                          )
+                        : Container(
+                            color: bColorPrimary,
+                            child: Center(
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: ShapeDecoration(
+                                  color: Color(0x1e787880),
+                                  shape: CircleBorder(),
+                                  shadows: [
+                                    BoxShadow(
+                                      color: Color(0x3F000000),
+                                      blurRadius: 4,
+                                      offset: Offset(0, 4),
+                                      spreadRadius: 0,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(Icons.add, color: colorPrimary),
+                              ),
+                            ),
                           ),
-                          child: Icon(
-                            Icons.add,
-                            color: colorPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
                   );
                 },
               ),
@@ -287,11 +294,13 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
                       itemCount: seriesToShow.length,
                       itemBuilder: (context, index) {
                         final series = seriesToShow[index];
-                        final isSelected = _selectedSeriesIds.contains(series);
+                        bool exists = _selectedSeries.any(
+                          (seriesItem) => seriesItem.id == series.id,
+                        );
 
                         return SeriesCard(
                           series: series,
-                          isSelected: isSelected,
+                          isSelected: exists,
                           onTap: () => _toggleSeriesSelection(series),
                         );
                       },
