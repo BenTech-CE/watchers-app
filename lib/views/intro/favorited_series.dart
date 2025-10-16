@@ -11,14 +11,14 @@ import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/series_card.dart';
 
-class WatchedSeries extends StatefulWidget {
-  const WatchedSeries({super.key});
+class FavoritedSeries extends StatefulWidget {
+  const FavoritedSeries({super.key});
 
   @override
-  State<WatchedSeries> createState() => _WatchedSeriesState();
+  State<FavoritedSeries> createState() => _FavoritedSeriesState();
 }
 
-class _WatchedSeriesState extends State<WatchedSeries> {
+class _FavoritedSeriesState extends State<FavoritedSeries> {
   // Para teste: Lista de séries
   // final List<Series> _allSeries = [
   //   Series(id: "1", posterUrl: "https://media.themoviedb.org/t/p/w600_and_h900_bestv2/7h8ZHFmx73HnEagDI6KbWAw4ea3.jpg"),
@@ -33,7 +33,8 @@ class _WatchedSeriesState extends State<WatchedSeries> {
   bool _isSearching = false;
 
   // Set para armazenar o id das séries selecionadas
-  final Set<String> _selectedSeriesIds = {};
+  final Set<SerieModel> _selectedSeriesIds = {};
+  final int _maxSelection = 3;
 
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
@@ -118,18 +119,24 @@ class _WatchedSeriesState extends State<WatchedSeries> {
     super.dispose();
   }
 
-  void _toggleSeriesSelection(String seriesId) {
-    setState(() {
-      if (_selectedSeriesIds.contains(seriesId)) {
-        _selectedSeriesIds.remove(seriesId);
-      } else {
-        _selectedSeriesIds.add(seriesId);
-      }
-    });
+  void _navigateToNext() {
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
-  void _navigateToNext() {
-    Navigator.pushReplacementNamed(context, '/onboarding/favorited');
+  void _toggleSeriesSelection(SerieModel series) {
+    setState(() {
+      if (_selectedSeriesIds.contains(series)) {
+        _selectedSeriesIds.remove(series);
+      } else if (_selectedSeriesIds.length < _maxSelection) {
+        _selectedSeriesIds.add(series);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Você só pode selecionar até $_maxSelection séries."),
+          ),
+        );
+      }
+    });
   }
 
   @override
@@ -150,17 +157,65 @@ class _WatchedSeriesState extends State<WatchedSeries> {
               ),
               const SizedBox(height: sizeSpacing),
               Text(
-                "Quais séries você já assistiu?",
+                "Quais são suas séries favoritas?",
                 style: AppTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.w500,
                   color: tColorPrimary,
                 ),
               ),
               Text(
-                "As selecionadas vão para o seu perfil!",
+                "Adicione as 3 séries que você mais ama ao seu perfil!",
                 style: AppTextStyles.labelLarge.copyWith(
                   color: tColorSecondary,
                 ),
+              ),
+              const SizedBox(height: sizeSpacing),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 23,
+                  mainAxisSpacing: 23,
+                  childAspectRatio: 2 / 3,
+                ),
+                itemCount: _maxSelection,
+                itemBuilder: (context, index) {
+                  final selectedIds = _selectedSeriesIds.toList();
+                  final hasImage = index < selectedIds.length;
+                  final imageUrl = hasImage ? selectedIds[index].posterUrl : '';
+
+                  return ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: hasImage
+                    ? SeriesCard(series: selectedIds[index], isSelected: false, onTap: () => _toggleSeriesSelection(selectedIds[index]))
+                    : Container(
+                      color: bColorPrimary,
+                      child: Center(
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: ShapeDecoration(
+                            color: Color(0x1e787880),
+                            shape: CircleBorder(),
+                            shadows: [
+                              BoxShadow(
+                                color: Color(0x3F000000),
+                                blurRadius: 4,
+                                offset: Offset(0, 4),
+                                spreadRadius: 0,
+                              )
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: colorPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: sizeSpacing),
               // TODO - Campo de Busca.
@@ -169,7 +224,7 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                 child: Consumer<SeriesProvider>(
                   builder: (context, provider, child) {
                     return TextInputWidget(
-                      label: "Procure séries que você já assistiu...",
+                      label: "Procure suas séries favoritas...",
                       controller: _searchController,
                       icon: provider.isLoading && _isSearching
                           ? Icons.hourglass_empty
@@ -232,14 +287,12 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                       itemCount: seriesToShow.length,
                       itemBuilder: (context, index) {
                         final series = seriesToShow[index];
-                        final isSelected = _selectedSeriesIds.contains(
-                          series.id,
-                        );
+                        final isSelected = _selectedSeriesIds.contains(series);
 
                         return SeriesCard(
                           series: series,
                           isSelected: isSelected,
-                          onTap: () => _toggleSeriesSelection(series.id),
+                          onTap: () => _toggleSeriesSelection(series),
                         );
                       },
                     );

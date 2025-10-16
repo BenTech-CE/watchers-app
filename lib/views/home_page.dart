@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 
@@ -16,16 +17,21 @@ class _HomePageState extends State<HomePage> {
     final authInfo = context.watch<AuthProvider>();
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: SizedBox(
+          width: 138,
+          height: 28,
+          child: SvgPicture.asset("assets/logo/logowatchers.svg"),
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Bem-vindo à Home Page!'),
-            const Text('Você está logado.'),
-            const Text('Informações da sessão atual:'),
-            Text('${authInfo.user?.username}'),
-            Text('Status de Autenticação: ${authInfo.status}'),
-            Text('Id: ${authInfo.user?.id}'),
+            const Text('Usuário atual:'),
+            Text('Username: ${authInfo.user?.username}'),
             Text('E-mail: ${authInfo.user?.email}'),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -50,6 +56,12 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pushReplacementNamed(context, '/login');
               },
               child: const Text('Sair'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/onboarding/watched');
+              },
+              child: const Text('Ir para Intro'),
             ),
           ],
         ),

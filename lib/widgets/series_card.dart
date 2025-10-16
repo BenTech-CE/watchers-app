@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
+import 'package:watchers/core/theme/colors.dart';
 
 class SeriesCard extends StatelessWidget {
-  final String imageUrl;
+  final SerieModel series;
   final bool isSelected;
   final VoidCallback
   onTap; // Função que deve ser chamada quando a série for selecionada
 
   const SeriesCard({
     super.key,
-    required this.imageUrl,
+    required this.series,
     required this.isSelected,
     required this.onTap,
   });
@@ -51,30 +53,43 @@ class SeriesCard extends StatelessWidget {
 
   Widget _buildImage() {
     // Verifica se a URL é válida
-    if (imageUrl.isEmpty || !_isValidUrl(imageUrl)) {
+    if (series.posterUrl.isEmpty || !_isValidUrl(series.posterUrl)) {
       return Container(
-        color: Colors.grey[300],
-        child: const Icon(
-          Icons.image_not_supported,
-          color: Colors.grey,
-          size: 50,
+        color: bColorPrimary,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.image_not_supported,
+                color: Colors.grey,
+                size: 32,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                series.name,
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
         ),
       );
     }
 
     return Image.network(
-      imageUrl,
+      series.posterUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
-          color: Colors.grey[300],
+          color: bColorPrimary,
           child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
         );
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Container(
-          color: Colors.grey[200],
+          color: bColorPrimary,
           child: Center(
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null

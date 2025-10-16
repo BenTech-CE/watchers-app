@@ -21,3 +21,7 @@ const bColorPrimary = Color(0xff2b2b2b);
 
 // BACKGROUND COLORS
 const bgColorButton = Color(0xff383838);
+
+// ADICIONAIS
+const unselectedNavBarItemColor = Colors.grey;
+const selectedNavBarItemColor = colorPrimary;

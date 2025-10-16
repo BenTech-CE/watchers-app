@@ -9,7 +9,9 @@ import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/login_view.dart';
 import 'package:watchers/views/auth/register_view.dart';
 import 'package:watchers/views/home_page.dart';
+import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
+import 'package:watchers/views/main_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,12 +56,14 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Watchers',
+        debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         routes: {
           '/login': (context) => const LoginView(),
           '/register': (context) => const RegisterViewMael(),
-          '/home': (context) => const HomePage(),
+          '/home': (context) => const MainPage(),
           '/onboarding/watched': (context) => const WatchedSeries(),
+          '/onboarding/favorited': (context) => const FavoritedSeries(),
         },
         home: FutureBuilder<bool>(
           future: checkSession(),
@@ -72,7 +76,7 @@ class MyApp extends StatelessWidget {
 
             // Se estiver logado, vai pra Home; senão, pra Login
             if (snapshot.data == true) {
-              return const WatchedSeries();
+              return const MainPage();
             } else {
               return const LoginView();
             }
