@@ -37,7 +37,7 @@ class SeriesService {
 
       if (response.statusCode == 200) {
         final List<SerieModel> series = [];
-        for (var serie in jsonResponse) {
+        for (var serie in jsonResponse["results"]) {
           series.add(SerieModel.fromJson(serie));
         }
         return series;
@@ -70,7 +70,7 @@ class SeriesService {
 
       if (response.statusCode == 200) {
         final List<SerieModel> series = [];
-        for (var serie in jsonResponse) {
+        for (var serie in jsonResponse["results"]) {
           series.add(SerieModel.fromJson(serie));
         }
         return series;
