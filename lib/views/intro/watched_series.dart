@@ -250,7 +250,6 @@ class _WatchedSeriesState extends State<WatchedSeries> {
           ),
         ),
       ),
-
       // Botões inferiores
       bottomNavigationBar: SafeArea(
         child: Padding(

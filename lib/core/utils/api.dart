@@ -17,7 +17,7 @@ class Api {
   // LIST
 
   static final Uri allLists = Uri.parse('${baseUrl}lists/');
-  static Uri listSeries(String id) => Uri.parse('${baseUrl}liss/$id/items');
+  static Uri listSeries(String id) => Uri.parse('${baseUrl}lists/$id/items');
   static Uri listDetails(String id) => Uri.parse('${baseUrl}lists/$id');
 }
 
