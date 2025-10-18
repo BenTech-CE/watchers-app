@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
+import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/series_card.dart';
 
@@ -33,7 +35,7 @@ class _WatchedSeriesState extends State<WatchedSeries> {
   bool _isSearching = false;
 
   // Set para armazenar o id das séries selecionadas
-  final Set<String> _selectedSeriesIds = {};
+  final Set<SerieModel> _selectedSeries = {};
 
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
@@ -118,22 +120,38 @@ class _WatchedSeriesState extends State<WatchedSeries> {
     super.dispose();
   }
 
-  void _toggleSeriesSelection(String seriesId) {
+  void _toggleSeriesSelection(SerieModel series) {
     setState(() {
-      if (_selectedSeriesIds.contains(seriesId)) {
-        _selectedSeriesIds.remove(seriesId);
+      bool exists = _selectedSeries.any(
+        (seriesItem) => seriesItem.id == series.id,
+      );
+      if (exists) {
+        _selectedSeries.removeWhere((seriesItem) => seriesItem.id == series.id);
       } else {
-        _selectedSeriesIds.add(seriesId);
+        _selectedSeries.add(series);
       }
     });
   }
 
   void _navigateToNext() {
-    Navigator.pushReplacementNamed(context, '/onboarding/favorited');
+    Navigator.pushReplacementNamed(context, '/onboarding/favorited', arguments: _selectedSeries);
+  }
+
+  void _sendWatchedSeries() async {
+    final ListsProvider listsProvider = context.read<ListsProvider>();
+
+    await listsProvider.addSeriesToList(
+      "watched",
+      _selectedSeries.map((into) => int.parse(into.id)).toList(),
+    );
+
+    _navigateToNext();
   }
 
   @override
   Widget build(BuildContext context) {
+    final ListsProvider listsProvider = context.watch<ListsProvider>();
+
     return Scaffold(
       backgroundColor: Colors.black,
       extendBody: true,
@@ -232,14 +250,14 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                       itemCount: seriesToShow.length,
                       itemBuilder: (context, index) {
                         final series = seriesToShow[index];
-                        final isSelected = _selectedSeriesIds.contains(
-                          series.id,
+                        bool exists = _selectedSeries.any(
+                          (seriesItem) => seriesItem.id == series.id,
                         );
 
                         return SeriesCard(
                           series: series,
-                          isSelected: isSelected,
-                          onTap: () => _toggleSeriesSelection(series.id),
+                          isSelected: exists,
+                          onTap: () => _toggleSeriesSelection(series),
                         );
                       },
                     );
@@ -253,40 +271,33 @@ class _WatchedSeriesState extends State<WatchedSeries> {
       // Botões inferiores
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 0,
+            top: 0,
+          ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 16,
             children: [
               Expanded(
-                child: OutlinedButton(
+                child: Button(
+                  variant: ButtonVariant.secondary,
+                  label: "Pular",
                   onPressed: () {
                     _navigateToNext();
                   },
-                  child: const Text('Pular'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.grey.shade800,
-                    side: BorderSide(color: Colors.grey.shade800),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
                 ),
               ),
-              const SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
+                child: Button(
+                  label: "Continuar",
                   onPressed: () {
-                    _navigateToNext();
+                    _sendWatchedSeries();
                   },
-                  child: const Text('Continuar'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: tColorPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
+                  disabled: listsProvider.isLoading,
+                  loading: listsProvider.isLoading,
                 ),
               ),
             ],

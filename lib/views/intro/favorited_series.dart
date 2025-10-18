@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
+import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/series_card.dart';
 
@@ -34,6 +36,10 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
 
   // Set para armazenar o id das séries selecionadas
   final Set<SerieModel> _selectedSeries = {};
+
+  // Esses vem da tela anterior por meio dos parâmetros da rota.
+  final Set<SerieModel> _watchedSeries = {};
+
   final int _maxSelection = 3;
 
   final TextEditingController _searchController = TextEditingController();
@@ -43,7 +49,10 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchSeriesTrending());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _watchedSeries.addAll(ModalRoute.of(context)!.settings.arguments as Set<SerieModel>);
+      _fetchSeriesTrending();
+    });
 
     _searchController.addListener(_onSearchChanged);
   }
@@ -99,7 +108,13 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
 
     if (series.isNotEmpty && mounted) {
       setState(() {
-        _allSeries.addAll(series);
+        _allSeries.addAll(_watchedSeries);
+
+        series.forEach((serie) {
+          if (!_allSeries.any((s) => s.id == serie.id)) {
+            _allSeries.add(serie);
+          }
+        });
       });
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,6 +138,17 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
     Navigator.pushReplacementNamed(context, '/home');
   }
 
+  void _sendFavoriteSeries() async {
+    final ListsProvider listsProvider = context.read<ListsProvider>();
+
+    await listsProvider.addSeriesToList(
+      "favorites",
+      _selectedSeries.map((into) => int.parse(into.id)).toList(),
+    );
+
+    _navigateToNext();
+  }
+
   void _toggleSeriesSelection(SerieModel series) {
     setState(() {
       bool exists = _selectedSeries.any(
@@ -144,6 +170,8 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
 
   @override
   Widget build(BuildContext context) {
+    final ListsProvider listsProvider = context.watch<ListsProvider>();
+
     return Scaffold(
       backgroundColor: Colors.black,
       extendBody: true,
@@ -316,40 +344,33 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
       // Botões inferiores
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 0,
+            top: 0,
+          ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 16,
             children: [
               Expanded(
-                child: OutlinedButton(
+                child: Button(
+                  variant: ButtonVariant.secondary,
+                  label: "Pular",
                   onPressed: () {
                     _navigateToNext();
                   },
-                  child: const Text('Pular'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.grey.shade800,
-                    side: BorderSide(color: Colors.grey.shade800),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
                 ),
               ),
-              const SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
+                child: Button(
+                  label: "Continuar",
                   onPressed: () {
-                    _navigateToNext();
+                    _sendFavoriteSeries();
                   },
-                  child: const Text('Continuar'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: tColorPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
+                  disabled: listsProvider.isLoading,
+                  loading: listsProvider.isLoading,
                 ),
               ),
             ],

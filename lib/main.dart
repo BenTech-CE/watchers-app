@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
+import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/theme/theme.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SeriesProvider(authService: authService),
         ),
+        ChangeNotifierProvider(create: (_) => ListsProvider(authService: authService))
       ],
       child: MaterialApp(
         title: 'Watchers',
