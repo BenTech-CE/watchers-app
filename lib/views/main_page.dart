@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/home_page.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:watchers/views/preview.dart';
 
 class MainPage extends StatefulWidget {
@@ -31,10 +32,22 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Color(0xff0d0d0d),
         elevation: 0,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home, size: 32), label: 'Início'),
-          NavigationDestination(icon: Icon(Icons.explore, size: 32), label: 'Descobrir'),
-          NavigationDestination(icon: Icon(Icons.search, size: 32), label: 'Procurar'),
-          NavigationDestination(icon: Icon(Icons.person, size: 32), label: 'Perfil'),
+          NavigationDestination(
+            icon: Icon(LucideIcons.house, size: 32),
+            label: 'Início',
+          ),
+          NavigationDestination(
+            icon: Icon(LucideIcons.popcorn, size: 32),
+            label: 'Descobrir',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search, size: 32),
+            label: 'Procurar',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_2_rounded, size: 32),
+            label: 'Perfil',
+          ),
         ],
         onDestinationSelected: (int index) {
           setState(() {
