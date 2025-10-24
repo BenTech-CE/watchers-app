@@ -65,7 +65,7 @@ class _ReviewCardState extends State<ReviewCard> {
                 onTap: () {}, // Substituir: Levar à tela da série!
               ),
             ),
-        
+
             // --- 2. Expanded (para as Informações) ---
             Expanded(
               child: Column(
@@ -82,7 +82,7 @@ class _ReviewCardState extends State<ReviewCard> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                      
+
                   // --- Container (Badge "Temporada 1") ---
                   // Só mostra o badge se a informação existir
                   if (widget.review.reviewed != null &&
@@ -107,7 +107,7 @@ class _ReviewCardState extends State<ReviewCard> {
                         ),
                       ),
                     ),
-                      
+
                   // --- Row (Avaliação) ---
                   Row(
                     children: [
@@ -130,7 +130,7 @@ class _ReviewCardState extends State<ReviewCard> {
                                     )
                                   : null,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 5),
                             Text(
                               widget.review.author.username,
                               style: const TextStyle(
@@ -144,16 +144,17 @@ class _ReviewCardState extends State<ReviewCard> {
                       Spacer(),
                       // Helper para construir as estrelas
                       ..._buildStarRating(widget.review.stars),
+                      Container(width: 4),
                       Icon(
                         _isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorited ? Colors.red : Colors.white,
-                        size: 20,
+                        color: _isFavorited ? Color(0xFFCC4A4A) : Colors.white,
+                        size: 16,
                       ),
                     ],
                   ),
-                      
+
                   const SizedBox(height: 10),
-                      
+
                   // --- Text.rich (Review "Lorem ipsum...") ---
                   _buildReviewText(),
                 ],

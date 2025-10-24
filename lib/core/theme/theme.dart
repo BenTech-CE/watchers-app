@@ -38,19 +38,27 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: Colors.black,
     navigationBarTheme: NavigationBarThemeData(
-      overlayColor: MaterialStateProperty.all(Colors.transparent),
-      iconTheme: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      height: 70,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const IconThemeData(color: selectedNavBarItemColor);
         }
         return const IconThemeData(color: unselectedNavBarItemColor);
       }),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const TextStyle(
-              color: selectedNavBarItemColor);
+            color: selectedNavBarItemColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 11,
+          );
         }
-        return const TextStyle(color: unselectedNavBarItemColor);
+        return const TextStyle(
+          color: unselectedNavBarItemColor,
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        );
       }),
     ),
   );

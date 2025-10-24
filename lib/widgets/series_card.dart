@@ -67,10 +67,7 @@ class SeriesCard extends StatelessWidget {
                 size: 32,
               ),
               const SizedBox(height: 8),
-              Text(
-                series.name,
-                textAlign: TextAlign.center,
-              )
+              Text(series.name, textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -102,13 +99,13 @@ class SeriesCard extends StatelessWidget {
       },
     );
   }
+}
 
-  bool _isValidUrl(String url) {
-    try {
-      final uri = Uri.parse(url);
-      return uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
-    } catch (e) {
-      return false;
-    }
+bool _isValidUrl(String url) {
+  try {
+    final uri = Uri.parse(url);
+    return uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
+  } catch (e) {
+    return false;
   }
 }

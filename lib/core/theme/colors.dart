@@ -18,10 +18,11 @@ const colorBackground = Color(0x0ff00000);
 
 // BORDER COLORS
 const bColorPrimary = Color(0xff2b2b2b);
+const bColorCard = Color(0xffd9d9d9);
 
 // BACKGROUND COLORS
 const bgColorButton = Color(0xff383838);
 
 // ADICIONAIS
-const unselectedNavBarItemColor = Colors.grey;
+const unselectedNavBarItemColor = Color(0xFF9A9A9A);
 const selectedNavBarItemColor = colorPrimary;

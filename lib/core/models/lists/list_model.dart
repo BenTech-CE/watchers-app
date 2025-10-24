@@ -1,3 +1,5 @@
+import 'package:watchers/core/models/lists/list_author_model.dart';
+
 enum ListType {
   Favorites(0),
   Watchlist(1),
@@ -30,14 +32,22 @@ class ListModel {
   final ListType type;
   final String name;
   final String createdAt;
-  final int seriesCount;
+  final int likeCount;
+  final int commentCount;
+  final String? description;
+  final ListAuthorModel author;
+  final List<String> thumbnails;
 
   const ListModel({
     required this.id,
     required this.type,
     required this.name,
     required this.createdAt,
-    required this.seriesCount,
+    required this.likeCount,
+    required this.commentCount,
+    this.description,
+    required this.author,
+    required this.thumbnails,
   });
 
   factory ListModel.fromJson(Map<String, dynamic> json) {
@@ -46,7 +56,11 @@ class ListModel {
       type: ListType.fromInt(json['type']) ?? ListType.Watchlist,
       name: json['name'] ?? '',
       createdAt: json['created_at'] ?? '',
-      seriesCount: json['series_count'] ?? 0,
+      likeCount: json['like_count'] ?? 0,
+      commentCount: json['comment_count'] ?? 0,
+      description: json['description'] ?? '',
+      author: ListAuthorModel.fromJson(json['author']),
+      thumbnails: List<String>.from(json['thumbnails'] ?? []),
     );
   }
 }

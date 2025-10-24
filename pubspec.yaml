@@ -36,6 +36,8 @@ dependencies:
   supabase_flutter: ^2.10.2
   provider: ^6.1.5+1
   lucide_icons_flutter: ^3.1.5
+  iconify_flutter: ^0.0.7
+  iconamoon: ^0.0.3
 
 dev_dependencies:
   flutter_test:
