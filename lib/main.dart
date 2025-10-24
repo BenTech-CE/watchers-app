@@ -13,6 +13,7 @@ import 'package:watchers/views/home_page.dart';
 import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/main_page.dart';
+import 'package:watchers/views/preview.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => const LoginView(),
           '/register': (context) => const RegisterViewMael(),
-          '/home': (context) => const MainPage(),
+          '/home': (context) => const MainPage(), // Substituir pela Preview quando necessário
           '/onboarding/watched': (context) => const WatchedSeries(),
           '/onboarding/favorited': (context) => const FavoritedSeries(),
         },

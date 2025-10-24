@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/home_page.dart';
+import 'package:watchers/views/preview.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -19,7 +20,7 @@ class _MainPageState extends State<MainPage> {
         index: _selectedIndex,
         children: const [
           HomePage(),
-          Center(child: Text('Descobrir')),
+          Preview(),
           Center(child: Text('Procurar')),
           Center(child: Text('Perfil')),
         ],
