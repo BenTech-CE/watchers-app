@@ -27,7 +27,7 @@ class _ListPopularCardState extends State<ListPopularCard> {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         spacing: sizePadding,
         children: [
           SizedBox(
@@ -57,6 +57,7 @@ class _ListPopularCardState extends State<ListPopularCard> {
           ),
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(

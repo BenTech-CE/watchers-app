@@ -86,62 +86,60 @@ class _HomePageState extends State<HomePage> {
           child: SvgPicture.asset("assets/logo/logowatchers.svg"),
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Text('Usuário atual:'),
-              Text('Username: ${authInfo.user?.username}'),
-              Text('E-mail: ${authInfo.user?.email}'),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "AccessToken: ${authInfo.accessToken?.substring(0, 15)}...",
-                  ),
+                  const Text('Lançamentos recentes', style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),),
                   IconButton(
-                    onPressed: () async {
-                      await Clipboard.setData(
-                        ClipboardData(text: authInfo.accessToken!),
-                      );
-                    },
-                    icon: Icon(Icons.copy),
-                    iconSize: 24,
-                  ),
+                    onPressed: () {}, 
+                    constraints: BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.chevron_right_outlined, size: 32)
+                  )
                 ],
               ),
-              Text("Séries assistidas: ${watchedSeries.length}"),
-              Column(
-                children: watchedSeries
-                    .map((serie) => Text(serie.name))
-                    .toList(),
-              ),
-              Text("Séries favoritas: ${favoritedSeries.length}"),
-              Column(
-                children: favoritedSeries
-                    .map((serie) => Text(serie.name))
-                    .toList(),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  authInfo.signOut();
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
-                child: const Text('Sair'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    '/onboarding/watched',
-                  );
-                },
-                child: const Text('Ir para Intro'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Resenhas populares', style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),),
+                  IconButton(
+                    onPressed: () {}, 
+                    constraints: BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.chevron_right_outlined, size: 32)
+                  )
+                ],
               ),
               ReviewCard(review: meuReview),
               Container(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Listas Populares', style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),),
+                  IconButton(
+                    onPressed: () {}, 
+                    constraints: BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.chevron_right_outlined, size: 32)
+                  )
+                ],
+              ),
               Container(
                 // decoration: BoxDecoration(
                 //   border: Border(
@@ -171,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Container(height: 120),
+              SizedBox(height: kToolbarHeight,)
             ],
           ),
         ),

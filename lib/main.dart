@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => const LoginView(),
           '/register': (context) => const RegisterViewMael(),
-          '/home': (context) => const MainPage(), // Substituir pela Preview quando necessário
+          '/home': (context) => const MainPage(),
           '/onboarding/watched': (context) => const WatchedSeries(),
           '/onboarding/favorited': (context) => const FavoritedSeries(),
         },

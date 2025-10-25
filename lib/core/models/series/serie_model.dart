@@ -3,8 +3,8 @@ class SerieModel {
   final double popularity;
   final String originalName;
   final String name;
-  final String backgroundUrl;
-  final String posterUrl;
+  final String? backgroundUrl;
+  final String? posterUrl;
   final String overview;
 
   const SerieModel({
@@ -12,8 +12,8 @@ class SerieModel {
     required this.popularity,
     required this.originalName,
     required this.name,
-    required this.backgroundUrl,
-    required this.posterUrl,
+    this.backgroundUrl,
+    this.posterUrl,
     required this.overview,
   });
 
@@ -23,8 +23,8 @@ class SerieModel {
       popularity: (json['popularity'] as num?)?.toDouble() ?? 0.0,
       originalName: json['original_name'] ?? '',
       name: json['name'] ?? '',
-      backgroundUrl: json['background_url'] ?? '',
-      posterUrl: json['poster_url'] ?? '',
+      backgroundUrl: json['background_url'],
+      posterUrl: json['poster_url'],
       overview: json['overview'] ?? '',
     );
   }

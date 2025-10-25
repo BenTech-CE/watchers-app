@@ -6,14 +6,15 @@ import 'package:watchers/core/theme/colors.dart';
 class SeriesCard extends StatelessWidget {
   final SerieModel series;
   final bool isSelected;
-  final VoidCallback
-  onTap; // Função que deve ser chamada quando a série for selecionada
+  final BorderRadiusGeometry? borderRadius;
+  final VoidCallback onTap; // Função que deve ser chamada quando a série for selecionada
 
   const SeriesCard({
     super.key,
     required this.series,
     required this.isSelected,
     required this.onTap,
+    this.borderRadius
   });
 
   @override
@@ -21,7 +22,7 @@ class SeriesCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: borderRadius ?? BorderRadius.circular(15),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -53,7 +54,7 @@ class SeriesCard extends StatelessWidget {
 
   Widget _buildImage() {
     // Verifica se a URL é válida
-    if (series.posterUrl.isEmpty || !_isValidUrl(series.posterUrl)) {
+    if (series.posterUrl != null && (series.posterUrl!.isEmpty || !_isValidUrl(series.posterUrl!))) {
       return Container(
         color: bColorPrimary,
         child: Center(
@@ -75,7 +76,7 @@ class SeriesCard extends StatelessWidget {
     }
 
     return Image.network(
-      series.posterUrl,
+      series.posterUrl!,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(

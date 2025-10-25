@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:watchers/views/preview.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ion.dart';
+import 'package:watchers/views/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -30,7 +31,7 @@ class _MainPageState extends State<MainPage> {
           HomePage(),
           Preview(),
           Center(child: Text('Procurar')),
-          Center(child: Text('Perfil')),
+          ProfilePage(),
         ],
       ),
       extendBody: true,
