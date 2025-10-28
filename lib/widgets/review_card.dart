@@ -132,11 +132,16 @@ class _ReviewCardState extends State<ReviewCard> {
                                 : null,
                           ),
                           const SizedBox(width: 5),
-                          Text(
-                            widget.review.author.username,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                          SizedBox(
+                            width: 60,
+                            height: 16,
+                            child: Text(
+                              widget.review.author.username,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],

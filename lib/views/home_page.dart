@@ -11,6 +11,7 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/preview.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/review_card.dart';
+import 'package:watchers/widgets/banner_series.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -93,34 +94,37 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Container(height: 22),
+              BannerSeries(series: [serieDaReview, serieDaReview, serieDaReview, serieDaReview, serieDaReview]),
+              Container(height: 22),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Lançamentos recentes', style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),),
+                  const Text(
+                    'Lançamentos recentes',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   IconButton(
-                    onPressed: () {}, 
+                    onPressed: () {},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32)
-                  )
+                    icon: Icon(Icons.chevron_right_outlined, size: 32),
+                  ),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Resenhas populares', style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),),
+                  const Text(
+                    'Resenhas populares',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   IconButton(
-                    onPressed: () {}, 
+                    onPressed: () {},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32)
-                  )
+                    icon: Icon(Icons.chevron_right_outlined, size: 32),
+                  ),
                 ],
               ),
               ReviewCard(review: meuReview),
@@ -128,48 +132,41 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Listas Populares', style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),),
+                  const Text(
+                    'Listas Populares',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   IconButton(
-                    onPressed: () {}, 
+                    onPressed: () {},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32)
-                  )
+                    icon: Icon(Icons.chevron_right_outlined, size: 32),
+                  ),
                 ],
               ),
-              Container(
-                // decoration: BoxDecoration(
-                //   border: Border(
-                //     bottom: BorderSide(color: bColorCard, width: 1),
-                //   ),
-                // ),
-                child: ListPopularCard(
-                  list: ListModel(
-                    id: "1",
-                    name: "Minha Lista Popular",
-                    createdAt: "2024-01-01",
-                    likeCount: 100,
-                    commentCount: 50,
-                    description: "Descrição da minha lista popular",
-                    type: ListType.Favorites,
-                    author: ListAuthorModel(
-                      id: authInfo.user!.id,
-                      username: authInfo.user!.username ?? '',
-                      avatarUrl: authInfo.user?.avatarUrl,
-                    ),
-                    thumbnails: [
-                      'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/7h8ZHFmx73HnEagDI6KbWAw4ea3.jpg',
-                      'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/6gcHdboppvplmBWxvROc96NJnmm.jpg',
-                      'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
-                      'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/m3Tzf6k537PnhOEwaSRNCSxedLS.jpg',
-                    ],
+              ListPopularCard(
+                list: ListModel(
+                  id: "1",
+                  name: "Minha Lista Popular",
+                  createdAt: "2024-01-01",
+                  likeCount: 100,
+                  commentCount: 50,
+                  description: "Descrição da minha lista popular",
+                  type: ListType.Favorites,
+                  author: ListAuthorModel(
+                    id: authInfo.user!.id,
+                    username: authInfo.user!.username ?? '',
+                    avatarUrl: authInfo.user?.avatarUrl,
                   ),
+                  thumbnails: [
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/7h8ZHFmx73HnEagDI6KbWAw4ea3.jpg',
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/6gcHdboppvplmBWxvROc96NJnmm.jpg',
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/m3Tzf6k537PnhOEwaSRNCSxedLS.jpg',
+                  ],
                 ),
               ),
-              SizedBox(height: kToolbarHeight,)
+              SizedBox(height: kToolbarHeight),
             ],
           ),
         ),

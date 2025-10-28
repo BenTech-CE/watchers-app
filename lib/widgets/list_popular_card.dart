@@ -91,11 +91,16 @@ class _ListPopularCardState extends State<ListPopularCard> {
                                 : null,
                           ),
                           const SizedBox(width: 5),
-                          Text(
-                            widget.list.author.username,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                          SizedBox(
+                            width: 106,
+                            height: 16,
+                            child: Text(
+                              overflow: TextOverflow.ellipsis,
+                              widget.list.author.username,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],

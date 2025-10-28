@@ -40,7 +40,7 @@ class _MainPageState extends State<MainPage> {
           filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
           child: NavigationBar(
             selectedIndex: _selectedIndex,
-            indicatorColor: Color(0xff151515),
+            indicatorColor: Color(0xff151515).withOpacity(0.6),
             backgroundColor: Color(0xff0d0d0d).withOpacity(0.8),
             elevation: 0,
             destinations: [
