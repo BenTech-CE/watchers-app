@@ -7,6 +7,7 @@ import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
+import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/preview.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
@@ -21,8 +22,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<SerieModel> watchedSeries = [];
-  List<SerieModel> favoritedSeries = [];
+  List<SerieModel> trendingSeries = [];
 
   @override
   void initState() {
@@ -31,8 +31,7 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print("called again...");
 
-      _fetchWatchedSeries();
-      _fetchFavoritedSeries();
+      _fetchTrendingSeries();
     });
   }
 
@@ -41,35 +40,19 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _fetchWatchedSeries() async {
-    final ListsProvider listsProvider = context.read<ListsProvider>();
+  void _fetchTrendingSeries() async {
+    final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    final watchedSeries = await listsProvider.getListSeries("watched");
-
-    setState(() {
-      this.watchedSeries = watchedSeries;
-    });
-
-    if (listsProvider.errorMessage != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
-    }
-  }
-
-  void _fetchFavoritedSeries() async {
-    final ListsProvider listsProvider = context.read<ListsProvider>();
-
-    final favoritedSeries = await listsProvider.getListSeries("favorites");
+    final trendingSeries = await seriesProvider.getSeriesTrending();
 
     setState(() {
-      this.favoritedSeries = favoritedSeries;
+      this.trendingSeries = trendingSeries;
     });
 
-    if (listsProvider.errorMessage != null) {
+    if (seriesProvider.errorMessage != null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
     }
   }
 
@@ -95,7 +78,8 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(height: 22),
-              BannerSeries(series: [serieDaReview, serieDaReview, serieDaReview, serieDaReview, serieDaReview]),
+              if (trendingSeries.isNotEmpty)
+                BannerSeries(series: trendingSeries.sublist(0, 5)),
               Container(height: 22),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,7 +150,29 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              SizedBox(height: kToolbarHeight),
+              ListPopularCard(
+                list: ListModel(
+                  id: "2",
+                  name: "Halloween Specials",
+                  createdAt: "2024-01-01",
+                  likeCount: 100,
+                  commentCount: 50,
+                  description: "lista de especiais de halloween",
+                  type: ListType.Favorites,
+                  author: ListAuthorModel(
+                    id: authInfo.user!.id,
+                    username: authInfo.user!.username ?? '',
+                    avatarUrl: authInfo.user?.avatarUrl,
+                  ),
+                  thumbnails: [
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/7h8ZHFmx73HnEagDI6KbWAw4ea3.jpg',
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/6gcHdboppvplmBWxvROc96NJnmm.jpg',
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
+                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/m3Tzf6k537PnhOEwaSRNCSxedLS.jpg',
+                  ],
+                ),
+              ),
+              SizedBox(height: kToolbarHeight*2),
             ],
           ),
         ),
