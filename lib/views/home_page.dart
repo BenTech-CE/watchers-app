@@ -11,6 +11,7 @@ import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/preview.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
+import 'package:watchers/widgets/list_series.dart';
 import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/banner_series.dart';
 
@@ -96,6 +97,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
+              if (trendingSeries.isNotEmpty)
+                ListSeries(series: trendingSeries.sublist(0, 5)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -172,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              SizedBox(height: kToolbarHeight*2),
+              SizedBox(height: kToolbarHeight * 2),
             ],
           ),
         ),
