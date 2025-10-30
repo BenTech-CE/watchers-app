@@ -23,148 +23,145 @@ class _ListPopularCardState extends State<ListPopularCard> {
   @override
   Widget build(BuildContext context) {
     final String? avatarUrl = widget.list.author.avatarUrl;
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: sizePadding,
-        children: [
-          SizedBox(
-            width: 137,
-            height: 161,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ThumbNailAlign(
-                  thumbnail: widget.list.thumbnails[0],
-                  alignment: Alignment.topCenter,
-                ),
-                ThumbNailAlign(
-                  thumbnail: widget.list.thumbnails[1],
-                  alignment: Alignment.centerLeft,
-                ),
-                ThumbNailAlign(
-                  thumbnail: widget.list.thumbnails[2],
-                  alignment: Alignment.centerRight,
-                ),
-                ThumbNailAlign(
-                  thumbnail: widget.list.thumbnails[3],
-                  alignment: Alignment.bottomCenter,
-                ),
-              ],
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: sizePadding,
+      children: [
+        SizedBox(
+          width: 137,
+          height: 161,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ThumbNailAlign(
+                thumbnail: widget.list.thumbnails[0],
+                alignment: Alignment.topCenter,
+              ),
+              ThumbNailAlign(
+                thumbnail: widget.list.thumbnails[1],
+                alignment: Alignment.centerLeft,
+              ),
+              ThumbNailAlign(
+                thumbnail: widget.list.thumbnails[2],
+                alignment: Alignment.centerRight,
+              ),
+              ThumbNailAlign(
+                thumbnail: widget.list.thumbnails[3],
+                alignment: Alignment.bottomCenter,
+              ),
+            ],
           ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.list.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.list.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                Container(height: 8),
-                // USER
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Colors.grey[700],
-                            backgroundImage: avatarUrl != null
-                                ? NetworkImage(avatarUrl)
-                                : null,
-                            child: avatarUrl == null
-                                ? const Icon(
-                                    Icons.person,
-                                    size: 14,
-                                    color: Colors.white,
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 5),
-                          SizedBox(
-                            width: 106,
-                            height: 16,
-                            child: Text(
-                              overflow: TextOverflow.ellipsis,
-                              widget.list.author.username,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
+              ),
+              Container(height: 8),
+              // USER
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.grey[700],
+                          backgroundImage: avatarUrl != null
+                              ? NetworkImage(avatarUrl)
+                              : null,
+                          child: avatarUrl == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 14,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          width: 106,
+                          height: 16,
+                          child: Text(
+                            overflow: TextOverflow.ellipsis,
+                            widget.list.author.username,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // DESCRIPTION
-                if (widget.list.description != null) Container(height: 3),
-                if (widget.list.description != null)
-                  Text(
-                    widget.list.description!,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.w500,
-                      height: 1.4,
+                        ),
+                      ],
                     ),
                   ),
-                // LIKES AND COMMENTS
-                Container(height: 10),
-                Row(
-                  spacing: 8,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.favorite,
-                          size: 16,
-                          color: Color(0xFFCC4A4A),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.list.likeCount.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Iconify(
-                          Mdi.comment_multiple,
-                          size: 16,
-                          color: Color(0xFF747474),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.list.commentCount.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                ],
+              ),
+              // DESCRIPTION
+              if (widget.list.description != null) Container(height: 3),
+              if (widget.list.description != null)
+                Text(
+                  widget.list.description!,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
                 ),
-              ],
-            ),
+              // LIKES AND COMMENTS
+              Container(height: 10),
+              Row(
+                spacing: 8,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: Color(0xFFCC4A4A),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.list.likeCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Iconify(
+                        Mdi.comment_multiple,
+                        size: 16,
+                        color: Color(0xFF747474),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        widget.list.commentCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

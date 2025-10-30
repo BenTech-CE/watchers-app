@@ -24,6 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<SerieModel> trendingSeries = [];
+  List<SerieModel> recentsSeries = [];
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
       print("called again...");
 
       _fetchTrendingSeries();
+      _fetchRecentsSeries();
     });
   }
 
@@ -48,6 +50,22 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       this.trendingSeries = trendingSeries;
+    });
+
+    if (seriesProvider.errorMessage != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
+    }
+  }
+
+  void _fetchRecentsSeries() async {
+    final SeriesProvider seriesProvider = context.read<SeriesProvider>();
+
+    final recentsSeries = await seriesProvider.getSeriesRecents();
+
+    setState(() {
+      this.recentsSeries = recentsSeries;
     });
 
     if (seriesProvider.errorMessage != null) {
@@ -97,8 +115,16 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              if (trendingSeries.isNotEmpty)
-                ListSeries(series: trendingSeries.sublist(0, 5)),
+              if (recentsSeries.isNotEmpty)
+                ListSeries(series: recentsSeries.sublist(0, 10)),
+              if (recentsSeries.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -114,8 +140,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              ReviewCard(review: meuReview),
-              Container(height: 12),
+              Column(spacing: 12, children: [ReviewCard(review: meuReview)]),
+              SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -131,49 +157,56 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              ListPopularCard(
-                list: ListModel(
-                  id: "1",
-                  name: "Minha Lista Popular",
-                  createdAt: "2024-01-01",
-                  likeCount: 100,
-                  commentCount: 50,
-                  description: "Descrição da minha lista popular",
-                  type: ListType.Favorites,
-                  author: ListAuthorModel(
-                    id: authInfo.user!.id,
-                    username: authInfo.user!.username ?? '',
-                    avatarUrl: authInfo.user?.avatarUrl,
+              Column(
+                spacing: 12,
+                children: [
+                  ListPopularCard(
+                    list: ListModel(
+                      id: "1",
+                      name: "Favoritos do mês",
+                      createdAt: "2024-01-01",
+                      likeCount: 17,
+                      commentCount: 2,
+                      description: null,
+                      type: ListType.Custom,
+                      author: ListAuthorModel(
+                        id: authInfo.user!.id,
+                        username: 'm.claraxz',
+                        avatarUrl:
+                            'https://instagram.ffor13-1.fna.fbcdn.net/v/t51.2885-19/538372448_18046792706641255_6410596257831276194_n.jpg?stp=dst-jpg_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMxIn0&_nc_ht=instagram.ffor13-1.fna.fbcdn.net&_nc_cat=107&_nc_oc=Q6cZ2QHgPFXaotJhMq0KyqyOZ0XSXcBKmbnmnYlWpSGURneoJQocZlxx2iQXk2Xz8m-T0Ic&_nc_ohc=rPNLv_Bx-w8Q7kNvwHQLs26&_nc_gid=HMKB-TKdWp2tLlYH0DBv8Q&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AffcxGyZzcfzmHCaUQiFUGoT33jRwhWDtxb6RxKQn2EJGA&oe=6908831E&_nc_sid=7a9f4b',
+                      ),
+                      thumbnails: [
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg',
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/el1KQzwdIm17I3A6cYPfsVIWhfX.jpg',
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/Ac8ruycRXzgcsndTZFK6ouGA0FA.jpg',
+                      ],
+                    ),
                   ),
-                  thumbnails: [
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/7h8ZHFmx73HnEagDI6KbWAw4ea3.jpg',
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/6gcHdboppvplmBWxvROc96NJnmm.jpg',
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/m3Tzf6k537PnhOEwaSRNCSxedLS.jpg',
-                  ],
-                ),
-              ),
-              ListPopularCard(
-                list: ListModel(
-                  id: "2",
-                  name: "Halloween Specials",
-                  createdAt: "2024-01-01",
-                  likeCount: 100,
-                  commentCount: 50,
-                  description: "lista de especiais de halloween",
-                  type: ListType.Favorites,
-                  author: ListAuthorModel(
-                    id: authInfo.user!.id,
-                    username: authInfo.user!.username ?? '',
-                    avatarUrl: authInfo.user?.avatarUrl,
+                  ListPopularCard(
+                    list: ListModel(
+                      id: "2",
+                      name: "Halloween 👻",
+                      createdAt: "2024-01-01",
+                      likeCount: 32,
+                      commentCount: 5,
+                      description: null,
+                      type: ListType.Custom,
+                      author: ListAuthorModel(
+                        id: authInfo.user!.id,
+                        username: 'rizdechapeu',
+                        avatarUrl:
+                            'https://instagram.ffor13-1.fna.fbcdn.net/v/t51.2885-19/566502530_18296745997257312_7739221498013065072_n.jpg?stp=dst-jpg_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby44MzkuYzEifQ&_nc_ht=instagram.ffor13-1.fna.fbcdn.net&_nc_cat=100&_nc_oc=Q6cZ2QGBl1erqzR02TTif5mlhWo4hKRBmco8DVxor3WvRFss2giKAj95fk_wB6dBKCblDWw&_nc_ohc=Xb3Wv4AdT_8Q7kNvwFLKBba&_nc_gid=8viHAAr-3LjKPgK0c886nw&edm=AHzjunoBAAAA&ccb=7-5&oh=00_Aff3nOYD5QwQvi4n7K31nP2BXSYF9XAF3ygtfnVJ1QpwHA&oe=69088705&_nc_sid=ba8368',
+                      ),
+                      thumbnails: [
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gMTfrLvrDaD0zrhpLZ7zXIIpKfJ.jpg',
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/pbV2eLnKSIm1epSZt473UYfqaeZ.jpg',
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/9j67wXS4uhPueFBwhAIoD4GxOP3.jpg',
+                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/j25YTaf8Vx5tBM7NP4ReBzDK3l7.jpg',
+                      ],
+                    ),
                   ),
-                  thumbnails: [
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/7h8ZHFmx73HnEagDI6KbWAw4ea3.jpg',
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/6gcHdboppvplmBWxvROc96NJnmm.jpg',
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
-                    'https://media.themoviedb.org/t/p/w600_and_h900_bestv2/m3Tzf6k537PnhOEwaSRNCSxedLS.jpg',
-                  ],
-                ),
+                ],
               ),
               SizedBox(height: kToolbarHeight * 2),
             ],

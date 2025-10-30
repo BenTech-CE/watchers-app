@@ -29,6 +29,20 @@ class SeriesProvider with ChangeNotifier {
     return [];
   }
 
+  Future<List<SerieModel>> getSeriesRecents() async {
+    _setLoading(true);
+    try {
+      clearError();
+      return await _seriesService.getSeriesRecents();
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+    return [];
+  }
+
   Future<List<SerieModel>> getSeriesSearch(String query) async {
     _setLoading(true);
     try {

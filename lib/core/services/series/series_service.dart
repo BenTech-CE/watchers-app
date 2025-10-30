@@ -52,6 +52,39 @@ class SeriesService {
     }
   }
 
+  Future<List<SerieModel>> getSeriesRecents() async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw SeriesServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.seriesRecentsEndpoint,
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<SerieModel> series = [];
+        for (var serie in jsonResponse["results"]) {
+          series.add(SerieModel.fromJson(serie));
+        }
+        return series;
+      } else {
+        throw SeriesServiceException(
+          'Erro ao buscar séries: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw SeriesServiceException('Erro ao buscar séries: $e');
+    }
+  }
+
   Future<List<SerieModel>> getSeriesSearch(String query) async {
     try {
       if (!authService.isAuthenticated) {

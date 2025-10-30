@@ -9,6 +9,8 @@ class ListSeries extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final serieCardSize = screenWidth * 0.25; // 25% da largura da tela
+
     return SizedBox(
       width: screenWidth,
       height: 158,
@@ -20,8 +22,8 @@ class ListSeries extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 10.0),
             child: SizedBox(
-              width: 96,
-              height: 142,
+              width: serieCardSize,
+              height: serieCardSize * 1.5, // respeita proporção 2:3
               child: SeriesCard(
                 series: series[index],
                 isSelected: false,

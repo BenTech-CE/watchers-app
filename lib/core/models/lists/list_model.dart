@@ -4,7 +4,9 @@ enum ListType {
   Favorites(0),
   Watchlist(1),
   Watched(2),
-  Watching(3);
+  Watching(3),
+  Custom(4),
+  Liked(5);
 
   final int value;
   const ListType(this.value);
@@ -23,6 +25,8 @@ enum ListType {
       ListType.Watchlist => "Watchlist",
       ListType.Watched => "Watched",
       ListType.Watching => "Watching",
+      ListType.Custom => "Custom",
+      ListType.Liked => "Liked",
     };
   }
 }

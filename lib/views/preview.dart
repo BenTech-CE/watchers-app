@@ -25,13 +25,13 @@ class Preview extends StatelessWidget {
 final autorDaReview = ReviewAuthor(
   id: "user_abc_123",
   username: "alicce",
-  avatarUrl: null, // URL de exemplo
+  avatarUrl: "https://www.evanescence.com/wp-content/uploads/2016/09/EV5_FALLEN_1200X1200.jpg", // URL de exemplo
 );
 
 final serieDaReview = SerieModel(
   id: "series_xyz_789",
   name: "Hannibal",
-  posterUrl: "https://image.tmdb.org/t/p/w500/eDn8XWA0a4U3zOhd1gh7HExdt4Y.jpg", // URL de exemplo
+  posterUrl: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/pbV2eLnKSIm1epSZt473UYfqaeZ.jpg", // URL de exemplo
   
   // --- Campos adicionais exigidos pelo SerieModel ---
   popularity: 95.8, // Valor de exemplo
@@ -49,7 +49,7 @@ final meuReview = ReviewModel(
   reviewed: "Temporada 1", // Opcional, mas se encaixa no card
   stars: 4.0, // 4 estrelas cheias
   liked: true, // O coração estava vermelho
-  content: "Adorei essa temporada, espero que continue assim nas próximas temporadas.",
+  content: "essa série explora a relação inicial entre o renomado psiquiatra Hannibal Lecter e seu paciente, o jovem analista criminal do FBI, Will Graham, que é assombrado por sua habilidade de ter empatia com assassinos em série.",
   series: serieDaReview,
   author: autorDaReview,
 );

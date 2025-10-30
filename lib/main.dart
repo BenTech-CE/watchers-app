@@ -40,11 +40,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<bool> checkSession() async {
-    final session = Supabase.instance.client.auth.currentSession;
-    return session != null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final AuthService authService = AuthService();
@@ -68,24 +63,113 @@ class MyApp extends StatelessWidget {
           '/onboarding/watched': (context) => const WatchedSeries(),
           '/onboarding/favorited': (context) => const FavoritedSeries(),
         },
-        home: FutureBuilder<bool>(
-          future: checkSession(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            // Se estiver logado, vai pra Home; senão, pra Login
-            if (snapshot.data == true) {
-              return const MainPage();
-            } else {
-              return const LoginView();
-            }
-          },
-        ),
+        home: const AuthWrapper(),
       ),
+    );
+  }
+}
+
+/// Widget que gerencia o refresh da sessão e decide qual tela mostrar
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  bool _isRefreshing = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshSessionAndCheckAuth();
+  }
+
+  Future<void> _refreshSessionAndCheckAuth() async {
+    try {
+      final currentSession = Supabase.instance.client.auth.currentSession;
+      
+      // Se há uma sessão, tenta fazer refresh
+      if (currentSession != null) {
+        await Supabase.instance.client.auth.refreshSession();
+      }
+      
+      // Finaliza o loading após refresh (ou se não havia sessão)
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+        });
+      }
+    } catch (error) {
+      // Erro ao fazer refresh, provavelmente sessão expirada
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sessão expirada: ${error.toString()}'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Enquanto está fazendo refresh, mostra loading
+    if (_isRefreshing) {
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text(
+                'Carregando...',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Após refresh, escuta mudanças de autenticação
+    return StreamBuilder(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final authState = snapshot.data;
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Scaffold(
+            body: Center(
+              child: Text('Erro de autenticação'),
+            ),
+          );
+        }
+
+        // Usa o estado inicial do refresh ou o novo estado do stream
+        final session = authState?.session ?? Supabase.instance.client.auth.currentSession;
+
+        if (session != null) {
+          return const MainPage();
+        } else {
+          return const LoginView();
+        }
+      },
     );
   }
 }

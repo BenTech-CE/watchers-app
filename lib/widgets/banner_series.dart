@@ -8,16 +8,35 @@ class BannerSeries extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = PageController(viewportFraction: 0.42, initialPage: 0);
+    // Width será 35% da tela
+    const double cardWidthFraction = 0.35;
+    // Aspect ratio 2:3 (width:height)
+    const double aspectRatio = 2 / 3;
+    // Calcula altura baseada no width e aspect ratio
+    final double cardWidth = MediaQuery.of(context).size.width * cardWidthFraction;
+    final double cardHeight = cardWidth / aspectRatio;
+
+    // Cria um grande offset inicial para simular scroll infinito
+    // e começar com o primeiro elemento centralizado
+    const int virtualOffset = 10000;
+    final int initialPage = virtualOffset;
+
+    final controller = PageController(
+      viewportFraction: cardWidthFraction + 0.05,
+      initialPage: initialPage,
+    );
 
     return SizedBox(
-      height: 202,
+      height: cardHeight * 1.1, // Altura do container com margem
       child: PageView.builder(
         controller: controller,
-        itemCount: series.length,
+        itemCount: null, // Infinito
         clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
+          // Usa módulo para circular pela lista
+          final int actualIndex = index % series.length;
+          
           return AnimatedBuilder(
             animation: controller,
             builder: (context, child) {
@@ -32,7 +51,8 @@ class BannerSeries extends StatelessWidget {
                 child: Transform.scale(
                   scale: scale,
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.40,
+                    width: cardWidth,
+                    height: cardHeight,
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
@@ -86,7 +106,7 @@ class BannerSeries extends StatelessWidget {
               );
             },
             child: SeriesCard(
-              series: series[index],
+              series: series[actualIndex],
               isSelected: false,
               onTap: () {},
             ),

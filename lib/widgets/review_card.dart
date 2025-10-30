@@ -44,10 +44,9 @@ class _ReviewCardState extends State<ReviewCard> {
     final screenWidth = MediaQuery.of(context).size.width;
     final serieCardSize = screenWidth * 0.25; // 25% da largura da tela
 
-    return Card(
-      elevation: 4.0,
-      color: cardColor,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor,
         borderRadius: BorderRadius.circular(cardRadius),
       ),
       clipBehavior:
