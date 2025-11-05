@@ -1,11 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:watchers/views/home_page.dart';
+import 'package:watchers/views/home/home_page.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:watchers/views/preview.dart';
+import 'package:watchers/views/home/preview.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ion.dart';
-import 'package:watchers/views/profile_page.dart';
+import 'package:watchers/views/profile/profile_page.dart';
+import 'package:watchers/views/search/search_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -27,12 +28,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [
-          HomePage(),
-          Preview(),
-          Center(child: Text('Procurar')),
-          ProfilePage(),
-        ],
+        children: const [HomePage(), Preview(), SearchPage(), ProfilePage()],
       ),
       extendBody: true,
       bottomNavigationBar: ClipRect(

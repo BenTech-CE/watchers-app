@@ -1,30 +1,47 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:watchers/core/mocks/genders.dart';
+import 'package:watchers/core/models/auth/user_model.dart';
 import 'package:watchers/core/models/lists/list_author_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/reviews/review_model.dart';
+import 'package:watchers/core/models/series/gender_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
-import 'package:watchers/views/preview.dart';
+import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/views/home/preview.dart';
+import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
 import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/banner_series.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _SearchPageState extends State<SearchPage> {
   List<SerieModel> trendingSeries = [];
-  List<SerieModel> recentsSeries = [];
+  List<GenderModel> genres = listGenres;
+  List<ListModel> listsPopular = [];
+
+  List<SerieModel> searchedSeries = [];
+  List<UserModel> searchedUsers = [];
+  List<ReviewModel> searchedReviews = [];
+
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -34,12 +51,63 @@ class _HomePageState extends State<HomePage> {
       print("called again...");
 
       _fetchTrendingSeries();
-      _fetchRecentsSeries();
     });
+
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final query = _searchController.text.trim();
+
+      if (query.isEmpty) {
+        setState(() {
+          _isSearching = false;
+          searchedSeries.clear();
+          // searchedUsers.clear();
+          // searchedReviews.clear();
+        });
+      } else {
+        _performSearch(query);
+      }
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty) return;
+
+    setState(() {
+      _isSearching = true;
+    });
+
+    final SeriesProvider seriesProvider = context.read<SeriesProvider>();
+
+    try {
+      final results = await seriesProvider.getSeriesSearch(query);
+
+      if (mounted) {
+        setState(() {
+          searchedSeries.clear();
+          // searchedUsers.clear();
+          // searchedReviews.clear();
+          searchedSeries.addAll(results);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erro ao pesquisar séries: $e")));
+      }
+    }
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -50,22 +118,6 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {
       this.trendingSeries = trendingSeries;
-    });
-
-    if (seriesProvider.errorMessage != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
-    }
-  }
-
-  void _fetchRecentsSeries() async {
-    final SeriesProvider seriesProvider = context.read<SeriesProvider>();
-
-    final recentsSeries = await seriesProvider.getSeriesRecents();
-
-    setState(() {
-      this.recentsSeries = recentsSeries;
     });
 
     if (seriesProvider.errorMessage != null) {
@@ -96,40 +148,32 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(height: 22),
-              if (trendingSeries.isNotEmpty)
-                BannerSeries(series: trendingSeries.sublist(0, 5)),
-              Container(height: 22),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Lançamentos recentes',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    constraints: BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32),
-                  ),
-                ],
-              ),
-              if (recentsSeries.isNotEmpty)
-                ListSeries(series: recentsSeries.sublist(0, 10)),
-              if (recentsSeries.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(),
-                  ),
+              Container(height: 32),
+              GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Consumer<SeriesProvider>(
+                  builder: (context, provider, child) {
+                    return TextInputWidget(
+                      label: "Procure por séries, listas, usuários...",
+                      controller: _searchController,
+                      icon: provider.isLoading && _isSearching
+                          ? Icons.hourglass_empty
+                          : Icons.search,
+                      labelAsHint: true,
+                      hintStyle: AppTextStyles.labelLarge.copyWith(
+                        color: tColorSecondary,
+                        fontSize: 14,
+                      ),
+                    );
+                  },
                 ),
-              SizedBox(height: 12),
+              ),
+              Container(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Resenhas populares',
+                    'Melhores avaliados',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
@@ -140,13 +184,30 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              Column(spacing: 12, children: [ReviewCard(review: meuReview)]),
+              if (trendingSeries.isNotEmpty)
+                ListSeries(series: trendingSeries.sublist(0, 10)),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Listas Populares',
+                    'Melhores gêneros',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    constraints: BoxConstraints(),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.chevron_right_outlined, size: 32),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Listas para você',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(

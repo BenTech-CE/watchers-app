@@ -9,11 +9,11 @@ import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/login_view.dart';
 import 'package:watchers/views/auth/register_view.dart';
-import 'package:watchers/views/home_page.dart';
+import 'package:watchers/views/home/home_page.dart';
 import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/main_page.dart';
-import 'package:watchers/views/preview.dart';
+import 'package:watchers/views/home/preview.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
