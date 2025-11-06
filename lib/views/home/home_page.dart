@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     final trendingSeries = await seriesProvider.getSeriesTrending();
 
     setState(() {
-      this.trendingSeries = trendingSeries;
+      if (mounted) this.trendingSeries = trendingSeries;
     });
 
     if (seriesProvider.errorMessage != null) {
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     final recentsSeries = await seriesProvider.getSeriesRecents();
 
     setState(() {
-      this.recentsSeries = recentsSeries;
+      if (mounted) this.recentsSeries = recentsSeries;
     });
 
     if (seriesProvider.errorMessage != null) {
@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, "/series/recent");},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.chevron_right_outlined, size: 32),

@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final watchedSeries = await listsProvider.getListSeries("watched");
 
     setState(() {
-      this.watchedSeries = watchedSeries;
+      if (mounted) this.watchedSeries = watchedSeries;
     });
 
     if (listsProvider.errorMessage != null) {
@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final favoritedSeries = await listsProvider.getListSeries("favorites");
 
     setState(() {
-      this.favoritedSeries = favoritedSeries;
+      if (mounted) this.favoritedSeries = favoritedSeries;
     });
 
     if (listsProvider.errorMessage != null) {
