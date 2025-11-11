@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/theme/colors.dart';
 
@@ -75,26 +76,70 @@ class SeriesCard extends StatelessWidget {
       );
     }
 
-    return Image.network(
-      series.posterUrl!,
+    return CachedNetworkImage(
+      imageUrl: series.posterUrl!,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
+      errorWidget: (context, url, error) {
         return Container(
           color: bColorPrimary,
           child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
         );
       },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+      progressIndicatorBuilder: (context, url, downloadProgress) {
         return Container(
           color: bColorPrimary,
-          child: Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                  : null,
-            ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Shimmer effect de fundo
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      bColorPrimary,
+                      bColorPrimary.withOpacity(0.7),
+                      bColorPrimary,
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
+                ),
+              ),
+              // Indicador de progresso moderno
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Circular progress com estilo moderno
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircularProgressIndicator(
+                        value: downloadProgress.progress,
+                        strokeWidth: 3,
+                        backgroundColor: Colors.white.withOpacity(0.1),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          colorPrimary.withOpacity(0.8),
+                        ),
+                      ),
+                    ),
+                    if (downloadProgress.progress != null) ...[
+                      const SizedBox(height: 12),
+                      // Percentual de carregamento
+                      Text(
+                        '${(downloadProgress.progress! * 100).toInt()}%',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },

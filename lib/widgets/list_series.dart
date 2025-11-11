@@ -13,25 +13,26 @@ class ListSeries extends StatelessWidget {
 
     return SizedBox(
       width: screenWidth,
-      height: 158,
-      child: ListView.builder(
+      height: serieCardSize * 1.5, // respeita proporção 2:3
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        itemCount: series.length,
         physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: SizedBox(
-              width: serieCardSize,
-              height: serieCardSize * 1.5, // respeita proporção 2:3
-              child: SeriesCard(
-                series: series[index],
-                isSelected: false,
-                onTap: () {},
+        child: Row(
+          children: List.generate(series.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: SizedBox(
+                width: serieCardSize,
+                height: serieCardSize * 1.5, // respeita proporção 2:3
+                child: SeriesCard(
+                  series: series[index],
+                  isSelected: false,
+                  onTap: () {},
+                ),
               ),
-            ),
-          );
-        },
+            );
+          }),
+        ),
       ),
     );
   }
