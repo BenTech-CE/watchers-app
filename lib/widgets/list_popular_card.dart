@@ -43,30 +43,28 @@ class _ListPopularCardState extends State<ListPopularCard> {
     bool isSmallComponent =
         widget.smallComponent != null && widget.smallComponent != false;
     return SizedBox(
-      width: isSmallComponent ? 87 : 137,
+      width: isSmallComponent ? 90 : 137,
       height: isSmallComponent ? 80 : 161,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ThumbNailAlign(
-            thumbnail: widget.list.thumbnails[0],
-            alignment: Alignment.topCenter,
-            smallComponent: isSmallComponent,
-          ),
-          ThumbNailAlign(
-            thumbnail: widget.list.thumbnails[1],
-            alignment: Alignment.centerLeft,
-            smallComponent: isSmallComponent,
-          ),
-          ThumbNailAlign(
-            thumbnail: widget.list.thumbnails[2],
-            alignment: Alignment.centerRight,
-            smallComponent: isSmallComponent,
-          ),
-          ThumbNailAlign(
-            thumbnail: widget.list.thumbnails[3],
-            alignment: Alignment.bottomCenter,
-            smallComponent: isSmallComponent,
+          ...List.generate(
+            widget.list.thumbnails.length > 4
+                ? 4
+                : widget.list.thumbnails.length,
+            (i) {
+              final alignments = [
+                Alignment.topCenter,
+                Alignment.centerLeft,
+                Alignment.centerRight,
+                Alignment.bottomCenter,
+              ];
+              return ThumbNailAlign(
+                thumbnail: widget.list.thumbnails[i],
+                alignment: alignments[i],
+                smallComponent: isSmallComponent,
+              );
+            },
           ),
         ],
       ),
@@ -78,7 +76,7 @@ class _ListPopularCardState extends State<ListPopularCard> {
         widget.smallComponent != null && widget.smallComponent != false;
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -86,14 +84,16 @@ class _ListPopularCardState extends State<ListPopularCard> {
             child: Text(
               widget.list.name,
               style: TextStyle(
-                fontSize: isSmallComponent ? 9 : 16,
-                fontWeight: FontWeight.bold,
-                overflow: TextOverflow.ellipsis,
+                fontSize: isSmallComponent ? 10 : 16,
+                fontWeight: isSmallComponent
+                    ? FontWeight.w500
+                    : FontWeight.bold,
+                overflow: TextOverflow.clip,
                 color: Colors.white,
               ),
             ),
           ),
-          Container(height: 8),
+          Container(height: 4),
           // USER
           Row(
             children: [
@@ -101,31 +101,37 @@ class _ListPopularCardState extends State<ListPopularCard> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.grey[700],
-                      backgroundImage: avatarUrl != null
-                          ? NetworkImage(avatarUrl)
-                          : null,
-                      child: avatarUrl == null
-                          ? const Icon(
-                              Icons.person,
-                              size: 14,
-                              color: Colors.white,
-                            )
-                          : null,
+                    SizedBox(
+                      width: isSmallComponent ? 18 : 24,
+                      height: isSmallComponent ? 18 : 24,
+                      child: CircleAvatar(
+                        radius: 12,
+                        backgroundColor: Colors.grey[700],
+                        backgroundImage: avatarUrl != null
+                            ? NetworkImage(avatarUrl)
+                            : null,
+                        child: avatarUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 14,
+                                color: Colors.white,
+                              )
+                            : null,
+                      ),
                     ),
                     const SizedBox(width: 5),
                     SizedBox(
                       width: isSmallComponent ? 65 : 106,
-                      height: 16,
+                      height: 12,
                       child: Text(
                         overflow: TextOverflow.ellipsis,
                         isSmallComponent
                             ? "${widget.list.likeCount.toString()} curtidas"
                             : widget.list.author.username,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: isSmallComponent
+                              ? Color(0xFF828282)
+                              : Colors.white,
                           fontSize: isSmallComponent ? 8 : 10,
                           fontWeight: FontWeight.w500,
                         ),

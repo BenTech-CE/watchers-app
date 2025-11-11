@@ -206,7 +206,7 @@ class _SearchPageState extends State<SearchPage> {
                       labelAsHint: true,
                       hintStyle: AppTextStyles.labelLarge.copyWith(
                         color: tColorSecondary,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     );
                   },
@@ -264,18 +264,17 @@ class _SearchPageState extends State<SearchPage> {
               ),
               SizedBox(
                 width: screenWidth,
-                height: 150,
+                height: 152,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: listsPopular.length,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
+                      padding: const EdgeInsets.only(right: 12.0),
                       child: SizedBox(
                         width: screenWidth * 0.25,
-                        height:
-                            screenWidth * 0.25 * 1.5,
+                        height: screenWidth * 0.45 * 1.5,
                         child: ListPopularCard(
                           list: listsPopular[index],
                           smallComponent: true,
