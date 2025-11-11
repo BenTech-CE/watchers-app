@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                       createdAt: "2024-01-01",
                       likeCount: 17,
                       commentCount: 2,
-                      description: null,
+                      description: "Minhas séries favoritas que assisti esse mês! confira aí 👀",
                       type: ListType.Custom,
                       author: ListAuthorModel(
                         id: authInfo.user!.id,

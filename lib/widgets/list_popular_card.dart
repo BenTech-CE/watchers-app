@@ -34,7 +34,7 @@ class _ListPopularCardState extends State<ListPopularCard> {
         : Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 4,
+            spacing: 12,
             children: [seriesthubmnails(), content(avatarUrl)],
           );
   }
@@ -78,13 +78,14 @@ class _ListPopularCardState extends State<ListPopularCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: isSmallComponent ? 8 : 16,
         children: [
           SizedBox(
-            width: isSmallComponent ? 100 : 400,
+            width: isSmallComponent ? 100 : double.maxFinite,
             child: Text(
               widget.list.name,
               style: TextStyle(
-                fontSize: isSmallComponent ? 10 : 16,
+                fontSize: isSmallComponent ? 12 : 16,
                 fontWeight: isSmallComponent
                     ? FontWeight.w500
                     : FontWeight.bold,
@@ -93,69 +94,59 @@ class _ListPopularCardState extends State<ListPopularCard> {
               ),
             ),
           ),
-          Container(height: 4),
-          // USER
-          Row(
+          Column(
+            spacing: 8,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: isSmallComponent ? 18 : 24,
-                      height: isSmallComponent ? 18 : 24,
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.grey[700],
-                        backgroundImage: avatarUrl != null
-                            ? NetworkImage(avatarUrl)
-                            : null,
-                        child: avatarUrl == null
-                            ? const Icon(
-                                Icons.person,
-                                size: 14,
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
+              // USER
+              Row(
+                children: [
+                  SizedBox(
+                    width: isSmallComponent ? 18 : 24,
+                    height: isSmallComponent ? 18 : 24,
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.grey[700],
+                      backgroundImage: avatarUrl != null
+                          ? NetworkImage(avatarUrl)
+                          : null,
+                      child: avatarUrl == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 14,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
-                    const SizedBox(width: 5),
-                    SizedBox(
-                      width: isSmallComponent ? 65 : 106,
-                      height: 12,
-                      child: Text(
-                        overflow: TextOverflow.ellipsis,
-                        isSmallComponent
-                            ? "${widget.list.likeCount.toString()} curtidas"
-                            : widget.list.author.username,
-                        style: TextStyle(
-                          color: isSmallComponent
-                              ? Color(0xFF828282)
-                              : Colors.white,
-                          fontSize: isSmallComponent ? 8 : 10,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    overflow: TextOverflow.ellipsis,
+                    isSmallComponent
+                        ? "${widget.list.likeCount.toString()} curtidas"
+                        : widget.list.author.username,
+                    style: TextStyle(
+                      color: isSmallComponent
+                          ? Color(0xFF828282)
+                          : Colors.white,
+                      fontSize: isSmallComponent ? 10 : 12,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+              // DESCRIPTION
+              if (!isSmallComponent && widget.list.description != null)
+                Text(
+                  widget.list.description!,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
             ],
           ),
-          // DESCRIPTION
-          if (!isSmallComponent && widget.list.description != null)
-            Container(height: 3),
-          if (!isSmallComponent && widget.list.description != null)
-            Text(
-              widget.list.description!,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontWeight: FontWeight.w500,
-                height: 1.4,
-              ),
-            ),
           // LIKES AND COMMENTS
-          if (!isSmallComponent) Container(height: 10),
           if (!isSmallComponent)
             Row(
               spacing: 8,
