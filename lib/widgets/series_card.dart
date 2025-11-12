@@ -8,6 +8,7 @@ class SeriesCard extends StatelessWidget {
   final SerieModel series;
   final bool isSelected;
   final BorderRadiusGeometry? borderRadius;
+  final Animation<double>? animation;
   final VoidCallback onTap; // Função que deve ser chamada quando a série for selecionada
 
   const SeriesCard({
@@ -15,47 +16,53 @@ class SeriesCard extends StatelessWidget {
     required this.series,
     required this.isSelected,
     required this.onTap,
-    this.borderRadius
+    this.borderRadius,
+    this.animation,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: borderRadius ?? BorderRadius.circular(15),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _buildImage(),
-            if (isSelected) Container(color: Colors.black.withAlpha(128)),
-
-            if (isSelected)
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(2.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withAlpha(200),
-                    shape: BoxShape.circle,
+      child: AnimatedBuilder(
+        animation: animation ?? AlwaysStoppedAnimation(0),
+        builder: (context, child) {
+          return ClipRRect(
+            borderRadius: borderRadius ?? BorderRadius.circular(15),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _buildImage(),
+                if (isSelected) Container(color: Colors.black.withAlpha(128)),
+          
+                if (isSelected)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(2.0),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withAlpha(200),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 18.0,
+                      ),
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 18.0,
-                  ),
-                ),
-              ),
-          ],
-        ),
+              ],
+            ),
+          );        
+        }
       ),
     );
   }
 
   Widget _buildImage() {
     // Verifica se a URL é válida
-    if (series.posterUrl != null && (series.posterUrl!.isEmpty || !_isValidUrl(series.posterUrl!))) {
+    if (series.posterUrl == null || (series.posterUrl != null && (series.posterUrl!.isEmpty || !_isValidUrl(series.posterUrl!)))) {
       return Container(
         color: bColorPrimary,
         child: Center(
@@ -91,7 +98,7 @@ class SeriesCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Shimmer effect de fundo
+              // Gradiente base
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -99,45 +106,43 @@ class SeriesCard extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [
                       bColorPrimary,
-                      bColorPrimary.withOpacity(0.7),
+                      bColorPrimary.withOpacity(0.8),
                       bColorPrimary,
                     ],
-                    stops: const [0.0, 0.5, 1.0],
                   ),
                 ),
               ),
-              // Indicador de progresso moderno
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Circular progress com estilo moderno
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: CircularProgressIndicator(
-                        value: downloadProgress.progress,
-                        strokeWidth: 3,
-                        backgroundColor: Colors.white.withOpacity(0.1),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          colorPrimary.withOpacity(0.8),
-                        ),
+              // Shimmer effect animado
+              if (animation != null)
+                Positioned(
+                  left: animation!.value * MediaQuery.of(context).size.width * 0.25,
+                  right: -animation!.value * MediaQuery.of(context).size.width * 0.25,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withOpacity(0.1),
+                          Colors.white.withOpacity(0.15),
+                          Colors.white.withOpacity(0.1),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
                       ),
                     ),
-                    if (downloadProgress.progress != null) ...[
-                      const SizedBox(height: 12),
-                      // Percentual de carregamento
-                      Text(
-                        '${(downloadProgress.progress! * 100).toInt()}%',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
+              // Ícone de imagem no centro
+              Center(
+                child: animation != null ? Icon(
+                  Icons.image_outlined,
+                  size: 48,
+                  color: Colors.white.withOpacity(0.2),
+                ) : CircularProgressIndicator(),
               ),
             ],
           ),

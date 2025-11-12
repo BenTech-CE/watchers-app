@@ -5,14 +5,14 @@ import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/series_card.dart';
 
-class RecentSeries extends StatefulWidget {
-  const RecentSeries({super.key});
+class BestSeries extends StatefulWidget {
+  const BestSeries({super.key});
 
   @override
-  State<RecentSeries> createState() => _RecentSeriesState();
+  State<BestSeries> createState() => _BestSeriesState();
 }
 
-class _RecentSeriesState extends State<RecentSeries> {
+class _BestSeriesState extends State<BestSeries> {
   @override
   void initState(){
     super.initState();
@@ -20,11 +20,11 @@ class _RecentSeriesState extends State<RecentSeries> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final seriesProvider = context.read<SeriesProvider>();
 
-      if (seriesProvider.recentsSeries.isNotEmpty) {
+      if (seriesProvider.trendingSeries.isNotEmpty) {
         return;
       }
 
-      _fetchRecentsSeries();
+      _fetchTrendingSeries();
     });
   }
 
@@ -33,10 +33,10 @@ class _RecentSeriesState extends State<RecentSeries> {
     super.dispose();
   }
 
-  void _fetchRecentsSeries() async {
+  void _fetchTrendingSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    await seriesProvider.getSeriesRecents();
+    await seriesProvider.getSeriesTrending();
 
     if (seriesProvider.errorMessage != null) {
       ScaffoldMessenger.of(
@@ -54,7 +54,7 @@ class _RecentSeriesState extends State<RecentSeries> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: Text("Lançamentos Recentes", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
+        title: Text("Melhores avaliadas", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -66,9 +66,9 @@ class _RecentSeriesState extends State<RecentSeries> {
               mainAxisSpacing: 23,
               childAspectRatio: 2 / 3,
             ),
-          itemCount: seriesProvider.recentsSeries.length,
+          itemCount: seriesProvider.trendingSeries.length,
           itemBuilder: (context, index) {
-            final series = seriesProvider.recentsSeries[index];
+            final series = seriesProvider.trendingSeries[index];
             return SeriesCard(
               series: series,
               isSelected: false,

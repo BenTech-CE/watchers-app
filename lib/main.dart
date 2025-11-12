@@ -15,6 +15,7 @@ import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/series/recent_series.dart';
+import 'package:watchers/views/series/best_series.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
           '/onboarding/watched': (context) => const WatchedSeries(),
           '/onboarding/favorited': (context) => const FavoritedSeries(),
           '/series/recent': (context) => const RecentSeries(),
+          '/series/best': (context) => const BestSeries(),
         },
         home: const AuthWrapper(),
       ),

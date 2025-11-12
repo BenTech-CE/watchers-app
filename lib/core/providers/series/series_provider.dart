@@ -10,41 +10,54 @@ class SeriesProvider with ChangeNotifier {
     : _seriesService = SeriesService(authService: authService);
 
   String? _errorMessage;
-  bool _isLoading = false;
+  bool _isLoadingTrending = false;
+  bool _isLoadingRecents = false;
+  bool _isLoadingSearch = false;
+  bool _isLoadingDetails = false;
+  
 
   String? get errorMessage => _errorMessage;
-  bool get isLoading => _isLoading;
+  bool get isLoadingTrending => _isLoadingTrending;
+  bool get isLoadingRecents => _isLoadingRecents;
+  bool get isLoadingSearch => _isLoadingSearch;
+  bool get isLoadingDetails => _isLoadingDetails;
 
-  Future<List<SerieModel>> getSeriesTrending() async {
-    _setLoading(true);
+  List<SerieModel> _trendingSeries = [];
+  List<SerieModel> get trendingSeries => _trendingSeries;
+
+  List<SerieModel> _recentsSeries = [];
+  List<SerieModel> get recentsSeries => _recentsSeries;
+
+  Future<void> getSeriesTrending() async {
+    _setLoadingTrending(true);
     try {
       clearError();
-      return await _seriesService.getSeriesTrending();
+      _trendingSeries = await _seriesService.getSeriesTrending();
     } catch (e) {
       print(e);
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      _setLoadingTrending(false);
     }
-    return [];
+    return;
   }
 
-  Future<List<SerieModel>> getSeriesRecents() async {
-    _setLoading(true);
+  Future<void> getSeriesRecents() async {
+    _setLoadingRecents(true);
     try {
       clearError();
-      return await _seriesService.getSeriesRecents();
+      _recentsSeries = await _seriesService.getSeriesRecents();      
     } catch (e) {
       print(e);
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      _setLoadingRecents(false);
     }
-    return [];
+    return;
   }
 
   Future<List<SerieModel>> getSeriesSearch(String query) async {
-    _setLoading(true);
+    _setLoadingSearch(true);
     try {
       clearError();
       return await _seriesService.getSeriesSearch(query);
@@ -52,13 +65,13 @@ class SeriesProvider with ChangeNotifier {
       print(e);
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      _setLoadingSearch(false);
     }
     return [];
   }
 
   Future<SerieModel?> getSerieDetails(String id) async {
-    _setLoading(true);
+    _setLoadingDetails(true);
     try {
       clearError();
       return await _seriesService.getSerieDetails(id);
@@ -66,7 +79,7 @@ class SeriesProvider with ChangeNotifier {
       print(e);
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      _setLoadingDetails(false);
     }
     return null;
   }
@@ -76,14 +89,28 @@ class SeriesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void _setLoading(bool loading) {
-    _isLoading = loading;
+  void _setLoadingTrending(bool loading) {
+    _isLoadingTrending = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingRecents(bool loading) {
+    _isLoadingRecents = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingDetails(bool loading) {
+    _isLoadingDetails = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingSearch(bool loading) {
+    _isLoadingSearch = loading;
     notifyListeners();
   }
 
   void _setError(String message) {
     _errorMessage = message;
-    _isLoading = false;
     notifyListeners();
   }
 }

@@ -20,6 +20,7 @@ import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
+import 'package:watchers/widgets/list_series_skeleton.dart';
 import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/banner_series.dart';
 
@@ -31,7 +32,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<SerieModel> trendingSeries = [];
   List<GenderModel> genres = listGenres;
   List<ListModel> listsPopular = [
     ListModel(
@@ -91,9 +91,8 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("called again...");
-
-      _fetchTrendingSeries();
+      //_fetchTrendingSeries(); 
+      // comentado pois a home ja faz essa chamada, a resposta já está no provider.
     });
 
     _searchController.addListener(_onSearchChanged);
@@ -157,11 +156,7 @@ class _SearchPageState extends State<SearchPage> {
   void _fetchTrendingSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    final trendingSeries = await seriesProvider.getSeriesTrending();
-
-    setState(() {
-      this.trendingSeries = trendingSeries;
-    });
+    await seriesProvider.getSeriesTrending();
 
     if (seriesProvider.errorMessage != null) {
       ScaffoldMessenger.of(
@@ -172,7 +167,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authInfo = context.watch<AuthProvider>();
+    final seriesProvider = context.watch<SeriesProvider>();
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -200,7 +195,7 @@ class _SearchPageState extends State<SearchPage> {
                     return TextInputWidget(
                       label: "Procure por séries, listas, usuários...",
                       controller: _searchController,
-                      icon: provider.isLoading && _isSearching
+                      icon: provider.isLoadingSearch && _isSearching
                           ? Icons.hourglass_empty
                           : Icons.search,
                       labelAsHint: true,
@@ -221,15 +216,17 @@ class _SearchPageState extends State<SearchPage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, "/series/best");},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.chevron_right_outlined, size: 32),
                   ),
                 ],
               ),
-              if (trendingSeries.isNotEmpty)
-                ListSeries(series: trendingSeries.sublist(0, 10)),
+              if (seriesProvider.isLoadingTrending)
+                const ListSeriesSkeleton(itemCount: 10),
+              if (seriesProvider.trendingSeries.isNotEmpty && seriesProvider.isLoadingTrending == false)
+                ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -12,6 +12,7 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
+import 'package:watchers/widgets/list_series_skeleton.dart';
 import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/banner_series.dart';
 
@@ -23,9 +24,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<SerieModel> trendingSeries = [];
-  List<SerieModel> recentsSeries = [];
-
   @override
   void initState() {
     super.initState();
@@ -46,11 +44,7 @@ class _HomePageState extends State<HomePage> {
   void _fetchTrendingSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    final trendingSeries = await seriesProvider.getSeriesTrending();
-
-    setState(() {
-      if (mounted) this.trendingSeries = trendingSeries;
-    });
+    await seriesProvider.getSeriesTrending();
 
     if (seriesProvider.errorMessage != null) {
       ScaffoldMessenger.of(
@@ -62,12 +56,8 @@ class _HomePageState extends State<HomePage> {
   void _fetchRecentsSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    final recentsSeries = await seriesProvider.getSeriesRecents();
-
-    setState(() {
-      if (mounted) this.recentsSeries = recentsSeries;
-    });
-
+    await seriesProvider.getSeriesRecents();
+  
     if (seriesProvider.errorMessage != null) {
       ScaffoldMessenger.of(
         context,
@@ -78,6 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final authInfo = context.watch<AuthProvider>();
+    final seriesProvider = context.watch<SeriesProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -97,8 +88,8 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(height: 22),
-              if (trendingSeries.isNotEmpty)
-                BannerSeries(series: trendingSeries.sublist(0, 5)),
+              if (seriesProvider.trendingSeries.isNotEmpty)
+                BannerSeries(series: seriesProvider.trendingSeries.sublist(0, 5)),
               Container(height: 22),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,15 +106,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              if (recentsSeries.isNotEmpty)
-                ListSeries(series: recentsSeries.sublist(0, 10)),
-              if (recentsSeries.isEmpty)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+              if (seriesProvider.isLoadingRecents)
+                const ListSeriesSkeleton(itemCount: 10),
+              if (seriesProvider.recentsSeries.isNotEmpty && seriesProvider.isLoadingRecents == false)
+                ListSeries(series: seriesProvider.recentsSeries.sublist(0, 10)),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

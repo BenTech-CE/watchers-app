@@ -104,13 +104,13 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
   Future<void> _fetchSeriesTrending() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    final series = await seriesProvider.getSeriesTrending();
+    await seriesProvider.getSeriesTrending();
 
-    if (series.isNotEmpty && mounted) {
+    if (seriesProvider.trendingSeries.isNotEmpty && mounted) {
       setState(() {
         _allSeries.addAll(_watchedSeries);
 
-        series.forEach((serie) {
+        seriesProvider.trendingSeries.forEach((serie) {
           if (!_allSeries.any((s) => s.id == serie.id)) {
             _allSeries.add(serie);
           }
@@ -261,7 +261,7 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
                     return TextInputWidget(
                       label: "Procure suas séries favoritas...",
                       controller: _searchController,
-                      icon: provider.isLoading && _isSearching
+                      icon: provider.isLoadingSearch && _isSearching
                           ? Icons.hourglass_empty
                           : Icons.search,
                       labelAsHint: true,
@@ -282,7 +282,7 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
                         ? _searchResults
                         : _allSeries;
 
-                    if (provider.isLoading && seriesToShow.isEmpty) {
+                    if ((provider.isLoadingSearch || provider.isLoadingTrending) && seriesToShow.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
 

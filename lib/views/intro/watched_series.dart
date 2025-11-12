@@ -96,11 +96,11 @@ class _WatchedSeriesState extends State<WatchedSeries> {
   Future<void> _fetchSeriesTrending() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    final series = await seriesProvider.getSeriesTrending();
+    await seriesProvider.getSeriesTrending();
 
-    if (series.isNotEmpty && mounted) {
+    if (seriesProvider.trendingSeries.isNotEmpty && mounted) {
       setState(() {
-        _allSeries.addAll(series);
+        _allSeries.addAll(seriesProvider.trendingSeries);
       });
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -189,7 +189,7 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                     return TextInputWidget(
                       label: "Procure séries que você já assistiu...",
                       controller: _searchController,
-                      icon: provider.isLoading && _isSearching
+                      icon: provider.isLoadingSearch && _isSearching
                           ? Icons.hourglass_empty
                           : Icons.search,
                       labelAsHint: true,
@@ -210,7 +210,7 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                         ? _searchResults
                         : _allSeries;
 
-                    if (provider.isLoading && seriesToShow.isEmpty) {
+                    if ((provider.isLoadingSearch || provider.isLoadingTrending) && seriesToShow.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
