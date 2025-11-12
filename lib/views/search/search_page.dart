@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/genders.dart';
@@ -9,20 +8,15 @@ import 'package:watchers/core/models/auth/user_model.dart';
 import 'package:watchers/core/models/lists/list_author_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
-import 'package:watchers/core/models/series/gender_model.dart';
+import 'package:watchers/core/models/series/genre_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
-import 'package:watchers/core/providers/auth/auth_provider.dart';
-import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
-import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
 import 'package:watchers/widgets/list_series_skeleton.dart';
-import 'package:watchers/widgets/review_card.dart';
-import 'package:watchers/widgets/banner_series.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -32,7 +26,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<GenderModel> genres = listGenres;
+  List<GenreModel> genres = listGenres;
   List<ListModel> listsPopular = [
     ListModel(
       id: "1",
@@ -45,8 +39,7 @@ class _SearchPageState extends State<SearchPage> {
       author: ListAuthorModel(
         id: "123",
         username: 'm.claraxz',
-        avatarUrl:
-            'https://picsum.photos/200',
+        avatarUrl: 'https://picsum.photos/200',
       ),
       thumbnails: [
         'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg',
@@ -66,8 +59,7 @@ class _SearchPageState extends State<SearchPage> {
       author: ListAuthorModel(
         id: "345",
         username: 'rizdechapeu',
-        avatarUrl:
-            'https://picsum.photos/200',
+        avatarUrl: 'https://picsum.photos/200',
       ),
       thumbnails: [
         'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gMTfrLvrDaD0zrhpLZ7zXIIpKfJ.jpg',
@@ -91,7 +83,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      //_fetchTrendingSeries(); 
+      //_fetchTrendingSeries();
       // comentado pois a home ja faz essa chamada, a resposta já está no provider.
     });
 
@@ -216,7 +208,9 @@ class _SearchPageState extends State<SearchPage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
-                    onPressed: () {Navigator.pushNamed(context, "/series/best");},
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/series/best");
+                    },
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.chevron_right_outlined, size: 32),
@@ -225,8 +219,11 @@ class _SearchPageState extends State<SearchPage> {
               ),
               if (seriesProvider.isLoadingTrending)
                 const ListSeriesSkeleton(itemCount: 10),
-              if (seriesProvider.trendingSeries.isNotEmpty && seriesProvider.isLoadingTrending == false)
-                ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
+              if (seriesProvider.trendingSeries.isNotEmpty &&
+                  seriesProvider.isLoadingTrending == false)
+                ListSeries(
+                  series: seriesProvider.trendingSeries.sublist(0, 10),
+                ),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,6 +239,31 @@ class _SearchPageState extends State<SearchPage> {
                     icon: Icon(Icons.chevron_right_outlined, size: 32),
                   ),
                 ],
+              ),
+              SizedBox(
+                width: screenWidth,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: List.generate(
+                        listsPopular.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: SizedBox(
+                            width: screenWidth * 0.25,
+                            child: ListPopularCard(
+                              list: listsPopular[index],
+                              smallComponent: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
               SizedBox(height: 12),
               Row(
