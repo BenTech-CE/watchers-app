@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/services/series/series_service.dart';
@@ -70,7 +71,7 @@ class SeriesProvider with ChangeNotifier {
     return [];
   }
 
-  Future<SerieModel?> getSerieDetails(String id) async {
+  Future<FullSeriesModel?> getSerieDetails(String id) async {
     _setLoadingDetails(true);
     try {
       clearError();

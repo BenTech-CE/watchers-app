@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:watchers/core/services/auth/auth_service.dart';
@@ -118,7 +119,7 @@ class SeriesService {
     }
   }
 
-  Future<SerieModel?> getSerieDetails(String id) async {
+  Future<FullSeriesModel?> getSerieDetails(String id) async {
     try {
       if (!authService.isAuthenticated) {
         throw SeriesServiceException('Usuário não autenticado');
@@ -135,7 +136,7 @@ class SeriesService {
       final jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        return SerieModel.fromJson(jsonResponse);
+        return FullSeriesModel.fromJson(jsonResponse);
       } else {
         throw SeriesServiceException(
           'Erro ao buscar os detalhes da série: ${jsonResponse['error']}',

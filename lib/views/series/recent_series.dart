@@ -57,7 +57,7 @@ class _RecentSeriesState extends State<RecentSeries> {
         title: Text("Lançamentos Recentes", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
         child: GridView.builder(
           gridDelegate: 
             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -72,7 +72,13 @@ class _RecentSeriesState extends State<RecentSeries> {
             return SeriesCard(
               series: series,
               isSelected: false,
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  '/series/detail',
+                  arguments: series.id,
+                );
+              },
             );
           },
         ),

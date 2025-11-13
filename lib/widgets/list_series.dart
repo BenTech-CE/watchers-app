@@ -58,7 +58,13 @@ class _ListSeriesState extends State<ListSeries> with SingleTickerProviderStateM
                   series: widget.series[index],
                   isSelected: false,
                   animation: _animation,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/series/detail',
+                      arguments: widget.series[index].id,
+                    );
+                  },
                 ),
               ),
             );
