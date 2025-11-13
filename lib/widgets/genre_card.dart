@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:watchers/core/models/series/genre_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -29,9 +30,10 @@ class GenreCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
-          child: Iconify(
+          child: SvgPicture.string(
             genre.icon,
-            size: 48,
+            width: 48,
+            height: 48,
           ),
         ),
       ),
