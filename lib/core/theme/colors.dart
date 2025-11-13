@@ -10,6 +10,7 @@ const tColorPrimary = Color.fromARGB(255, 240, 240, 240);
 const tColorSecondary = Color.fromARGB(255, 180, 180, 180);
 const tColorTertiary = Color(0xffededed);
 const tColorQuarternary = Color(0xffC2BCBC);
+const tColorGray = Color(0xff9E9E9E);
 
 // TEXT INPUT COLORS
 const tiColorPrimary = Color.fromRGBO(0, 0, 0, 0.45);

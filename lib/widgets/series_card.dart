@@ -9,7 +9,8 @@ class SeriesCard extends StatelessWidget {
   final bool isSelected;
   final BorderRadiusGeometry? borderRadius;
   final Animation<double>? animation;
-  final VoidCallback onTap; // Função que deve ser chamada quando a série for selecionada
+  final VoidCallback
+  onTap; // Função que deve ser chamada quando a série for selecionada
 
   const SeriesCard({
     super.key,
@@ -34,7 +35,7 @@ class SeriesCard extends StatelessWidget {
               children: [
                 _buildImage(),
                 if (isSelected) Container(color: Colors.black.withAlpha(128)),
-          
+
                 if (isSelected)
                   Positioned(
                     top: 8,
@@ -54,15 +55,17 @@ class SeriesCard extends StatelessWidget {
                   ),
               ],
             ),
-          );        
-        }
+          );
+        },
       ),
     );
   }
 
   Widget _buildImage() {
     // Verifica se a URL é válida
-    if (series.posterUrl == null || (series.posterUrl != null && (series.posterUrl!.isEmpty || !_isValidUrl(series.posterUrl!)))) {
+    if (series.posterUrl == null ||
+        (series.posterUrl != null &&
+            (series.posterUrl!.isEmpty || !_isValidUrl(series.posterUrl!)))) {
       return Container(
         color: bColorPrimary,
         child: Center(
@@ -115,8 +118,14 @@ class SeriesCard extends StatelessWidget {
               // Shimmer effect animado
               if (animation != null)
                 Positioned(
-                  left: animation!.value * MediaQuery.of(context).size.width * 0.25,
-                  right: -animation!.value * MediaQuery.of(context).size.width * 0.25,
+                  left:
+                      animation!.value *
+                      MediaQuery.of(context).size.width *
+                      0.25,
+                  right:
+                      -animation!.value *
+                      MediaQuery.of(context).size.width *
+                      0.25,
                   top: 0,
                   bottom: 0,
                   child: Container(
@@ -138,11 +147,13 @@ class SeriesCard extends StatelessWidget {
                 ),
               // Ícone de imagem no centro
               Center(
-                child: animation != null ? Icon(
-                  Icons.image_outlined,
-                  size: 48,
-                  color: Colors.white.withOpacity(0.2),
-                ) : CircularProgressIndicator(),
+                child: animation != null
+                    ? Icon(
+                        Icons.image_outlined,
+                        size: 48,
+                        color: Colors.white.withOpacity(0.2),
+                      )
+                    : CircularProgressIndicator(),
               ),
             ],
           ),
