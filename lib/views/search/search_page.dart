@@ -13,6 +13,7 @@ import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/widgets/genre_card.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
@@ -245,20 +246,15 @@ class _SearchPageState extends State<SearchPage> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  child: IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: List.generate(
-                        listsPopular.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: SizedBox(
-                            width: screenWidth * 0.25,
-                            child: ListPopularCard(
-                              list: listsPopular[index],
-                              smallComponent: true,
-                            ),
-                          ),
+                  child: Row(
+                    children: List.generate(
+                      genres.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: GenreCard(
+                          genre: genres[index],
+                          onTap: () {},
+                          
                         ),
                       ),
                     ),
