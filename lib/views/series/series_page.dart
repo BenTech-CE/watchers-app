@@ -453,27 +453,36 @@ class _SeriesPageState extends State<SeriesPage> {
                 height: cardHeight,
                 child: ImageCard(url: "https://image.tmdb.org/t/p/w154${season.posterPath}", onTap: () {})
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(season.name ?? 'Temporada ${season.seasonNumber}', style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.w600,
-                      )),
-                      Icon(Icons.chevron_right_rounded, size: 24, color: tColorPrimary),
-                    ],
-                  ),
-                  
-                  Text(
-                    '${season.airDate?.split('-').first ?? "TBA"} • ${season.episodeCount} episódios',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Color(0xff747474),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            season.name ?? 'Temporada ${season.seasonNumber}',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded, size: 24, color: tColorPrimary),
+                      ],
                     ),
-                  ),
-                ],
+                    
+                    Text(
+                      season.airDate != null ? '${season.airDate?.split('-').first ?? "TBA"} • ${season.episodeCount} episódios' : '${season.episodeCount} episódios',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: Color(0xff747474),
+                      ),
+                    ),
+                  ],
+                ),
               )
               
             ],
