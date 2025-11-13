@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:watchers/core/theme/colors.dart';
 
-enum ButtonVariant { primary, secondary }
+enum ButtonVariant { primary, secondary, inactive }
 
 class Button extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
+  final EdgeInsets padding;
+  final BorderRadius borderRadius;
   final ButtonVariant variant;
   final bool loading;
   final bool disabled;
@@ -15,6 +17,8 @@ class Button extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.variant = ButtonVariant.primary,
+    this.padding = const EdgeInsets.symmetric(vertical: 16),
+    this.borderRadius = const BorderRadius.all(Radius.circular(16)),
     this.loading = false,
     this.disabled = false,
   });
@@ -30,9 +34,9 @@ class Button extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           foregroundColor: _getForegroundColor(),
           backgroundColor: _getBackgroundColor(),
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: borderRadius,
           ),
         ),
         child: loading
@@ -50,6 +54,13 @@ class Button extends StatelessWidget {
     if (variant == ButtonVariant.primary) {
       return tColorPrimary;
     }
+    if (variant == ButtonVariant.secondary) {
+      return tColorPrimary;
+    }
+    if (variant == ButtonVariant.inactive) {
+      return Colors.grey.shade400;
+    }
+
     return tColorPrimary;
   }
 
@@ -57,6 +68,15 @@ class Button extends StatelessWidget {
     if (variant == ButtonVariant.primary) {
       return colorPrimary;
     }
-    return Colors.grey.shade800;
+
+    if (variant == ButtonVariant.secondary) {
+      return Colors.grey.shade800;
+    }
+
+    if (variant == ButtonVariant.inactive) {
+      return Colors.grey.shade900;
+    }
+
+    return colorPrimary;
   }
 }
