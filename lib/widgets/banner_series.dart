@@ -108,7 +108,9 @@ class BannerSeries extends StatelessWidget {
             child: SeriesCard(
               series: series[actualIndex],
               isSelected: false,
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/series/detail', arguments: series[actualIndex].id);
+              },
             ),
           );
         },

@@ -459,16 +459,20 @@ class Crew {
 }
 
 class Images {
-  List<dynamic>? backdrops;
-  List<dynamic>? logos;
+  List<ImageFile>? backdrops;
+  List<ImageFile>? logos;
   List<ImageFile>? posters;
 
   Images({this.backdrops, this.logos, this.posters});
 
   factory Images.fromJson(Map<String, dynamic> json) {
     return Images(
-      backdrops: json['backdrops'] as List<dynamic>?,
-      logos: json['logos'] as List<dynamic>?,
+      backdrops: (json['backdrops'] as List<dynamic>?)
+          ?.map((e) => ImageFile.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      logos: (json['logos'] as List<dynamic>?)
+          ?.map((e) => ImageFile.fromJson(e as Map<String, dynamic>))
+          .toList(),
       posters: (json['posters'] as List<dynamic>?)
           ?.map((e) => ImageFile.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -482,7 +486,7 @@ class ImageFile {
   String? iso31661;
   String? iso6391;
   String? filePath;
-  int? voteAverage;
+  double? voteAverage;
   int? voteCount;
   int? width;
 
@@ -504,7 +508,7 @@ class ImageFile {
       iso31661: json['iso_3166_1'] as String?,
       iso6391: json['iso_639_1'] as String?,
       filePath: json['file_path'] as String?,
-      voteAverage: json['vote_average'] as int?,
+      voteAverage: (json['vote_average'] as num?)?.toDouble(),
       voteCount: json['vote_count'] as int?,
       width: json['width'] as int?,
     );
