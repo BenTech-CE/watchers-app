@@ -37,14 +37,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final watchedSeries = await listsProvider.getListSeries("watched");
 
-    setState(() {
-      if (mounted) this.watchedSeries = watchedSeries;
-    });
+    if (mounted) {
+      setState(() {
+        this.watchedSeries = watchedSeries;
+      });
+      
 
-    if (listsProvider.errorMessage != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      if (listsProvider.errorMessage != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      }
     }
   }
 
@@ -53,14 +56,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final favoritedSeries = await listsProvider.getListSeries("favorites");
 
-    setState(() {
-      if (mounted) this.favoritedSeries = favoritedSeries;
-    });
+    if (mounted) {
+      setState(() {
+        this.favoritedSeries = favoritedSeries;
+      });
 
-    if (listsProvider.errorMessage != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      if (listsProvider.errorMessage != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      }
     }
   }
 

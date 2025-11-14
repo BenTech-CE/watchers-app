@@ -97,7 +97,7 @@ class _SearchPageState extends State<SearchPage> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       final query = _searchController.text.trim();
 
-      if (query.isEmpty) {
+      if (query.isEmpty && mounted) {
         setState(() {
           _isSearching = false;
           searchedSeries.clear();
@@ -151,7 +151,7 @@ class _SearchPageState extends State<SearchPage> {
 
     await seriesProvider.getSeriesTrending();
 
-    if (seriesProvider.errorMessage != null) {
+    if (seriesProvider.errorMessage != null && mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));

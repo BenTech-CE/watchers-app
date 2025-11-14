@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/series/full_season_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
@@ -76,6 +77,20 @@ class SeriesProvider with ChangeNotifier {
     try {
       clearError();
       return await _seriesService.getSerieDetails(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingDetails(false);
+    }
+    return null;
+  }
+
+  Future<FullSeasonModel?> getSeasonDetails(String seriesId, String seasonNumber) async {
+    _setLoadingDetails(true);
+    try {
+      clearError();
+      return await _seriesService.getSeasonDetails(seriesId, seasonNumber);
     } catch (e) {
       print(e);
       _setError(e.toString());

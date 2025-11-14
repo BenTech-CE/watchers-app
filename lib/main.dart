@@ -14,8 +14,10 @@ import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
+import 'package:watchers/views/series/episode_page.dart';
 import 'package:watchers/views/series/recent_series.dart';
 import 'package:watchers/views/series/best_series.dart';
+import 'package:watchers/views/series/season_page.dart';
 import 'package:watchers/views/series/series_page.dart';
 
 Future<void> main() async {
@@ -68,6 +70,8 @@ class MyApp extends StatelessWidget {
           '/series/recent': (context) => const RecentSeries(),
           '/series/best': (context) => const BestSeries(),
           '/series/detail': (context) => const SeriesPage(),
+          '/series/season': (context) => const SeasonPage(),
+          '/series/episode': (context) => const EpisodePage(),
         },
         home: const AuthWrapper(),
       ),

@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/genders.dart';
+import 'package:watchers/core/models/series/full_season_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
@@ -12,15 +15,18 @@ import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:path/path.dart' as path;
 
-class SeriesPage extends StatefulWidget {
-  const SeriesPage({super.key});
+class EpisodePage extends StatefulWidget {
+  const EpisodePage({super.key});
 
   @override
-  State<SeriesPage> createState() => _SeriesPageState();
+  State<EpisodePage> createState() => _EpisodePageState();
 }
 
-class _SeriesPageState extends State<SeriesPage> {
+class _EpisodePageState extends State<EpisodePage> {
+  SeasonEpisode? episode;
   FullSeriesModel? series;
+  String? seasonPosterPath;
+
   final ScrollController _scrollController = ScrollController();
   int _appBarOpacity = 0;
   double _gradientOpacity = 0.0;
@@ -37,16 +43,16 @@ class _SeriesPageState extends State<SeriesPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // get id from route
-      final id = ModalRoute.of(context)!.settings.arguments as String;
-      final String seriesId = id;
-
-      final seriesProvider = context.read<SeriesProvider>();
-
-      final result = await seriesProvider.getSerieDetails(seriesId);
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final SeasonEpisode episode = args['episode'];
+      final String seasonPosterPath = args['seasonPosterPath'];
+      final FullSeriesModel series = args['series'];
 
       if (mounted) {
         setState(() {
-          series = result;
+          this.seasonPosterPath = seasonPosterPath;
+          this.episode = episode;
+          this.series = series;
         });
       }
     });
@@ -65,6 +71,18 @@ class _SeriesPageState extends State<SeriesPage> {
     }
   }
 
+  String _formatEpisodeAirDate(String airDate) {
+    try {
+      final date = DateTime.parse(airDate);
+
+      final isFuture = date.isAfter(DateTime.now());
+
+      return isFuture ? 'Lançará em ${date.day}/${date.month}/${date.year}' : 'Lançado em ${date.day}/${date.month}/${date.year}';
+    } catch (e) {
+      return 'Data de exibição desconhecida';
+    }
+  }
+
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
@@ -77,25 +95,13 @@ class _SeriesPageState extends State<SeriesPage> {
     final backdropPath = series?.backdropPath != null
         ? "https://image.tmdb.org/t/p/w1280${series!.backdropPath!}"
         : '';
-    final posterPath = series?.posterPath != null
-        ? "https://image.tmdb.org/t/p/w500${series!.posterPath!}"
+    final posterPath = seasonPosterPath != null
+        ? "https://image.tmdb.org/t/p/w500${seasonPosterPath!}"
         : '';
-
-    final logoLanguagePriority = ['pt'];
-
-    final logoPath =
-        series?.images?.logos != null && series!.images!.logos!.isNotEmpty
-        ? "https://image.tmdb.org/t/p/w500${series!.images!.logos!.firstWhere((logo) => logoLanguagePriority.contains(logo.iso6391), orElse: () => series!.images!.logos!.first).filePath!}"
-        : '';
-
-    final willShowLogo = logoPath.isNotEmpty && path.extension(logoPath).toLowerCase() != '.svg';
 
     final List<String> infosToDisplay = [
-      if (series?.firstAirDate != null) series!.firstAirDate!.split('-')[0],
-      if (series?.numberOfSeasons != null)
-        "${series!.numberOfSeasons} ${series!.numberOfSeasons == 1 ? 'Temporada' : 'Temporadas'}",
-      if (series?.numberOfEpisodes != null)
-        "${series!.numberOfEpisodes} ${series!.numberOfEpisodes == 1 ? 'Episódio' : 'Episódios'}",
+      if (episode?.airDate != null) episode!.airDate!.split('-')[0],
+      if (episode?.runtime != null) "${episode!.runtime} minutos",
       if (series?.contentRatings != null &&
           series!.contentRatings!.results != null &&
           series!.contentRatings!.results!.isNotEmpty &&
@@ -124,11 +130,8 @@ class _SeriesPageState extends State<SeriesPage> {
 
     // abas de detalhes
     final List<String> detailTabs = [
-      'Temporadas',
       'Detalhes',
       'Resenhas',
-      'Similares',
-      'Listas'
     ];
 
     final Map<String, int> starRatingDistribution = {
@@ -151,7 +154,7 @@ class _SeriesPageState extends State<SeriesPage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
-          series?.name ?? '',
+          'Episódio ${episode?.episodeNumber ?? ''}',
           style: AppTextStyles.bodyLarge.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -230,26 +233,13 @@ class _SeriesPageState extends State<SeriesPage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            if (willShowLogo)
-                                              Container(
-                                                constraints: BoxConstraints(
-                                                  maxHeight: 70,
-                                                ),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: logoPath,
-                                                  height: 70,
-                                                  width: double.infinity,
-                                                  alignment: Alignment.centerLeft,
-                                                ),
-                                              ),
-                                            if (!willShowLogo)
-                                              Text(
-                                                series!.name!,
-                                                style: AppTextStyles.titleLarge
-                                                    .copyWith(
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                              ),
+                                            Text(
+                                              episode!.name!,
+                                              style: AppTextStyles.titleLarge
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
                                             if (infosToDisplay.isNotEmpty)
                                               Text(
                                                 infosToDisplay.join(" • "),
@@ -274,9 +264,9 @@ class _SeriesPageState extends State<SeriesPage> {
                                       ),
                                     ],
                                   ),
-                                  if (series!.overview != null &&
-                                      series!.overview!.isNotEmpty)
-                                    Text(series!.overview ?? ''),
+                                  if (episode!.overview != null &&
+                                      episode!.overview!.isNotEmpty)
+                                    Text(episode!.overview ?? ''),
                                   GestureDetector(
                                     onTap: () {
                                       // implementar ação
@@ -373,40 +363,19 @@ class _SeriesPageState extends State<SeriesPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Column(
                                 children: [
-                                  // Índice 0: _buildSeasons
-                                  Visibility(
-                                    visible: _indexedStackIndex == 0,
-                                    maintainState: true,
-                                    maintainSize: false,
-                                    child: _buildSeasons(),
-                                  ),
                                   // Índice 1: _buildDetails
                                   Visibility(
-                                    visible: _indexedStackIndex == 1,
+                                    visible: _indexedStackIndex == 0,
                                     maintainState: true,
                                     maintainSize: false,
                                     child: _buildDetails(),
                                   ),
                                   // Índice 2: _buildReviews
                                   Visibility(
-                                    visible: _indexedStackIndex == 2,
+                                    visible: _indexedStackIndex == 1,
                                     maintainState: true,
                                     maintainSize: false,
                                     child: _buildReviews(),
-                                  ),
-                                  // Índice 3: _buildRecommendations
-                                  Visibility(
-                                    visible: _indexedStackIndex == 3,
-                                    maintainState: true,
-                                    maintainSize: false,
-                                    child: _buildRecommendations(),
-                                  ),
-                                  // Índice 4: _buildLists
-                                  Visibility(
-                                    visible: _indexedStackIndex == 4,
-                                    maintainState: true,
-                                    maintainSize: false,
-                                    child: _buildLists(),
                                   ),
                                 ],
                               )
@@ -599,126 +568,11 @@ class _SeriesPageState extends State<SeriesPage> {
               ),
             ),
             TextSpan(
-              text: series!.firstAirDate ?? 'A ser anunciado',
+              text: episode!.airDate ?? 'A ser anunciado',
               style: AppTextStyles.bodyLarge,
             ),
           ],
         ))
-      ],
-    );
-  }
-
-  Widget _buildSeasons() {
-    // variaveis para o taman ho do poster (25% da tela, proporção 2:3)
-    const double cardWidthFraction = 0.15;
-    const double aspectRatio = 2 / 3;
-    final double cardWidth =
-        MediaQuery.of(context).size.width * cardWidthFraction;
-    final double cardHeight = cardWidth / aspectRatio;
-
-    return Column(
-      spacing: 16,
-      children: [
-        for (var season in series!.seasons!) 
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/series/season',
-                arguments: {
-                  'seriesId': series!.id.toString(),
-                  'seasonNumber': season.seasonNumber.toString(),
-                  'series': series
-                },
-              );
-            },
-            child: Row(
-              spacing: 8,
-              children: [
-                SizedBox(
-                  width: cardWidth,
-                  height: cardHeight,
-                  child: ImageCard(url: "https://image.tmdb.org/t/p/w154${season.posterPath}", onTap: () {})
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              season.name ?? 'Temporada ${season.seasonNumber}',
-                              style: AppTextStyles.bodyLarge.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Icon(Icons.chevron_right_rounded, size: 24, color: tColorPrimary),
-                        ],
-                      ),
-                      
-                      Text(
-                        season.airDate != null ? '${season.airDate?.split('-').first ?? "TBA"} • ${season.episodeCount} episódios' : '${season.episodeCount} episódios',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: Color(0xff747474),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                
-              ],
-            ),
-          )
-      ],
-    );
-  }
-
-  Widget _buildRecommendations() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 16,
-      children: [
-        Text(
-          "Séries similares a ${series?.name ?? 'essa'}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 16
-          ),
-        ),
-        GridView.builder(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: 
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 2 / 3,
-            ),
-          itemCount: series?.recommendations?.results?.length ?? 0,
-          itemBuilder: (context, index) {
-            final s = series!.recommendations!.results![index];
-            return ImageCard(
-              url: "https://image.tmdb.org/t/p/w154${s.posterPath}",
-              fallbackText: s.name,
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/series/detail',
-                  arguments: s.id.toString(),
-                );
-              },
-            );
-          },
-        ),
       ],
     );
   }
@@ -737,17 +591,4 @@ class _SeriesPageState extends State<SeriesPage> {
     );
   }
 
-  Widget _buildLists() {
-    return Column(
-      children: [
-        Text(
-          "Listas com ${series?.name ?? ''}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 16
-          ),
-        ),
-      ],
-    );
-  }
 }

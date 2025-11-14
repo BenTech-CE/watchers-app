@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/series/full_season_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:http/http.dart' as http;
@@ -145,6 +146,35 @@ class SeriesService {
       }
     } catch (e) {
       throw SeriesServiceException('Erro ao buscar os detalhes da série: $e');
+    }
+  }
+
+  Future<FullSeasonModel?> getSeasonDetails(String seriesId, String seasonNumber) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw SeriesServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.seasonDetailsEndpoint(seriesId, seasonNumber),
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return FullSeasonModel.fromJson(jsonResponse);
+      } else {
+        throw SeriesServiceException(
+          'Erro ao buscar os detalhes da temporada: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw SeriesServiceException('Erro ao buscar os detalhes da temporada: $e');
     }
   }
 }

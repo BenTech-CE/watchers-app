@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
 
     await seriesProvider.getSeriesTrending();
 
-    if (seriesProvider.errorMessage != null) {
+    if (seriesProvider.errorMessage != null && mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
     await seriesProvider.getSeriesRecents();
   
-    if (seriesProvider.errorMessage != null) {
+    if (seriesProvider.errorMessage != null && mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));

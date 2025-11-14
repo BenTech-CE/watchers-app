@@ -16,6 +16,8 @@ class Api {
       Uri.parse('${baseUrl}series/search?q=$query');
   static Uri serieDetailsEndpoint(String id) =>
       Uri.parse('${baseUrl}series/$id');
+  static Uri seasonDetailsEndpoint(String seriesId, String seasonNumber) =>
+      Uri.parse('${baseUrl}series/$seriesId/season/$seasonNumber');
 
   // LIST
 
