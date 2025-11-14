@@ -69,6 +69,7 @@ class ImageCard extends StatelessWidget {
       imageUrl: url!,
       fit: BoxFit.cover,
       errorWidget: (context, url, error) {
+        print(error);
         return Container(
           color: bColorPrimary,
           child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),

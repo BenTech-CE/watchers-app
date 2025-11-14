@@ -517,7 +517,7 @@ class ImageFile {
 
 class Recommendations {
   int? page;
-  List<SerieModel>? results;
+  List<RecommendationResult>? results;
   int? totalPages;
   int? totalResults;
 
@@ -527,7 +527,7 @@ class Recommendations {
     return Recommendations(
       page: json['page'] as int?,
       results: (json['results'] as List<dynamic>?)
-          ?.map((e) => SerieModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => RecommendationResult.fromJson(e as Map<String, dynamic>))
           .toList(),
       totalPages: json['total_pages'] as int?,
       totalResults: json['total_results'] as int?,
@@ -535,7 +535,7 @@ class Recommendations {
   }
 }
 
-/*class RecommendationResult {
+class RecommendationResult {
   bool? adult;
   String? backdropPath;
   int? id;
@@ -592,7 +592,7 @@ class Recommendations {
           .toList(),
     );
   }
-}*/
+}
 
 class ContentRatings {
   List<ContentRatingResult>? results;

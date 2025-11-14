@@ -10,6 +10,7 @@ import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
+import 'package:path/path.dart' as path;
 
 class SeriesPage extends StatefulWidget {
   const SeriesPage({super.key});
@@ -84,6 +85,8 @@ class _SeriesPageState extends State<SeriesPage> {
         series?.images?.logos != null && series!.images!.logos!.isNotEmpty
         ? "https://image.tmdb.org/t/p/w500${series!.images!.logos!.firstWhere((logo) => logoLanguagePriority.contains(logo.iso6391), orElse: () => series!.images!.logos!.first).filePath!}"
         : '';
+
+    final willShowLogo = logoPath.isNotEmpty && path.extension(logoPath).toLowerCase() != '.svg';
 
     final List<String> infosToDisplay = [
       if (series?.firstAirDate != null) series!.firstAirDate!.split('-')[0],
@@ -224,7 +227,7 @@ class _SeriesPageState extends State<SeriesPage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            if (logoPath.isNotEmpty)
+                                            if (willShowLogo)
                                               Container(
                                                 constraints: BoxConstraints(
                                                   maxHeight: 70,
@@ -236,7 +239,7 @@ class _SeriesPageState extends State<SeriesPage> {
                                                   alignment: Alignment.centerLeft,
                                                 ),
                                               ),
-                                            if (logoPath.isEmpty)
+                                            if (!willShowLogo)
                                               Text(
                                                 series!.name!,
                                                 style: AppTextStyles.titleLarge
@@ -371,7 +374,7 @@ class _SeriesPageState extends State<SeriesPage> {
                                   _buildSeasons(),
                                   _buildDetails(),
                                   _buildDetails(),
-                                  _buildDetails(),
+                                  _buildRecommendations(),
                                 ],
                               ),
                             )
@@ -626,6 +629,50 @@ class _SeriesPageState extends State<SeriesPage> {
               
             ],
           )
+      ],
+    );
+  }
+
+  Widget _buildRecommendations() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 16,
+      children: [
+        Text(
+          "Séries similares a ${series?.name ?? 'essa'}",
+          style: AppTextStyles.bodyLarge.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 16
+          ),
+        ),
+        GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: 
+            const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 2 / 3,
+            ),
+          itemCount: series?.recommendations?.results?.length ?? 0,
+          itemBuilder: (context, index) {
+            final s = series!.recommendations!.results![index];
+            return ImageCard(
+              url: "https://image.tmdb.org/t/p/w154${s.posterPath}",
+              fallbackText: s.name,
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  '/series/detail',
+                  arguments: s.id.toString(),
+                );
+              },
+            );
+          },
+        ),
       ],
     );
   }

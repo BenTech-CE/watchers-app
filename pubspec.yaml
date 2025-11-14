@@ -39,6 +39,7 @@ dependencies:
   iconify_flutter: ^0.0.7
   iconamoon: ^0.0.3
   cached_network_image: ^3.4.1
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:

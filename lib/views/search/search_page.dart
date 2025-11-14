@@ -165,6 +165,7 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         centerTitle: true,
         title: SizedBox(
@@ -230,14 +231,21 @@ class _SearchPageState extends State<SearchPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Melhores gêneros',
+                    'Buscar por gênero',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    constraints: BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32),
+                  // esse botão foi oculto pois não faz sentido uma pagina para mostrar os generos se aqui ja mostram todos.
+                  Visibility(
+                    visible: false,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: IconButton(
+                      onPressed: () {},
+                      constraints: BoxConstraints(),
+                      padding: EdgeInsets.zero,
+                      icon: Icon(Icons.chevron_right_outlined, size: 32),
+                    ),
                   ),
                 ],
               ),
