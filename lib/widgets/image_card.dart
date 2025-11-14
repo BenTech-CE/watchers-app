@@ -57,7 +57,8 @@ class ImageCard extends StatelessWidget {
                 size: 32,
               ),
               const SizedBox(height: 8),
-              Text(fallbackText ?? '', textAlign: TextAlign.center),
+              if (fallbackText != null)
+                Text(fallbackText ?? '', textAlign: TextAlign.center),
             ],
           ),
         ),

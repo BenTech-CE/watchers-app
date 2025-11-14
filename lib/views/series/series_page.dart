@@ -9,6 +9,7 @@ import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/series_card.dart';
+import 'package:watchers/widgets/stars_chart.dart';
 
 class SeriesPage extends StatefulWidget {
   const SeriesPage({super.key});
@@ -24,6 +25,8 @@ class _SeriesPageState extends State<SeriesPage> {
   double _gradientOpacity = 0.0;
 
   int _indexedStackIndex = 0;
+
+  final double crewProfilePictureSize = 60.0;
 
   @override
   void initState() {
@@ -121,6 +124,19 @@ class _SeriesPageState extends State<SeriesPage> {
       'Resenhas',
       'Similares'
     ];
+
+    final Map<String, int> starRatingDistribution = {
+      '0.5': 12,
+      '1.0': 54,
+      '1.5': 18,
+      '2.0': 44,
+      '2.5': 32,
+      '3.0': 98,
+      '3.5': 293,
+      '4.0': 486,
+      '4.5': 346,
+      '5.0': 383,
+    };
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -294,6 +310,28 @@ class _SeriesPageState extends State<SeriesPage> {
                                       ),
                                     ),
                                   ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Avaliações",
+                                        style: AppTextStyles.bodyLarge.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: tColorSecondary,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        "0 ",
+                                        style: AppTextStyles.bodyLarge.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: tColorSecondary,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4,),
+                                      Icon(Icons.favorite_rounded, color: tColorSecondary, size: 18,),
+                                    ],
+                                  ),
+                                  StarsChart(data: starRatingDistribution,)
                                 ],
                               ),
                             ),
@@ -357,6 +395,23 @@ class _SeriesPageState extends State<SeriesPage> {
         ),
     ];
 
+    final crewList = series?.credits?.crew ?? <Crew>[];
+
+    final seenDirectorIds = <int>{};
+    final seenWriterIds = <int>{};
+
+    final List<Crew> directors = crewList.where((crew) {
+      final isDirector = crew.knownForDepartment == 'Directing';
+
+      return isDirector && crew.id != null && seenDirectorIds.add(crew.id!);
+    }).toList();
+
+    final List<Crew> writers = crewList.where((crew) {
+      final isWriter = crew.knownForDepartment == 'Writing';
+
+      return isWriter && crew.id != null && seenWriterIds.add(crew.id!);
+    }).toList();
+
     return Column(
       spacing: 8,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -382,6 +437,90 @@ class _SeriesPageState extends State<SeriesPage> {
           ),
         if (series!.originCountry != null &&
             series!.originCountry!.isNotEmpty)
+        if (directors.isNotEmpty)
+          Column(
+            spacing: 8,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Diretor${directors.length > 1 ? 'es' : ''}:",
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  spacing: 16,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: directors.map((director) => SizedBox(
+                    width: crewProfilePictureSize,
+                    child: Column(
+                      spacing: 4,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: crewProfilePictureSize,
+                          height: crewProfilePictureSize,
+                          child: ImageCard(url: "https://image.tmdb.org/t/p/w154${director.profilePath}", onTap: () {})
+                        ),
+                        Text(director.name ?? '',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            height: 1.1
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )).toList(),
+                ),
+              )
+            ],
+          ),
+        if (writers.isNotEmpty)
+          Column(
+            spacing: 8,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Roteirista${writers.length > 1 ? 's' : ''}:",
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  spacing: 16,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: writers.map((writer) => SizedBox(
+                    width: crewProfilePictureSize,
+                    child: Column(
+                      spacing: 4,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: crewProfilePictureSize,
+                          height: crewProfilePictureSize,
+                          child: ImageCard(url: "https://image.tmdb.org/t/p/w154${writer.profilePath}", onTap: () {})
+                        ),
+                        Text(writer.name ?? '',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            height: 1.1
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )).toList(),
+                ),
+              )
+            ],
+          ),
           RichText(
             text: TextSpan(
               children: [
