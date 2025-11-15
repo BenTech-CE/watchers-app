@@ -92,8 +92,8 @@ class _EpisodePageState extends State<EpisodePage> {
 
   @override
   Widget build(BuildContext context) {
-    final backdropPath = series?.backdropPath != null
-        ? "https://image.tmdb.org/t/p/w1280${series!.backdropPath!}"
+    final backdropPath = episode?.stillPath != null
+        ? "https://image.tmdb.org/t/p/w1280${episode!.stillPath!}"
         : '';
     final posterPath = seasonPosterPath != null
         ? "https://image.tmdb.org/t/p/w500${seasonPosterPath!}"
@@ -131,7 +131,7 @@ class _EpisodePageState extends State<EpisodePage> {
     // abas de detalhes
     final List<String> detailTabs = [
       'Detalhes',
-      'Resenhas',
+      //'Resenhas',
     ];
 
     final Map<String, int> starRatingDistribution = {
@@ -267,6 +267,7 @@ class _EpisodePageState extends State<EpisodePage> {
                                   if (episode!.overview != null &&
                                       episode!.overview!.isNotEmpty)
                                     Text(episode!.overview ?? ''),
+                                  /*
                                   GestureDetector(
                                     onTap: () {
                                       // implementar ação
@@ -328,6 +329,7 @@ class _EpisodePageState extends State<EpisodePage> {
                                     ],
                                   ),
                                   StarsChart(data: starRatingDistribution,)
+                                  */
                                 ],
                               ),
                             ),
@@ -371,12 +373,12 @@ class _EpisodePageState extends State<EpisodePage> {
                                     child: _buildDetails(),
                                   ),
                                   // Índice 2: _buildReviews
-                                  Visibility(
+                                  /*Visibility(
                                     visible: _indexedStackIndex == 1,
                                     maintainState: true,
                                     maintainSize: false,
                                     child: _buildReviews(),
-                                  ),
+                                  ),*/
                                 ],
                               )
                             )
