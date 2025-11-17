@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
+import 'package:watchers/core/providers/global/search_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
@@ -55,7 +56,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SeriesProvider(authService: authService),
         ),
-        ChangeNotifierProvider(create: (_) => ListsProvider(authService: authService))
+        ChangeNotifierProvider(
+          create: (_) => ListsProvider(authService: authService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SearchProvider(authService: authService),
+        ),
       ],
       child: MaterialApp(
         title: 'Watchers',
@@ -99,12 +105,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Future<void> _refreshSessionAndCheckAuth() async {
     try {
       final currentSession = Supabase.instance.client.auth.currentSession;
-      
+
       // Se há uma sessão, tenta fazer refresh
       if (currentSession != null) {
         await Supabase.instance.client.auth.refreshSession();
       }
-      
+
       // Finaliza o loading após refresh (ou se não havia sessão)
       if (mounted) {
         setState(() {
@@ -117,7 +123,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         setState(() {
           _isRefreshing = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Sessão expirada: ${error.toString()}'),
@@ -139,10 +145,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 16),
-              Text(
-                'Carregando...',
-                style: TextStyle(fontSize: 16),
-              ),
+              Text('Carregando...', style: TextStyle(fontSize: 16)),
             ],
           ),
         ),
@@ -157,22 +160,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
         if (snapshot.hasError) {
           return const Scaffold(
-            body: Center(
-              child: Text('Erro de autenticação'),
-            ),
+            body: Center(child: Text('Erro de autenticação')),
           );
         }
 
         // Usa o estado inicial do refresh ou o novo estado do stream
-        final session = authState?.session ?? Supabase.instance.client.auth.currentSession;
+        final session =
+            authState?.session ?? Supabase.instance.client.auth.currentSession;
 
         if (session != null) {
           return const MainPage();

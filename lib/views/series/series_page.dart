@@ -88,25 +88,10 @@ class _SeriesPageState extends State<SeriesPage> {
         ? "https://image.tmdb.org/t/p/w500${series!.images!.logos!.firstWhere((logo) => logoLanguagePriority.contains(logo.iso6391), orElse: () => series!.images!.logos!.first).filePath!}"
         : '';
 
-    final willShowLogo = logoPath.isNotEmpty && path.extension(logoPath).toLowerCase() != '.svg';
+    final willShowLogo =
+        logoPath.isNotEmpty && path.extension(logoPath).toLowerCase() != '.svg';
 
-    final List<String> infosToDisplay = [
-      if (series?.firstAirDate != null) series!.firstAirDate!.split('-')[0],
-      if (series?.numberOfSeasons != null)
-        "${series!.numberOfSeasons} ${series!.numberOfSeasons == 1 ? 'Temporada' : 'Temporadas'}",
-      if (series?.numberOfEpisodes != null)
-        "${series!.numberOfEpisodes} ${series!.numberOfEpisodes == 1 ? 'Episódio' : 'Episódios'}",
-      if (series?.contentRatings != null &&
-          series!.contentRatings!.results != null &&
-          series!.contentRatings!.results!.isNotEmpty &&
-          series!.contentRatings!.results!.any(
-            (rating) => rating.iso31661 == 'BR',
-          ))
-        "+${series!.contentRatings!.results!.firstWhere(
-          (rating) => rating.iso31661 == 'BR',
-          orElse: () => ContentRatingResult(iso31661: '', rating: ''),
-        ).rating}",
-    ];
+    final List<String> infosToDisplay = buildInfosSeriesToDisplay(series);
 
     final List<String> genresToDisplay = [
       if (series?.genres != null && series!.genres!.isNotEmpty)
@@ -128,7 +113,7 @@ class _SeriesPageState extends State<SeriesPage> {
       'Detalhes',
       'Resenhas',
       'Similares',
-      'Listas'
+      'Listas',
     ];
 
     final Map<String, int> starRatingDistribution = {
@@ -200,20 +185,28 @@ class _SeriesPageState extends State<SeriesPage> {
                       // Container com conteúdo
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, kBottomNavigationBarHeight + 16),
+                        padding: const EdgeInsets.fromLTRB(
+                          0,
+                          0,
+                          0,
+                          kBottomNavigationBarHeight + 16,
+                        ),
                         child: Column(
                           spacing: 16,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
                               child: Column(
                                 spacing: 16,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     spacing: 16,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       ClipRRect(
@@ -239,7 +232,8 @@ class _SeriesPageState extends State<SeriesPage> {
                                                   imageUrl: logoPath,
                                                   height: 70,
                                                   width: double.infinity,
-                                                  alignment: Alignment.centerLeft,
+                                                  alignment:
+                                                      Alignment.centerLeft,
                                                 ),
                                               ),
                                             if (!willShowLogo)
@@ -247,7 +241,8 @@ class _SeriesPageState extends State<SeriesPage> {
                                                 series!.name!,
                                                 style: AppTextStyles.titleLarge
                                                     .copyWith(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                               ),
                                             if (infosToDisplay.isNotEmpty)
@@ -297,20 +292,26 @@ class _SeriesPageState extends State<SeriesPage> {
                                         children: [
                                           Text(
                                             'Avalie, curta, liste e muito mais',
-                                            style: AppTextStyles.bodyMedium.copyWith(
-                                              color: const Color.fromARGB(
-                                                185,
-                                                255,
-                                                255,
-                                                255,
-                                              ),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
+                                            style: AppTextStyles.bodyMedium
+                                                .copyWith(
+                                                  color: const Color.fromARGB(
+                                                    185,
+                                                    255,
+                                                    255,
+                                                    255,
+                                                  ),
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14,
+                                                ),
                                           ),
                                           const Icon(
                                             Icons.chevron_right_rounded,
-                                            color: Color.fromARGB(185, 255, 255, 255),
+                                            color: Color.fromARGB(
+                                              185,
+                                              255,
+                                              255,
+                                              255,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -333,28 +334,34 @@ class _SeriesPageState extends State<SeriesPage> {
                                           color: tColorSecondary,
                                         ),
                                       ),
-                                      const SizedBox(width: 4,),
-                                      Icon(Icons.favorite_rounded, color: tColorSecondary, size: 18,),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.favorite_rounded,
+                                        color: tColorSecondary,
+                                        size: 18,
+                                      ),
                                     ],
                                   ),
-                                  StarsChart(data: starRatingDistribution,)
+                                  StarsChart(data: starRatingDistribution),
                                 ],
                               ),
                             ),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
                                 child: Row(
                                   spacing: 8,
                                   children: detailTabs.map((tab) {
                                     final index = detailTabs.indexOf(tab);
-                                
+
                                     return SizedBox(
                                       width: 120,
                                       height: 40,
                                       child: Button(
-                                        label: tab, 
+                                        label: tab,
                                         padding: EdgeInsets.zero,
                                         borderRadius: BorderRadius.circular(99),
                                         onPressed: () {
@@ -362,7 +369,9 @@ class _SeriesPageState extends State<SeriesPage> {
                                             _indexedStackIndex = index;
                                           });
                                         },
-                                        variant: _indexedStackIndex == index ? ButtonVariant.primary : ButtonVariant.inactive,
+                                        variant: _indexedStackIndex == index
+                                            ? ButtonVariant.primary
+                                            : ButtonVariant.inactive,
                                       ),
                                     );
                                   }).toList(),
@@ -370,7 +379,9 @@ class _SeriesPageState extends State<SeriesPage> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
                               child: Column(
                                 children: [
                                   // Índice 0: _buildSeasons
@@ -409,8 +420,8 @@ class _SeriesPageState extends State<SeriesPage> {
                                     child: _buildLists(),
                                   ),
                                 ],
-                              )
-                            )
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -465,63 +476,75 @@ class _SeriesPageState extends State<SeriesPage> {
                   ),
                 ),
                 TextSpan(
-                  text: series!.productionCompanies!.map((e) => e.name).join(', '),
+                  text: series!.productionCompanies!
+                      .map((e) => e.name)
+                      .join(', '),
                   style: AppTextStyles.bodyLarge,
                 ),
               ],
             ),
           ),
-        if (series!.originCountry != null &&
-            series!.originCountry!.isNotEmpty)
-        if (directors.isNotEmpty)
-          Column(
-            spacing: 8,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Diretor${directors.length > 1 ? 'es' : ''}:",
-                style: AppTextStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+        if (series!.originCountry != null && series!.originCountry!.isNotEmpty)
+          if (directors.isNotEmpty)
+            Column(
+              spacing: 8,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Diretor${directors.length > 1 ? 'es' : ''}:",
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  spacing: 16,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: directors.map((director) => SizedBox(
-                    width: crewProfilePictureSize,
-                    child: Column(
-                      spacing: 4,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: crewProfilePictureSize,
-                          height: crewProfilePictureSize,
-                          child: ImageCard(url: "https://image.tmdb.org/t/p/w154${director.profilePath}", onTap: () {})
-                        ),
-                        Text(director.name ?? '',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            height: 1.1
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    spacing: 16,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: directors
+                        .map(
+                          (director) => SizedBox(
+                            width: crewProfilePictureSize,
+                            child: Column(
+                              spacing: 4,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: crewProfilePictureSize,
+                                  height: crewProfilePictureSize,
+                                  child: ImageCard(
+                                    url:
+                                        "https://image.tmdb.org/t/p/w154${director.profilePath}",
+                                    onTap: () {},
+                                  ),
+                                ),
+                                Text(
+                                  director.name ?? '',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    height: 1.1,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  )).toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
-              )
-            ],
-          ),
+              ],
+            ),
         if (writers.isNotEmpty)
           Column(
             spacing: 8,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Roteirista${writers.length > 1 ? 's' : ''}:",
+              Text(
+                "Roteirista${writers.length > 1 ? 's' : ''}:",
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -533,46 +556,55 @@ class _SeriesPageState extends State<SeriesPage> {
                   spacing: 16,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: writers.map((writer) => SizedBox(
-                    width: crewProfilePictureSize,
-                    child: Column(
-                      spacing: 4,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
+                  children: writers
+                      .map(
+                        (writer) => SizedBox(
                           width: crewProfilePictureSize,
-                          height: crewProfilePictureSize,
-                          child: ImageCard(url: "https://image.tmdb.org/t/p/w154${writer.profilePath}", onTap: () {})
-                        ),
-                        Text(writer.name ?? '',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            height: 1.1
+                          child: Column(
+                            spacing: 4,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: crewProfilePictureSize,
+                                height: crewProfilePictureSize,
+                                child: ImageCard(
+                                  url:
+                                      "https://image.tmdb.org/t/p/w154${writer.profilePath}",
+                                  onTap: () {},
+                                ),
+                              ),
+                              Text(
+                                writer.name ?? '',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  height: 1.1,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                      ],
-                    ),
-                  )).toList(),
+                      )
+                      .toList(),
                 ),
-              )
+              ),
             ],
           ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'País de origem: ',
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'País de origem: ',
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-                TextSpan(
-                  text: series!.originCountry!.join(', '),
-                  style: AppTextStyles.bodyLarge,
-                ),
-              ],
-            ),
+              ),
+              TextSpan(
+                text: series!.originCountry!.join(', '),
+                style: AppTextStyles.bodyLarge,
+              ),
+            ],
           ),
+        ),
         if (genresToDisplay.isNotEmpty)
           RichText(
             text: TextSpan(
@@ -590,20 +622,22 @@ class _SeriesPageState extends State<SeriesPage> {
               ],
             ),
           ),
-        RichText(text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Lançamento: ',
-              style: AppTextStyles.bodyLarge.copyWith(
-                fontWeight: FontWeight.w600,
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Lançamento: ',
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            TextSpan(
-              text: series!.firstAirDate ?? 'A ser anunciado',
-              style: AppTextStyles.bodyLarge,
-            ),
-          ],
-        ))
+              TextSpan(
+                text: series!.firstAirDate ?? 'A ser anunciado',
+                style: AppTextStyles.bodyLarge,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -619,7 +653,7 @@ class _SeriesPageState extends State<SeriesPage> {
     return Column(
       spacing: 16,
       children: [
-        for (var season in series!.seasons!) 
+        for (var season in series!.seasons!)
           GestureDetector(
             onTap: () {
               Navigator.pushNamed(
@@ -628,7 +662,7 @@ class _SeriesPageState extends State<SeriesPage> {
                 arguments: {
                   'seriesId': series!.id.toString(),
                   'seasonNumber': season.seasonNumber.toString(),
-                  'series': series
+                  'series': series,
                 },
               );
             },
@@ -638,7 +672,10 @@ class _SeriesPageState extends State<SeriesPage> {
                 SizedBox(
                   width: cardWidth,
                   height: cardHeight,
-                  child: ImageCard(url: "https://image.tmdb.org/t/p/w154${season.posterPath}", onTap: () {})
+                  child: ImageCard(
+                    url: "https://image.tmdb.org/t/p/w154${season.posterPath}",
+                    onTap: () {},
+                  ),
                 ),
                 Expanded(
                   child: Column(
@@ -658,23 +695,28 @@ class _SeriesPageState extends State<SeriesPage> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Icon(Icons.chevron_right_rounded, size: 24, color: tColorPrimary),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 24,
+                            color: tColorPrimary,
+                          ),
                         ],
                       ),
-                      
+
                       Text(
-                        season.airDate != null ? '${season.airDate?.split('-').first ?? "TBA"} • ${season.episodeCount} episódios' : '${season.episodeCount} episódios',
+                        season.airDate != null
+                            ? '${season.airDate?.split('-').first ?? "TBA"} • ${season.episodeCount} episódios'
+                            : '${season.episodeCount} episódios',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: Color(0xff747474),
                         ),
                       ),
                     ],
                   ),
-                )
-                
+                ),
               ],
             ),
-          )
+          ),
       ],
     );
   }
@@ -689,20 +731,19 @@ class _SeriesPageState extends State<SeriesPage> {
           "Séries similares a ${series?.name ?? 'essa'}",
           style: AppTextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w600,
-            fontSize: 16
+            fontSize: 16,
           ),
         ),
         GridView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: 
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 2 / 3,
-            ),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 2 / 3,
+          ),
           itemCount: series?.recommendations?.results?.length ?? 0,
           itemBuilder: (context, index) {
             final s = series!.recommendations!.results![index];
@@ -730,7 +771,7 @@ class _SeriesPageState extends State<SeriesPage> {
           "Resenhas de ${series?.name ?? ''}",
           style: AppTextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w600,
-            fontSize: 16
+            fontSize: 16,
           ),
         ),
       ],
@@ -744,10 +785,28 @@ class _SeriesPageState extends State<SeriesPage> {
           "Listas com ${series?.name ?? ''}",
           style: AppTextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w600,
-            fontSize: 16
+            fontSize: 16,
           ),
         ),
       ],
     );
   }
+}
+
+List<String> buildInfosSeriesToDisplay(FullSeriesModel? s) {
+  return [
+    if (s?.firstAirDate != null) s!.firstAirDate!.split('-')[0],
+    if (s?.numberOfSeasons != null)
+      "${s!.numberOfSeasons} ${s.numberOfSeasons == 1 ? 'Temporada' : 'Temporadas'}",
+    if (s?.numberOfEpisodes != null)
+      "${s!.numberOfEpisodes} ${s.numberOfEpisodes == 1 ? 'Episódio' : 'Episódios'}",
+    if (s?.contentRatings != null &&
+        s!.contentRatings!.results != null &&
+        s.contentRatings!.results!.isNotEmpty &&
+        s.contentRatings!.results!.any((rating) => rating.iso31661 == 'BR'))
+      "+${s.contentRatings!.results!.firstWhere(
+        (rating) => rating.iso31661 == 'BR',
+        orElse: () => ContentRatingResult(iso31661: '', rating: ''),
+      ).rating}",
+  ];
 }

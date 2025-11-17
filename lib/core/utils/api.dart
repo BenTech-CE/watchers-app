@@ -24,6 +24,9 @@ class Api {
   static final Uri allLists = Uri.parse('${baseUrl}lists/');
   static Uri listSeries(String id) => Uri.parse('${baseUrl}lists/$id/items');
   static Uri listDetails(String id) => Uri.parse('${baseUrl}lists/$id');
+
+  // GLOBAL
+  static final Uri searchEndpoint = Uri.parse('${baseUrl}app/search');
 }
 
 class Headers {
