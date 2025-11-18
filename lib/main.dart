@@ -165,9 +165,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
 
         if (snapshot.hasError) {
-          return const Scaffold(
-            body: Center(child: Text('Erro de autenticação')),
-          );
+          return const LoginView();
         }
 
         // Usa o estado inicial do refresh ou o novo estado do stream
