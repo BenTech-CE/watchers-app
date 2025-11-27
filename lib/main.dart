@@ -7,6 +7,7 @@ import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/global/search_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/login_view.dart';
@@ -65,6 +66,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => SearchProvider(authService: authService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(authService: authService),
         ),
       ],
       child: MaterialApp(

@@ -27,6 +27,17 @@ class Api {
 
   // GLOBAL
   static final Uri searchEndpoint = Uri.parse('${baseUrl}app/search');
+
+  // USER
+  static final Uri userSeriesFavoritesEnpoint = Uri.parse(
+    '${baseUrl}user/favorites',
+  );
+  static final Uri userSeriesWatchedEnpoint = Uri.parse(
+    '${baseUrl}user/watched',
+  );
+  static final Uri userSeriesWatchlistEnpoint = Uri.parse(
+    '${baseUrl}app/watchlist',
+  );
 }
 
 class Headers {
