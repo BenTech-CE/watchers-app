@@ -23,6 +23,7 @@ const bColorCard = Color(0xffd9d9d9);
 
 // BACKGROUND COLORS
 const bgColorButton = Color(0xff383838);
+const bgColor = Color(0xFF161616);
 
 // ADICIONAIS
 const unselectedNavBarItemColor = Color(0xFF9A9A9A);

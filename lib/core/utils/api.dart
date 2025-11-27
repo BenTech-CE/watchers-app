@@ -38,6 +38,7 @@ class Api {
   static final Uri userSeriesWatchlistEnpoint = Uri.parse(
     '${baseUrl}app/watchlist',
   );
+  static Uri userReviewsSeries(String seriesId) => Uri.parse('${baseUrl}reviews/$seriesId');
 }
 
 class Headers {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:watchers/core/services/auth/auth_service.dart';
@@ -101,7 +102,7 @@ class UserService {
 
       final jsonResponse = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final List<SerieModel> series = [];
         for (var serie in jsonResponse["results"]) {
           series.add(SerieModel.fromJson(serie));
@@ -116,6 +117,41 @@ class UserService {
     } catch (e) {
       throw UserServiceException(
         'Erro ao adicionar as séries ${type.name}: $e',
+      );
+    }
+  }
+
+  Future<ReviewModel> saveReviewSeries(
+    ReviewModel review,
+    String serieId,
+  ) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.userReviewsSeries(serieId),
+        headers: Headers.auth(authService),
+        body: jsonEncode(review.toJson()),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        return ReviewModel.fromJson(jsonResponse);
+      } else {
+        throw UserServiceException(
+          'Erro ao salvar a review da série: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException(
+        'Erro ao salvar a review da série: $e',
       );
     }
   }

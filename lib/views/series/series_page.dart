@@ -6,7 +6,7 @@ import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
-import 'package:watchers/views/series/review_sheet.dart';
+import 'package:watchers/views/series/series_options_sheet.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
@@ -137,7 +137,7 @@ class _SeriesPageState extends State<SeriesPage> {
         context: context,
         showDragHandle: true,
         isScrollControlled: true,
-        builder: (BuildContext context) => ReviewSheet(series: series!),
+        builder: (BuildContext context) => SeriesOptionsSheet(series: series!),
       );
     }
 
@@ -294,7 +294,7 @@ class _SeriesPageState extends State<SeriesPage> {
                                         horizontal: 16,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Color(0xff161616),
+                                        color: bgColor,
                                         borderRadius: BorderRadius.circular(15),
                                       ),
                                       child: Row(
