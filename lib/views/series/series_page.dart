@@ -6,6 +6,7 @@ import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/views/series/review_sheet.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/series_card.dart';
@@ -128,6 +129,15 @@ class _SeriesPageState extends State<SeriesPage> {
       '4.5': 346,
       '5.0': 383,
     };
+
+    void _sheetReview(BuildContext context) {
+      showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (BuildContext context) => ReviewSheet(series: series!),
+      );
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -274,7 +284,7 @@ class _SeriesPageState extends State<SeriesPage> {
                                     Text(series!.overview ?? ''),
                                   GestureDetector(
                                     onTap: () {
-                                      // implementar ação
+                                      _sheetReview(context);
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
