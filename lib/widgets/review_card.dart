@@ -90,8 +90,8 @@ class _ReviewCardState extends State<ReviewCard> {
 
                   // --- Container (Badge "Temporada 1") ---
                   // Só mostra o badge se a informação existir
-                  if (widget.review.content != null &&
-                      widget.review.content!.isNotEmpty)
+                  if (widget.review.type == "season" ||
+                      widget.review.type == "episode")
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12.0,
@@ -102,7 +102,9 @@ class _ReviewCardState extends State<ReviewCard> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: Text(
-                        widget.review.content!,
+                        widget.review.type == "season"
+                            ? "Temporada ${widget.review.seasonNumber}"
+                            : "Episódio ${widget.review.episodeNumber}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,

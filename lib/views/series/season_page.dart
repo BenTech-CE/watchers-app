@@ -9,6 +9,7 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
+import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:path/path.dart' as path;
@@ -761,14 +762,20 @@ class _SeasonPageState extends State<SeasonPage> {
 
   Widget _buildReviews() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         Text(
-          "Resenhas de ${series?.name ?? ''}",
+          "Resenhas de ${season?.name ?? 'Temporada ${season?.seasonNumber ?? ''}'}",
           style: AppTextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
         ),
+        ...season?.reviews
+                ?.map((review) => ReviewCard(review: review))
+                .toList() ??
+            [],
       ],
     );
   }
