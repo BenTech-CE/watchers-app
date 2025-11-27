@@ -40,14 +40,18 @@ class _SeasonPageState extends State<SeasonPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // get id from route
-      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final String seriesId = args['seriesId'];
       final String seasonNumber = args['seasonNumber'];
       final FullSeriesModel series = args['series'];
 
       final seriesProvider = context.read<SeriesProvider>();
 
-      final result = await seriesProvider.getSeasonDetails(seriesId, seasonNumber);
+      final result = await seriesProvider.getSeasonDetails(
+        seriesId,
+        seasonNumber,
+      );
 
       if (mounted) {
         setState(() {
@@ -77,7 +81,9 @@ class _SeasonPageState extends State<SeasonPage> {
 
       final isFuture = date.isAfter(DateTime.now());
 
-      return isFuture ? 'Lançará em ${date.day}/${date.month}/${date.year}' : 'Lançado em ${date.day}/${date.month}/${date.year}';
+      return isFuture
+          ? 'Lançará em ${date.day}/${date.month}/${date.year}'
+          : 'Lançado em ${date.day}/${date.month}/${date.year}';
     } catch (e) {
       return 'Data de exibição desconhecida';
     }
@@ -106,7 +112,8 @@ class _SeasonPageState extends State<SeasonPage> {
         ? "https://image.tmdb.org/t/p/w500${series!.images!.logos!.firstWhere((logo) => logoLanguagePriority.contains(logo.iso6391), orElse: () => series!.images!.logos!.first).filePath!}"
         : '';
 
-    final willShowLogo = logoPath.isNotEmpty && path.extension(logoPath).toLowerCase() != '.svg';
+    final willShowLogo =
+        logoPath.isNotEmpty && path.extension(logoPath).toLowerCase() != '.svg';
 
     final List<String> infosToDisplay = [
       if (season?.airDate != null) season!.airDate!.split('-')[0],
@@ -139,11 +146,7 @@ class _SeasonPageState extends State<SeasonPage> {
     final double cardHeight = cardWidth / aspectRatio;
 
     // abas de detalhes
-    final List<String> detailTabs = [
-      'Episódios',
-      'Detalhes',
-      'Resenhas',
-    ];
+    final List<String> detailTabs = ['Episódios', 'Detalhes', 'Resenhas'];
 
     final Map<String, int> starRatingDistribution = {
       '0.5': 12,
@@ -214,20 +217,28 @@ class _SeasonPageState extends State<SeasonPage> {
                       // Container com conteúdo
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, kBottomNavigationBarHeight + 16),
+                        padding: const EdgeInsets.fromLTRB(
+                          0,
+                          0,
+                          0,
+                          kBottomNavigationBarHeight + 16,
+                        ),
                         child: Column(
                           spacing: 16,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
                               child: Column(
                                 spacing: 16,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     spacing: 16,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       ClipRRect(
@@ -253,7 +264,8 @@ class _SeasonPageState extends State<SeasonPage> {
                                                   imageUrl: logoPath,
                                                   height: 70,
                                                   width: double.infinity,
-                                                  alignment: Alignment.centerLeft,
+                                                  alignment:
+                                                      Alignment.centerLeft,
                                                 ),
                                               ),
                                             if (!willShowLogo)
@@ -261,7 +273,8 @@ class _SeasonPageState extends State<SeasonPage> {
                                                 series!.name!,
                                                 style: AppTextStyles.titleLarge
                                                     .copyWith(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                               ),
                                             if (infosToDisplay.isNotEmpty)
@@ -311,20 +324,26 @@ class _SeasonPageState extends State<SeasonPage> {
                                         children: [
                                           Text(
                                             'Avalie, curta, liste e muito mais',
-                                            style: AppTextStyles.bodyMedium.copyWith(
-                                              color: const Color.fromARGB(
-                                                185,
-                                                255,
-                                                255,
-                                                255,
-                                              ),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
+                                            style: AppTextStyles.bodyMedium
+                                                .copyWith(
+                                                  color: const Color.fromARGB(
+                                                    185,
+                                                    255,
+                                                    255,
+                                                    255,
+                                                  ),
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14,
+                                                ),
                                           ),
                                           const Icon(
                                             Icons.chevron_right_rounded,
-                                            color: Color.fromARGB(185, 255, 255, 255),
+                                            color: Color.fromARGB(
+                                              185,
+                                              255,
+                                              255,
+                                              255,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -347,28 +366,36 @@ class _SeasonPageState extends State<SeasonPage> {
                                           color: tColorSecondary,
                                         ),
                                       ),
-                                      const SizedBox(width: 4,),
-                                      Icon(Icons.favorite_rounded, color: tColorSecondary, size: 18,),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.favorite_rounded,
+                                        color: tColorSecondary,
+                                        size: 18,
+                                      ),
                                     ],
                                   ),
-                                  StarsChart(data: starRatingDistribution,)
+                                  StarsChart(
+                                    data: season?.starDistribution ?? [],
+                                  ),
                                 ],
                               ),
                             ),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
                                 child: Row(
                                   spacing: 8,
                                   children: detailTabs.map((tab) {
                                     final index = detailTabs.indexOf(tab);
-                                
+
                                     return SizedBox(
                                       width: 120,
                                       height: 40,
                                       child: Button(
-                                        label: tab, 
+                                        label: tab,
                                         padding: EdgeInsets.zero,
                                         borderRadius: BorderRadius.circular(99),
                                         onPressed: () {
@@ -376,7 +403,9 @@ class _SeasonPageState extends State<SeasonPage> {
                                             _indexedStackIndex = index;
                                           });
                                         },
-                                        variant: _indexedStackIndex == index ? ButtonVariant.primary : ButtonVariant.inactive,
+                                        variant: _indexedStackIndex == index
+                                            ? ButtonVariant.primary
+                                            : ButtonVariant.inactive,
                                       ),
                                     );
                                   }).toList(),
@@ -384,7 +413,9 @@ class _SeasonPageState extends State<SeasonPage> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
                               child: Column(
                                 children: [
                                   // Índice 0: _buildEpisodes
@@ -409,8 +440,8 @@ class _SeasonPageState extends State<SeasonPage> {
                                     child: _buildReviews(),
                                   ),
                                 ],
-                              )
-                            )
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -465,63 +496,75 @@ class _SeasonPageState extends State<SeasonPage> {
                   ),
                 ),
                 TextSpan(
-                  text: series!.productionCompanies!.map((e) => e.name).join(', '),
+                  text: series!.productionCompanies!
+                      .map((e) => e.name)
+                      .join(', '),
                   style: AppTextStyles.bodyLarge,
                 ),
               ],
             ),
           ),
-        if (series!.originCountry != null &&
-            series!.originCountry!.isNotEmpty)
-        if (directors.isNotEmpty)
-          Column(
-            spacing: 8,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Diretor${directors.length > 1 ? 'es' : ''}:",
-                style: AppTextStyles.bodyLarge.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+        if (series!.originCountry != null && series!.originCountry!.isNotEmpty)
+          if (directors.isNotEmpty)
+            Column(
+              spacing: 8,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Diretor${directors.length > 1 ? 'es' : ''}:",
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  spacing: 16,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: directors.map((director) => SizedBox(
-                    width: crewProfilePictureSize,
-                    child: Column(
-                      spacing: 4,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: crewProfilePictureSize,
-                          height: crewProfilePictureSize,
-                          child: ImageCard(url: "https://image.tmdb.org/t/p/w154${director.profilePath}", onTap: () {})
-                        ),
-                        Text(director.name ?? '',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            height: 1.1
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    spacing: 16,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: directors
+                        .map(
+                          (director) => SizedBox(
+                            width: crewProfilePictureSize,
+                            child: Column(
+                              spacing: 4,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: crewProfilePictureSize,
+                                  height: crewProfilePictureSize,
+                                  child: ImageCard(
+                                    url:
+                                        "https://image.tmdb.org/t/p/w154${director.profilePath}",
+                                    onTap: () {},
+                                  ),
+                                ),
+                                Text(
+                                  director.name ?? '',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    height: 1.1,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  )).toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
-              )
-            ],
-          ),
+              ],
+            ),
         if (writers.isNotEmpty)
           Column(
             spacing: 8,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Roteirista${writers.length > 1 ? 's' : ''}:",
+              Text(
+                "Roteirista${writers.length > 1 ? 's' : ''}:",
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -533,46 +576,55 @@ class _SeasonPageState extends State<SeasonPage> {
                   spacing: 16,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: writers.map((writer) => SizedBox(
-                    width: crewProfilePictureSize,
-                    child: Column(
-                      spacing: 4,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
+                  children: writers
+                      .map(
+                        (writer) => SizedBox(
                           width: crewProfilePictureSize,
-                          height: crewProfilePictureSize,
-                          child: ImageCard(url: "https://image.tmdb.org/t/p/w154${writer.profilePath}", onTap: () {})
-                        ),
-                        Text(writer.name ?? '',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            height: 1.1
+                          child: Column(
+                            spacing: 4,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: crewProfilePictureSize,
+                                height: crewProfilePictureSize,
+                                child: ImageCard(
+                                  url:
+                                      "https://image.tmdb.org/t/p/w154${writer.profilePath}",
+                                  onTap: () {},
+                                ),
+                              ),
+                              Text(
+                                writer.name ?? '',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  height: 1.1,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                      ],
-                    ),
-                  )).toList(),
+                      )
+                      .toList(),
                 ),
-              )
+              ),
             ],
           ),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'País de origem: ',
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'País de origem: ',
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-                TextSpan(
-                  text: series!.originCountry!.join(', '),
-                  style: AppTextStyles.bodyLarge,
-                ),
-              ],
-            ),
+              ),
+              TextSpan(
+                text: series!.originCountry!.join(', '),
+                style: AppTextStyles.bodyLarge,
+              ),
+            ],
           ),
+        ),
         if (genresToDisplay.isNotEmpty)
           RichText(
             text: TextSpan(
@@ -590,20 +642,22 @@ class _SeasonPageState extends State<SeasonPage> {
               ],
             ),
           ),
-        RichText(text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Lançamento: ',
-              style: AppTextStyles.bodyLarge.copyWith(
-                fontWeight: FontWeight.w600,
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Lançamento: ',
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            TextSpan(
-              text: season!.airDate ?? 'A ser anunciado',
-              style: AppTextStyles.bodyLarge,
-            ),
-          ],
-        ))
+              TextSpan(
+                text: season!.airDate ?? 'A ser anunciado',
+                style: AppTextStyles.bodyLarge,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -619,7 +673,7 @@ class _SeasonPageState extends State<SeasonPage> {
     return Column(
       spacing: 16,
       children: [
-        for (var episode in season!.episodes) 
+        for (var episode in season!.episodes)
           GestureDetector(
             onTap: () {
               Navigator.pushNamed(
@@ -639,7 +693,11 @@ class _SeasonPageState extends State<SeasonPage> {
                 SizedBox(
                   width: cardWidth,
                   height: cardHeight,
-                  child: ImageCard(url: "https://image.tmdb.org/t/p/w154${episode.stillPath}", onTap: () {}, borderRadius: BorderRadius.circular(8),)
+                  child: ImageCard(
+                    url: "https://image.tmdb.org/t/p/w154${episode.stillPath}",
+                    onTap: () {},
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 Expanded(
                   child: Column(
@@ -667,20 +725,24 @@ class _SeasonPageState extends State<SeasonPage> {
                                       color: tColorPrimary,
                                     ),
                                   ),
-                                ]
+                                ],
                               ),
-                            )
+                            ),
                           ),
-                          Icon(Icons.chevron_right_rounded, size: 24, color: tColorPrimary),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 24,
+                            color: tColorPrimary,
+                          ),
                         ],
                       ),
-                      
+
                       Text(
                         episode.overview != null && episode.overview!.isNotEmpty
-                          ? episode.overview!
-                          : (episode.airDate != null
-                              ? _formatEpisodeAirDate(episode.airDate!)
-                              : "Sem descrição disponível."),
+                            ? episode.overview!
+                            : (episode.airDate != null
+                                  ? _formatEpisodeAirDate(episode.airDate!)
+                                  : "Sem descrição disponível."),
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: Color(0xff747474),
                         ),
@@ -689,11 +751,10 @@ class _SeasonPageState extends State<SeasonPage> {
                       ),
                     ],
                   ),
-                )
-                
+                ),
               ],
             ),
-          )
+          ),
       ],
     );
   }
@@ -705,11 +766,10 @@ class _SeasonPageState extends State<SeasonPage> {
           "Resenhas de ${series?.name ?? ''}",
           style: AppTextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.w600,
-            fontSize: 16
+            fontSize: 16,
           ),
         ),
       ],
     );
   }
-
 }

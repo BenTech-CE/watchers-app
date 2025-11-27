@@ -1,3 +1,6 @@
+import 'package:watchers/core/models/global/star_distribution_model.dart';
+import 'package:watchers/core/models/global/user_interaction_model.dart';
+import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 
 class FullSeasonModel {
@@ -10,6 +13,9 @@ class FullSeasonModel {
   String? posterPath;
   int? seasonNumber;
   double? voteAverage;
+  UserInteractionData? userData;
+  List<StarDistributionModel>? starDistribution;
+  List<ReviewModel>? reviews;
 
   FullSeasonModel({
     this.airDate,
@@ -21,6 +27,9 @@ class FullSeasonModel {
     this.posterPath,
     this.seasonNumber,
     this.voteAverage,
+    this.userData,
+    this.starDistribution,
+    this.reviews,
   });
 
   factory FullSeasonModel.fromJson(Map<String, dynamic> json) {
@@ -38,6 +47,17 @@ class FullSeasonModel {
       posterPath: json['poster_path'],
       seasonNumber: json['season_number'],
       voteAverage: json['vote_average']?.toDouble(),
+      userData: json['userData'] == null
+          ? null
+          : UserInteractionData.fromJson(
+              json['userData'] as Map<String, dynamic>),
+      starDistribution: (json['starDistribution'] as List<dynamic>?)
+          ?.map((e) =>
+              StarDistributionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      reviews: (json['reviews'] as List<dynamic>?)
+          ?.map((e) => ReviewModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

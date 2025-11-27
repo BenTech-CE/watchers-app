@@ -9,6 +9,8 @@ import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/views/series/review_sheet.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
+import 'package:watchers/widgets/list_popular_card.dart';
+import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:path/path.dart' as path;
@@ -352,7 +354,9 @@ class _SeriesPageState extends State<SeriesPage> {
                                       ),
                                     ],
                                   ),
-                                  StarsChart(data: starRatingDistribution),
+                                  StarsChart(
+                                    data: series?.starDistribution ?? [],
+                                  ),
                                 ],
                               ),
                             ),
@@ -776,6 +780,8 @@ class _SeriesPageState extends State<SeriesPage> {
 
   Widget _buildReviews() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         Text(
           "Resenhas de ${series?.name ?? ''}",
@@ -784,12 +790,18 @@ class _SeriesPageState extends State<SeriesPage> {
             fontSize: 16,
           ),
         ),
+        ...series?.reviews
+                ?.map((review) => ReviewCard(review: review))
+                .toList() ??
+            [],
       ],
     );
   }
 
   Widget _buildLists() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         Text(
           "Listas com ${series?.name ?? ''}",
@@ -798,6 +810,8 @@ class _SeriesPageState extends State<SeriesPage> {
             fontSize: 16,
           ),
         ),
+        ...series?.lists?.map((list) => ListPopularCard(list: list)).toList() ??
+            [],
       ],
     );
   }

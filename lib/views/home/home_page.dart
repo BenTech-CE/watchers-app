@@ -155,7 +155,6 @@ class _HomePageState extends State<HomePage> {
                       likeCount: 17,
                       commentCount: 2,
                       description: "Minhas séries favoritas que assisti esse mês! confira aí 👀",
-                      type: ListType.Custom,
                       author: ListAuthorModel(
                         id: authInfo.user!.id,
                         username: 'm.claraxz',
@@ -178,7 +177,6 @@ class _HomePageState extends State<HomePage> {
                       likeCount: 32,
                       commentCount: 5,
                       description: null,
-                      type: ListType.Custom,
                       author: ListAuthorModel(
                         id: authInfo.user!.id,
                         username: 'rizdechapeu',

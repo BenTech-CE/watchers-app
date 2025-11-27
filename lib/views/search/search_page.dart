@@ -43,7 +43,6 @@ class _SearchPageState extends State<SearchPage> {
       likeCount: 17,
       commentCount: 2,
       description: null,
-      type: ListType.Custom,
       author: ListAuthorModel(
         id: "123",
         username: 'm.claraxz',
@@ -63,7 +62,6 @@ class _SearchPageState extends State<SearchPage> {
       likeCount: 32,
       commentCount: 5,
       description: null,
-      type: ListType.Custom,
       author: ListAuthorModel(
         id: "345",
         username: 'rizdechapeu',

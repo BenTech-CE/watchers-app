@@ -33,7 +33,6 @@ enum ListType {
 
 class ListModel {
   final String id;
-  final ListType type;
   final String name;
   final String createdAt;
   final int likeCount;
@@ -44,7 +43,6 @@ class ListModel {
 
   const ListModel({
     required this.id,
-    required this.type,
     required this.name,
     required this.createdAt,
     required this.likeCount,
@@ -57,7 +55,6 @@ class ListModel {
   factory ListModel.fromJson(Map<String, dynamic> json) {
     return ListModel(
       id: json['id'].toString(),
-      type: ListType.fromInt(json['type']) ?? ListType.Watchlist,
       name: json['name'] ?? '',
       createdAt: json['created_at'] ?? '',
       likeCount: json['like_count'] ?? 0,

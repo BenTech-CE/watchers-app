@@ -1,4 +1,8 @@
 // Modelo principal para o JSON completo da série
+import 'package:watchers/core/models/global/star_distribution_model.dart';
+import 'package:watchers/core/models/global/user_interaction_model.dart';
+import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 
 class FullSeriesModel {
@@ -38,6 +42,10 @@ class FullSeriesModel {
   Images? images;
   Recommendations? recommendations;
   ContentRatings? contentRatings;
+  UserInteractionData? userData;
+  List<StarDistributionModel>? starDistribution;
+  List<ReviewModel>? reviews;
+  List<ListModel>? lists;
 
   FullSeriesModel({
     this.adult,
@@ -76,6 +84,10 @@ class FullSeriesModel {
     this.images,
     this.recommendations,
     this.contentRatings,
+    this.userData,
+    this.starDistribution,
+    this.reviews,
+    this.lists,
   });
 
   factory FullSeriesModel.fromJson(Map<String, dynamic> json) {
@@ -152,6 +164,20 @@ class FullSeriesModel {
           ? null
           : ContentRatings.fromJson(
               json['content_ratings'] as Map<String, dynamic>),
+      userData: json['userData'] == null
+          ? null
+          : UserInteractionData.fromJson(
+              json['userData'] as Map<String, dynamic>),
+      starDistribution: (json['starDistribution'] as List<dynamic>?)
+          ?.map((e) =>
+              StarDistributionModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      reviews: (json['reviews'] as List<dynamic>?)
+          ?.map((e) => ReviewModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      lists: (json['lists'] as List<dynamic>?)
+          ?.map((e) => ListModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

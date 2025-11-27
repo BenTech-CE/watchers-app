@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:watchers/core/models/global/star_distribution_model.dart';
 import 'package:watchers/core/theme/colors.dart';
 
 class StarsChart extends StatefulWidget {
-  final Map<String, int> data;
+  final List<StarDistributionModel> data;
   final double maxBarHeight;
 
   const StarsChart({super.key, required this.data, this.maxBarHeight = 80.0});
@@ -12,7 +13,6 @@ class StarsChart extends StatefulWidget {
 }
 
 class _StarsChartState extends State<StarsChart> {
-
   double _calculateBarHeight(int count, int maxCount) {
     if (maxCount == 0) return 3;
     double calc = (count / maxCount) * widget.maxBarHeight;
@@ -23,19 +23,19 @@ class _StarsChartState extends State<StarsChart> {
   double _calcMedia() {
     // 1. Calcular o total de votos (o "peso" total)
     // O método fold é seguro, retornando 0 se a lista estiver vazia.
-    final int totalCount = widget.data.values.fold(
+    final int totalCount = widget.data.fold(
       0, // Valor inicial
-      (previousValue, count) => previousValue + count,
+      (previousValue, element) => previousValue + element.quantity,
     );
 
     // 2. Calcular a soma ponderada total
     // (Iteramos nas "entries" para ter acesso à chave e ao valor ao mesmo tempo)
-    final double totalWeightedSum = widget.data.entries.fold(
+    final double totalWeightedSum = widget.data.fold(
       0.0, // Valor inicial
-      (previousValue, entry) {
+      (previousValue, element) {
         // entry.key é a String (ex: '4.5'), entry.value é a contagem (ex: 346)
-        final double ratingValue = double.parse(entry.key);
-        final int count = entry.value;
+        final double ratingValue = element.starRating;
+        final int count = element.quantity;
         return previousValue + (ratingValue * count);
       },
     );
@@ -68,11 +68,10 @@ class _StarsChartState extends State<StarsChart> {
     return stars;
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final int maxCount = widget.data.values.isNotEmpty
-        ? widget.data.values.reduce((a, b) => a > b ? a : b)
+    final int maxCount = widget.data.isNotEmpty
+        ? widget.data.reduce((a, b) => a.quantity > b.quantity ? a : b).quantity
         : 1;
 
     return Row(
@@ -84,23 +83,28 @@ class _StarsChartState extends State<StarsChart> {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (String rating in widget.data.keys)
+              for (var ratingData in widget.data)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
-                        height: _calculateBarHeight(widget.data[rating] ?? 0, maxCount),
+                        height: _calculateBarHeight(
+                          ratingData.quantity,
+                          maxCount,
+                        ),
                         decoration: BoxDecoration(
                           color: Color(0xff545454),
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            topRight: Radius.circular(4),
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
-              
             ],
           ),
         ),
@@ -114,9 +118,7 @@ class _StarsChartState extends State<StarsChart> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Row(
-              children: _buildStarRating(_calcMedia().roundToDouble()),
-            )
+            Row(children: _buildStarRating(_calcMedia().roundToDouble())),
           ],
         ),
       ],

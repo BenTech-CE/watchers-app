@@ -1,61 +1,93 @@
 import 'package:watchers/core/models/series/serie_model.dart';
 
 class ReviewModel {
-    final String id;
-    final String type; // "season", "episode" ou "series"
-    final String? reviewed;
-    final double stars;
-    final bool liked;
-    final String content;
-    final SerieModel series; // <--- ALTERADO AQUI
-    final ReviewAuthor author;
+  final int id;
+  final int? seasonNumber; // Novo campo do JSON
+  final int? episodeNumber; // Novo campo do JSON
+  final double stars;
+  final bool liked;
+  final String? content; // Agora pode ser nulo
+  final ReviewSeries series;
+  final ReviewAuthor author;
 
-    ReviewModel({
-        required this.id,
-        required this.type,
-        this.reviewed,
-        required this.stars,
-        required this.liked,
-        required this.content,
-        required this.series, // O tipo aqui agora é SerieModel
-        required this.author,
-    });
+  ReviewModel({
+    required this.id,
+    this.seasonNumber,
+    this.episodeNumber,
+    required this.stars,
+    required this.liked,
+    this.content,
+    required this.series,
+    required this.author,
+  });
 
-    /// Cria uma instância de [ReviewModel] a partir de um mapa JSON.
-    factory ReviewModel.fromJson(Map<String, dynamic> json) {
-        return ReviewModel(
-            id: json["id"],
-            type: json["type"],
-            // A chave 'reviewed' pode ser nula ou inexistente no JSON
-            reviewed: json["reviewed"], 
-            // Converte 'num' (int ou double) para double com segurança
-            stars: (json["stars"] as num).toDouble(), 
-            liked: json["liked"],
-            content: json["content"],
-            // Chama o construtor fromJson da classe aninhada
-            series: SerieModel.fromJson(json["series"]), // <--- ALTERADO AQUI
-            author: ReviewAuthor.fromJson(json["author"]),
-        );
-    }
+  /// Getter calculado para manter a compatibilidade com sua lógica antiga de "type"
+  String get type {
+    if (episodeNumber != null) return 'episode';
+    if (seasonNumber != null) return 'season';
+    return 'series';
+  }
+
+  factory ReviewModel.fromJson(Map<String, dynamic> json) {
+    return ReviewModel(
+      id: json["id"] as int,
+      
+      // Mapeando os novos campos
+      seasonNumber: json["season_number"] as int?,
+      episodeNumber: json["episode_number"] as int?,
+      
+      // Tratamento seguro para números (int ou double)
+      stars: (json["stars"] as num).toDouble(),
+      
+      // Bool seguro (se vier null, assume false)
+      liked: json["liked"] as bool? ?? false,
+      
+      // Content aceita null agora
+      content: json["content"] as String?,
+      
+      // ATENÇÃO: Seu SerieModel deve estar preparado para receber apenas
+      // {id, name, poster_url}. Se o SerieModel exigir outros campos, vai dar erro.
+      series: ReviewSeries.fromJson(json["series"]),
+      
+      author: ReviewAuthor.fromJson(json["author"]),
+    );
+  }
 }
 
-/// Modelo para o objeto aninhado 'author'
-class ReviewAuthor {
-    final String id;
-    final String username;
-    final String? avatarUrl; // '?' indica que pode ser nulo
+class ReviewSeries {
+  final int id;
+  final String name;
+  final String? posterUrl;
 
-    ReviewAuthor({
-        required this.id,
-        required this.username,
-        this.avatarUrl,
-    });
+  ReviewSeries({
+    required this.id,
+    required this.name,
+    this.posterUrl,
+  });
 
-    /// Cria uma instância de [ReviewAuthor] a partir de um mapa JSON.
-    factory ReviewAuthor.fromJson(Map<String, dynamic> json) => ReviewAuthor(
-        id: json["id"],
-        username: json["username"],
-        // Mapeia 'avatar_url' do JSON para 'avatarUrl' no Dart
-        avatarUrl: json["avatar_url"], 
+  factory ReviewSeries.fromJson(Map<String, dynamic> json) {
+    return ReviewSeries(
+      id: json["id"] as int,
+      name: json["name"] as String,
+      posterUrl: json["poster_url"] as String?,
     );
+  }
+}
+
+class ReviewAuthor {
+  final String id;
+  final String username;
+  final String? avatarUrl;
+
+  ReviewAuthor({
+    required this.id,
+    required this.username,
+    this.avatarUrl,
+  });
+
+  factory ReviewAuthor.fromJson(Map<String, dynamic> json) => ReviewAuthor(
+    id: json["id"],
+    username: json["username"],
+    avatarUrl: json["avatar_url"],
+  );
 }

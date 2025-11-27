@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
+import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/series_card.dart';
 
 class ReviewCard extends StatefulWidget {
@@ -62,10 +63,9 @@ class _ReviewCardState extends State<ReviewCard> {
             SizedBox(
               width: serieCardSize,
               height: serieCardSize * 1.5,
-              child: SeriesCard(
+              child: ImageCard(
                 borderRadius: BorderRadius.circular(12),
-                series: widget.review.series,
-                isSelected: false,
+                url: widget.review.series.posterUrl,
                 onTap: () {}, // Substituir: Levar à tela da série!
               ),
             ),
@@ -90,8 +90,8 @@ class _ReviewCardState extends State<ReviewCard> {
 
                   // --- Container (Badge "Temporada 1") ---
                   // Só mostra o badge se a informação existir
-                  if (widget.review.reviewed != null &&
-                      widget.review.reviewed!.isNotEmpty)
+                  if (widget.review.content != null &&
+                      widget.review.content!.isNotEmpty)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12.0,
@@ -102,7 +102,7 @@ class _ReviewCardState extends State<ReviewCard> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: Text(
-                        widget.review.reviewed!,
+                        widget.review.content!,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -190,7 +190,7 @@ class _ReviewCardState extends State<ReviewCard> {
 
   /// Helper para construir o texto expansível da review
   Widget _buildReviewText() {
-    final String text = widget.review.content;
+    final String text = widget.review.content ?? "";
     final bool isTextLong = text.length > kCollapsedTextLimit;
 
     // Estilo do link "ler mais..."
