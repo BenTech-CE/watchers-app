@@ -13,6 +13,8 @@ class StarsChart extends StatefulWidget {
 }
 
 class _StarsChartState extends State<StarsChart> {
+  StarDistributionModel? _highlightedRating;
+
   double _calculateBarHeight(int count, int maxCount) {
     if (maxCount == 0) return 3;
     double calc = (count / maxCount) * widget.maxBarHeight;
@@ -68,6 +70,16 @@ class _StarsChartState extends State<StarsChart> {
     return stars;
   }
 
+  void toggleHighlight(StarDistributionModel? ratingData) {
+    setState(() {
+      if (ratingData != null && _highlightedRating != ratingData) {
+        _highlightedRating = ratingData;
+      } else {
+        _highlightedRating = null;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final int maxCount = widget.data.isNotEmpty
@@ -85,24 +97,27 @@ class _StarsChartState extends State<StarsChart> {
             children: [
               for (var ratingData in widget.data)
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: _calculateBarHeight(
-                          ratingData.quantity,
-                          maxCount,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Color(0xff545454),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            topRight: Radius.circular(4),
+                  child: GestureDetector(
+                    onTap: () => { toggleHighlight(ratingData) },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          height: _calculateBarHeight(
+                            ratingData.quantity,
+                            maxCount,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _highlightedRating != null && _highlightedRating!.starRating == ratingData.starRating ? tColorSecondary : Color(0xff545454),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(4),
+                              topRight: Radius.circular(4),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
             ],
@@ -111,14 +126,14 @@ class _StarsChartState extends State<StarsChart> {
         Column(
           children: [
             Text(
-              _calcMedia().toStringAsFixed(1),
+              _highlightedRating != null ? _highlightedRating!.quantity.toString() : _calcMedia().toStringAsFixed(1),
               style: TextStyle(
                 color: tColorSecondary,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Row(children: _buildStarRating(_calcMedia().roundToDouble())),
+            Row(children: _buildStarRating(_highlightedRating != null ? _highlightedRating!.starRating : _calcMedia().roundToDouble())),
           ],
         ),
       ],
