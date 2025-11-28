@@ -11,6 +11,7 @@ import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/review_card.dart';
+import 'package:watchers/widgets/review_card_in_serie.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:path/path.dart' as path;
@@ -791,7 +792,7 @@ class _SeriesPageState extends State<SeriesPage> {
           ),
         ),
         ...series?.reviews
-                ?.map((review) => ReviewCard(review: review))
+                ?.map((review) => ReviewCardInSerie(review: review))
                 .toList() ??
             [],
       ],

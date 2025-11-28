@@ -10,6 +10,7 @@ import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/review_card.dart';
+import 'package:watchers/widgets/review_card_in_serie.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:path/path.dart' as path;
@@ -773,7 +774,7 @@ class _SeasonPageState extends State<SeasonPage> {
           ),
         ),
         ...season?.reviews
-                ?.map((review) => ReviewCard(review: review))
+                ?.map((review) => ReviewCardInSerie(review: review))
                 .toList() ??
             [],
       ],

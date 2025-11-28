@@ -34,16 +34,18 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(24.0), // Bordas mais arredondadas conforme a foto
+        borderRadius: BorderRadius.circular(15.0), // Bordas mais arredondadas conforme a foto
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0), // Padding interno geral
+        padding: const EdgeInsets.all(12.0), // Padding interno geral
         child: Column(
+          spacing: 12,
           mainAxisSize: MainAxisSize.min, // Ocupa apenas o tamanho necessário
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- 1. CABEÇALHO (Avatar, Nome, Estrelas, Like) ---
             Row(
+              spacing: 12,
               children: [
                 // Avatar (Maior que no design anterior)
                 CircleAvatar(
@@ -56,7 +58,6 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
                       ? const Icon(Icons.person, color: Colors.white)
                       : null,
                 ),
-                const SizedBox(width: 12),
 
                 // Nome do Usuário
                 Expanded(
@@ -75,31 +76,19 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
                 Row(
                   children: _buildStarRating(widget.review.stars),
                 ),
-                
-                const SizedBox(width: 8),
 
                 // Ícone de Coração
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isFavorited = !_isFavorited;
-                    });
-                    // Aqui você chamaria sua API para dar like/deslike
-                  },
-                  child: Icon(
-                    _isFavorited ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.grey[600],
-                    size: 20,
-                  ),
+                Icon(
+                  _isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.grey[600],
+                  size: 20,
                 ),
               ],
             ),
 
-            const SizedBox(height: 12), // Espaço entre cabeçalho e texto
-
             // --- 2. TEXTO DA REVIEW ---
             // Reutilizando sua lógica que já estava ótima
-            _buildReviewText(),
+            if (widget.review.content != null) _buildReviewText(),
           ],
         ),
       ),

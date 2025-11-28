@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/widgets/review_card.dart';
+import 'package:watchers/widgets/review_card_in_serie.dart';
 
 class Preview extends StatelessWidget {
   const Preview({super.key});
@@ -13,7 +14,7 @@ class Preview extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(height: 300),
-        ReviewCard(review: meuReview),
+        ReviewCardInSerie(review: meuReview),
       ],
     );
   }
@@ -50,7 +51,7 @@ final meuReview = ReviewModel(
   episodeNumber: null,
   stars: 4.5,
   liked: true,
-  content: null, // Veio nulo no JSON
+  content: "jkdaskfjdsfskj", // Veio nulo no JSON
   series: ReviewSeries(
     id: 121,
     name: "Doctor Who",
