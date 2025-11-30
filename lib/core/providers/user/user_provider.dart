@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/services/user/user_service.dart';
@@ -9,6 +11,12 @@ class UserProvider with ChangeNotifier {
 
   UserProvider({required AuthService authService})
     : _userService = UserService(authService: authService);
+
+  UserInteractionData _currSeriesUID = UserInteractionData.empty();
+  UserInteractionData currentUserInteractionData(String scope) =>
+      scope == 'series' ? _currSeriesUID : scope == 'season' ? _currSeasonUID : UserInteractionData.empty();
+
+  UserInteractionData _currSeasonUID = UserInteractionData.empty();
 
   String? _errorMessage;
   bool _isLoadingGetFavorites = false;
@@ -94,12 +102,7 @@ class UserProvider with ChangeNotifier {
     _setLoadingAddFavorites(true);
     try {
       clearError();
-      _seriesFavorites = await _userService.addSeries(
-        ListType.Favorites,
-        ids,
-        null,
-        null,
-      );
+      await _userService.addSeries(ListType.Favorites, ids, null, null);
     } catch (e) {
       print(e);
       _setError(e.toString());
@@ -117,7 +120,7 @@ class UserProvider with ChangeNotifier {
     _setLoadingAddWatched(true);
     try {
       clearError();
-      _seriesWatched = await _userService.addSeries(
+      await _userService.addSeries(
         ListType.Watched,
         ids,
         seasonNumber,
@@ -140,7 +143,7 @@ class UserProvider with ChangeNotifier {
     _setLoadingAddWatchlist(true);
     try {
       clearError();
-      _seriesWatchlist = await _userService.addSeries(
+      await _userService.addSeries(
         ListType.Watchlist,
         ids,
         seasonNumber,
@@ -161,12 +164,7 @@ class UserProvider with ChangeNotifier {
     _setLoadingDeleteFavorites(true);
     try {
       clearError();
-      _seriesFavorites = await _userService.deleteSeries(
-        ListType.Favorites,
-        ids,
-        null,
-        null,
-      );
+      await _userService.deleteSeries(ListType.Favorites, ids, null, null);
     } catch (e) {
       print(e);
       _setError(e.toString());
@@ -184,7 +182,7 @@ class UserProvider with ChangeNotifier {
     _setLoadingDeleteWatched(true);
     try {
       clearError();
-      _seriesWatched = await _userService.deleteSeries(
+      await _userService.deleteSeries(
         ListType.Watched,
         ids,
         seasonNumber,
@@ -207,7 +205,7 @@ class UserProvider with ChangeNotifier {
     _setLoadingDeleteWatchlist(true);
     try {
       clearError();
-      _seriesWatchlist = await _userService.deleteSeries(
+      await _userService.deleteSeries(
         ListType.Watchlist,
         ids,
         seasonNumber,
@@ -222,6 +220,17 @@ class UserProvider with ChangeNotifier {
     return;
   }
 
+  Future<ReviewModel> saveReviewSeries(ReviewModel review, String serieId) async {
+    try {
+      clearError();
+      return await _userService.saveReviewSeries(review, serieId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+      rethrow;
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
@@ -229,42 +238,69 @@ class UserProvider with ChangeNotifier {
 
   void _setLoadingGetFavorites(bool loading) {
     _isLoadingGetFavorites = loading;
+    notifyListeners();
   }
 
   void _setLoadingGetWatched(bool loading) {
     _isLoadingGetWatched = loading;
+    notifyListeners();
   }
 
   void _setLoadingGetWatchlist(bool loading) {
     _isLoadingGetWatchlist = loading;
+    notifyListeners();
   }
 
   void _setLoadingAddFavorites(bool loading) {
     _isLoadingAddFavorites = loading;
+    notifyListeners();
   }
 
   void _setLoadingAddWatched(bool loading) {
     _isLoadingAddWatched = loading;
+    notifyListeners();
   }
 
   void _setLoadingAddWatchlist(bool loading) {
     _isLoadingAddWatchlist = loading;
+    notifyListeners();
   }
 
   void _setLoadingDeleteFavorites(bool loading) {
     _isLoadingDeleteFavorites = loading;
+    notifyListeners();
   }
 
   void _setLoadingDeleteWatched(bool loading) {
     _isLoadingDeleteWatched = loading;
+    notifyListeners();
   }
 
   void _setLoadingDeleteWatchlist(bool loading) {
     _isLoadingDeleteWatchlist = loading;
+    notifyListeners();
   }
 
   void _setError(String message) {
     _errorMessage = message;
+    notifyListeners();
+  }
+
+  void setCurrentUserInteractionData(String scope, UserInteractionData data) {
+    if (scope == 'series') {
+      _currSeriesUID = data;
+    } else if (scope == 'season') {
+      _currSeasonUID = data;
+    }
+    notifyListeners();
+  }
+
+  void clearCurrentUserInteractionData(String scope) {
+    if (scope == 'series') {
+      _currSeriesUID = UserInteractionData.empty();
+    } else if (scope == 'season') {
+      _currSeasonUID = UserInteractionData.empty();
+    }
     notifyListeners();
   }
 }

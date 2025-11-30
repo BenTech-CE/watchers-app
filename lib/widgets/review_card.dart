@@ -149,7 +149,8 @@ class _ReviewCardState extends State<ReviewCard> {
                       ),
                       Spacer(),
                       // Helper para construir as estrelas
-                      ..._buildStarRating(widget.review.stars),
+                      if (widget.review.stars != null)
+                        ..._buildStarRating(widget.review.stars!),
                       Container(width: 4),
                       Icon(
                         _isFavorited ? Icons.favorite : Icons.favorite_border,

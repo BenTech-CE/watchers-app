@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/genders.dart';
+import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/views/series/series_options_sheet.dart';
@@ -45,6 +47,9 @@ class _SeriesPageState extends State<SeriesPage> {
       final String seriesId = id;
 
       final seriesProvider = context.read<SeriesProvider>();
+      final userProvider = context.read<UserProvider>();
+
+      userProvider.clearCurrentUserInteractionData("series");
 
       final result = await seriesProvider.getSerieDetails(seriesId);
 
@@ -52,6 +57,11 @@ class _SeriesPageState extends State<SeriesPage> {
         setState(() {
           series = result;
         });
+
+        userProvider.setCurrentUserInteractionData(
+          "series",
+          result?.userData ?? UserInteractionData.empty(),
+        );
       }
     });
   }
@@ -120,25 +130,20 @@ class _SeriesPageState extends State<SeriesPage> {
       'Listas',
     ];
 
-    final Map<String, int> starRatingDistribution = {
-      '0.5': 12,
-      '1.0': 54,
-      '1.5': 18,
-      '2.0': 44,
-      '2.5': 32,
-      '3.0': 98,
-      '3.5': 293,
-      '4.0': 486,
-      '4.5': 346,
-      '5.0': 383,
-    };
-
     void _sheetReview(BuildContext context) {
+      final userProvider = context.read<UserProvider>();
+      //userProvider.setCurrentUserInteractionData(series?.userData ?? UserInteractionData.empty());
+
       showModalBottomSheet<void>(
         context: context,
         showDragHandle: true,
         isScrollControlled: true,
-        builder: (BuildContext context) => SeriesOptionsSheet(series: series!),
+        builder: (BuildContext context) => SeriesOptionsSheet(
+          title: series?.name ?? "",
+          id: series?.id.toString() ?? '',
+          scope: "series",
+          isSeries: true,
+        ),
       );
     }
 
@@ -742,11 +747,22 @@ class _SeriesPageState extends State<SeriesPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Text(
-          "Séries similares a ${series?.name ?? 'essa'}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
+        RichText(
+          text: TextSpan(
+            text: "Series similares a ",
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+            children: [
+              TextSpan(
+                text: "${series!.name}",
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ),
         GridView.builder(
@@ -784,11 +800,22 @@ class _SeriesPageState extends State<SeriesPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 16,
       children: [
-        Text(
-          "Resenhas de ${series?.name ?? ''}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
+        RichText(
+          text: TextSpan(
+            text: "Resenhas de ",
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+            children: [
+              TextSpan(
+                text: "${series!.name}",
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ),
         ...series?.reviews
@@ -804,11 +831,22 @@ class _SeriesPageState extends State<SeriesPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 16,
       children: [
-        Text(
-          "Listas com ${series?.name ?? ''}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
+        RichText(
+          text: TextSpan(
+            text: "Listas com ",
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+            children: [
+              TextSpan(
+                text: "${series!.name}",
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ),
         ...series?.lists?.map((list) => ListPopularCard(list: list)).toList() ??

@@ -66,7 +66,7 @@ class UserService {
 
   // POST
 
-  Future<List<SerieModel>> addSeries(
+  Future<void> addSeries(
     ListType type,
     List<String> ids,
     int? seasonNumber,
@@ -82,7 +82,7 @@ class UserService {
           : type == ListType.Watched
           ? Api.userSeriesWatchedEnpoint
           : type == ListType.Watchlist
-          ? Api.userSeriesWatchedEnpoint
+          ? Api.userSeriesWatchlistEnpoint
           : Api.userSeriesFavoritesEnpoint;
 
       final response = await http.post(
@@ -102,12 +102,13 @@ class UserService {
 
       final jsonResponse = jsonDecode(response.body);
 
-      if (response.statusCode == 201) {
-        final List<SerieModel> series = [];
+      if (response.statusCode == 200) {
+        /*final List<SerieModel> series = [];
         for (var serie in jsonResponse["results"]) {
           series.add(SerieModel.fromJson(serie));
         }
-        return series;
+        return series;*/
+        return;
       } else {
         throw UserServiceException(
           'Erro ao adicionar as séries ${type.name}: ${jsonResponse['error']}',
@@ -150,15 +151,13 @@ class UserService {
         );
       }
     } catch (e) {
-      throw UserServiceException(
-        'Erro ao salvar a review da série: $e',
-      );
+      throw UserServiceException('Erro ao salvar a review da série: $e');
     }
   }
 
   // DELETE
 
-  Future<List<SerieModel>> deleteSeries(
+  Future<void> deleteSeries(
     ListType type,
     List<String> ids,
     int? seasonNumber,
@@ -174,7 +173,7 @@ class UserService {
           : type == ListType.Watched
           ? Api.userSeriesWatchedEnpoint
           : type == ListType.Watchlist
-          ? Api.userSeriesWatchedEnpoint
+          ? Api.userSeriesWatchlistEnpoint
           : Api.userSeriesFavoritesEnpoint;
 
       final response = await http.delete(
@@ -195,11 +194,12 @@ class UserService {
       final jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        final List<SerieModel> series = [];
+        /*final List<SerieModel> series = [];
         for (var serie in jsonResponse["results"]) {
           series.add(SerieModel.fromJson(serie));
         }
-        return series;
+        return series;*/
+        return;
       } else {
         throw UserServiceException(
           'Erro ao deletar as séries ${type.name}: ${jsonResponse['error']}',

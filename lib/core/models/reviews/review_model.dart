@@ -2,7 +2,7 @@ class ReviewModel {
   final int? id;
   final int? seasonNumber; // Novo campo do JSON
   final int? episodeNumber; // Novo campo do JSON
-  final double stars;
+  final double? stars;
   final bool liked;
   final String? content; // Agora pode ser nulo
   final ReviewSeries series;
@@ -12,7 +12,7 @@ class ReviewModel {
     required this.id,
     this.seasonNumber,
     this.episodeNumber,
-    required this.stars,
+    this.stars,
     required this.liked,
     this.content,
     required this.series,
@@ -35,7 +35,7 @@ class ReviewModel {
       episodeNumber: json["episode_number"] as int?,
 
       // Tratamento seguro para números (int ou double)
-      stars: (json["stars"] as num).toDouble(),
+      stars: json["stars"] != null ? (json["stars"] as num).toDouble() : null,
 
       // Bool seguro (se vier null, assume false)
       liked: json["liked"] as bool? ?? false,

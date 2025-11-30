@@ -1,62 +1,345 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/carbon.dart';
-import 'package:iconify_flutter/icons/fa.dart';
-import 'package:iconify_flutter/icons/lucide.dart';
+import 'package:iconify_flutter/icons/cil.dart';
+import 'package:iconify_flutter/icons/majesticons.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:provider/provider.dart';
+import 'package:watchers/core/models/global/user_interaction_model.dart';
+import 'package:watchers/core/models/reviews/review_model.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/search/search_page.dart';
+import 'package:iconify_flutter/icons/oi.dart';
 
 class SeriesOptionsSheet extends StatefulWidget {
-  final dynamic series;
-  const SeriesOptionsSheet({super.key, required this.series});
+  final String title;
+  final String id;
+  final String scope;
+  final bool isSeries;
+  final int? seasonNumber;
+  final int? episodeNumber;
+  const SeriesOptionsSheet({
+    super.key,
+    required this.title,
+    required this.id,
+    required this.scope,
+    required this.isSeries,
+    this.seasonNumber,
+    this.episodeNumber,
+  });
 
   @override
   State<SeriesOptionsSheet> createState() => _SeriesOptionsSheetState();
 }
 
-String iconWatched =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="576" height="512" viewBox="0 0 576 512"><path fill="currentColor" d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19M288 400a144 144 0 1 1 144-144a143.93 143.93 0 0 1-144 144m0-240a95.3 95.3 0 0 0-25.31 3.79a47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160"/></svg>';
+//String iconWatched =
+//    '<svg xmlns="http://www.w3.org/2000/svg" width="572" height="512" viewBox="0 0 572 512"><path fill="currentColor" d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19M288 400a144 144 0 1 1 144-144a143.93 143.93 0 0 1-144 144m0-240a95.3 95.3 0 0 0-25.31 3.79a47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160"/></svg>';
 
 class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
-  int rating = 0;
+  double rating = 0;
   bool watched = false;
   bool liked = false;
   bool watchlist = false;
+
+  void updateProviderState({
+    bool? newWatched,
+    bool? newLiked,
+    bool? newWatchlist,
+    double? newStars,
+    int? newReviewId,
+  }) {
+    final userProvider = context.read<UserProvider>();
+    final current = userProvider.currentUserInteractionData(widget.scope);
+
+    userProvider.setCurrentUserInteractionData(
+      widget.scope,
+      UserInteractionData(
+        isWatched: newWatched ?? watched, // Usa o novo ou o local atual
+        isLiked: newLiked ?? liked,
+        inWatchlist: newWatchlist ?? watchlist,
+        stars:
+            newStars ??
+            (rating != 0
+                ? rating
+                : current.stars), // Ajuste conforme sua var rating
+        reviewId: newReviewId ?? current.reviewId,
+        reviewText: current.reviewText,
+      ),
+    );
+  }
+
+  void changeWatched() async {
+    final userProvider = context.read<UserProvider>();
+
+    // 1. Guarda o estado anterior para caso precise desfazer (Rollback)
+    final previousWatched = watched;
+
+    // 2. Atualiza Estado Local e Provider Otimisticamente
+    setState(() {
+      watched = !watched;
+    });
+    updateProviderState(newWatched: watched);
+
+    try {
+      // 3. Chama a API
+      if (previousWatched) {
+        // Se estava assistido, vamos remover
+        await userProvider.deleteSeriesWatched(
+          [widget.id],
+          widget.seasonNumber,
+          widget.episodeNumber,
+        );
+      } else {
+        // Se não estava, vamos adicionar
+        await userProvider.addSeriesWatched(
+          [widget.id],
+          widget.seasonNumber,
+          widget.episodeNumber,
+        );
+      }
+
+      // Verifica erro de negócio da API
+      if (userProvider.errorMessage != null) {
+        throw Exception(userProvider.errorMessage);
+      }
+    } catch (e) {
+      // 4. ROLLBACK: Se deu erro, desfaz tudo
+      if (mounted) {
+        setState(() {
+          watched = previousWatched; // Volta o valor antigo
+        });
+        updateProviderState(newWatched: previousWatched); // Volta o provider
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao atualizar assistido: $e')),
+        );
+      }
+    }
+  }
+
+  void changeWatchlist() async {
+    final userProvider = context.read<UserProvider>();
+    final previousWatchlist = watchlist;
+
+    // Otimista
+    setState(() {
+      watchlist = !watchlist;
+    });
+    updateProviderState(newWatchlist: watchlist);
+
+    try {
+      if (previousWatchlist) {
+        await userProvider.deleteSeriesWatchlist(
+          [widget.id],
+          widget.seasonNumber,
+          widget.episodeNumber,
+        );
+      } else {
+        await userProvider.addSeriesWatchlist(
+          [widget.id],
+          widget.seasonNumber,
+          widget.episodeNumber,
+        );
+      }
+
+      if (userProvider.errorMessage != null) {
+        throw Exception(userProvider.errorMessage);
+      }
+    } catch (e) {
+      // Rollback
+      if (mounted) {
+        setState(() {
+          watchlist = previousWatchlist;
+        });
+        updateProviderState(newWatchlist: previousWatchlist);
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro na watchlist: $e')));
+      }
+    }
+  }
+
+  void changeLiked() async {
+    final userProvider = context.read<UserProvider>();
+    final previousLiked = liked;
+
+    // Otimista
+    setState(() {
+      liked = !liked;
+    });
+    // Note: Ainda não temos o ID novo se for criado agora, mas atualizamos a UI visual
+    updateProviderState(newLiked: liked);
+
+    ReviewModel review = ReviewModel(
+      id: userProvider
+          .currentUserInteractionData(widget.scope)
+          .reviewId, // ID atual (pode ser null/vazio se nunca interagiu)
+      stars: rating != 0 ? rating.toDouble() : null,
+      content: userProvider.currentUserInteractionData(widget.scope).reviewText,
+      liked: liked, // O novo valor
+      series: ReviewSeries(
+        id: 0,
+        name: '',
+      ), // Dados mock para o envio, se necessário
+      author: ReviewAuthor(id: '', username: ''),
+      seasonNumber: widget.seasonNumber,
+      episodeNumber: widget.episodeNumber,
+    );
+    print(jsonEncode(review.toJson()));
+
+    try {
+      final savedReview = await userProvider.saveReviewSeries(
+        review,
+        widget.id,
+      );
+
+      if (userProvider.errorMessage != null) {
+        throw Exception(userProvider.errorMessage);
+      }
+
+      // SUCESSO: A API retornou a review salva.
+      // É CRUCIAL atualizar o Provider com o ID que veio do servidor
+      // caso tenha sido criada uma nova review (interação) agora.
+      if (mounted) {
+        updateProviderState(
+          newLiked: savedReview.liked,
+          newReviewId: savedReview.id, // Atualiza o ID para persistência futura
+          newStars: savedReview.stars,
+        );
+      }
+    } catch (e) {
+      // Rollback
+      if (mounted) {
+        setState(() {
+          liked = previousLiked;
+        });
+        updateProviderState(newLiked: previousLiked);
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao curtir: $e')));
+      }
+    }
+  }
+
+  void changeRating(double newRating) async {
+    final userProvider = context.read<UserProvider>();
+
+    // 1. Guarda o valor antigo para Rollback
+    final previousRating = rating;
+
+    // 2. Atualização Otimista (UI + Provider Local)
+    setState(() {
+      rating = newRating;
+    });
+
+    // Usa o helper criado na resposta anterior para propagar a mudança
+    updateProviderState(newStars: newRating);
+
+    // 3. Monta o objeto Review preservando os outros dados (like, texto)
+    ReviewModel review = ReviewModel(
+      id: userProvider
+          .currentUserInteractionData(widget.scope)
+          .reviewId, // Mantém ID se existir
+      stars: newRating, // O valor novo
+      content: userProvider
+          .currentUserInteractionData(widget.scope)
+          .reviewText, // Mantém o texto atual
+      liked: liked, // Mantém o status de like atual
+      series: ReviewSeries(id: 0, name: ''), // Boilerplate
+      author: ReviewAuthor(id: '', username: ''), // Boilerplate
+      seasonNumber: widget.seasonNumber,
+      episodeNumber: widget.episodeNumber,
+    );
+
+    try {
+      // 4. Chama a API
+      final savedReview = await userProvider.saveReviewSeries(
+        review,
+        widget.id,
+      );
+
+      if (userProvider.errorMessage != null) {
+        throw Exception(userProvider.errorMessage);
+      }
+
+      // 5. Sucesso: Atualiza o Provider com o retorno da API
+      // Isso é crucial caso seja a primeira avaliação e um novo ID tenha sido gerado
+      if (mounted) {
+        updateProviderState(
+          newStars: savedReview.stars,
+          newReviewId: savedReview.id,
+        );
+      }
+    } catch (e) {
+      // 6. Rollback: Deu erro? Volta tudo como era antes.
+      if (mounted) {
+        setState(() {
+          rating = previousRating;
+        });
+        updateProviderState(newStars: previousRating);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar classificação: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final userProvider = context.read<UserProvider>();
+    // Inicializa o estado com base nos dados da série
+    
+    watched = userProvider.currentUserInteractionData(widget.scope).isWatched;
+    liked = userProvider.currentUserInteractionData(widget.scope).isLiked;
+    watchlist = userProvider.currentUserInteractionData(widget.scope).inWatchlist;
+    rating = (userProvider.currentUserInteractionData(widget.scope).stars ?? 0).toDouble();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "Avalie",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Avalie",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                Container(width: 6),
-                Text(
-                  "${widget.series.name ?? "Série"}",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    height: 1.2,
-                    color: colorPrimary,
-                    fontWeight: FontWeight.w700,
+                  Container(width: 6),
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      height: 1.2,
+                      color: colorPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
             LineSeparator(),
 
@@ -64,31 +347,32 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
 
             // ===== ICON ROW =====
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: widget.isSeries
+                    ? MainAxisAlignment.spaceBetween
+                    : MainAxisAlignment.spaceEvenly,
                 children: [
                   _iconAction(
-                    icon: iconWatched,
-                    label: "Completa",
+                    icon: Oi.eye,
+                    label: widget.isSeries ? "Completo" : "Assistido",
                     active: watched,
                     index: 0,
-                    onTap: () => setState(() => watched = !watched),
+                    onTap: changeWatched,
                   ),
                   _iconAction(
-                    icon:
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8"><path fill="currentColor" d="m4 8l2-2c4-4-1-6-2-3c-1-3-6-1-2 3"/></svg>',
+                    icon: Mdi.heart,
                     label: "Gostei",
                     active: liked,
                     index: 1,
-                    onTap: () => setState(() => liked = !liked),
+                    onTap: changeLiked,
                   ),
                   _iconAction(
-                    icon: Carbon.time,
+                    icon: Cil.clock,
                     label: "Watchlist",
                     active: watchlist,
                     index: 2,
-                    onTap: () => setState(() => watchlist = !watchlist),
+                    onTap: changeWatchlist,
                   ),
                 ],
               ),
@@ -106,7 +390,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 3.0),
                     child: GestureDetector(
-                      onTap: () => setState(() => rating = i),
+                      onTap: () => changeRating(i.toDouble()),
                       child: Iconify(
                         '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path fill="currentColor" d="M394 480a16 16 0 0 1-9.39-3L256 383.76L127.39 477a16 16 0 0 1-24.55-18.08L153 310.35L23 221.2a16 16 0 0 1 9-29.2h160.38l48.4-148.95a16 16 0 0 1 30.44 0l48.4 149H480a16 16 0 0 1 9.05 29.2L359 310.35l50.13 148.53A16 16 0 0 1 394 480"/></svg>',
                         color: rating >= i
@@ -128,37 +412,40 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
               style: TextStyle(color: Colors.white70),
             ),
 
-            const Divider(height: 32, color: Color(0xFF8D8D8D)),
+            const SizedBox(height: 16),
+
+            LineSeparator(),
 
             // ===== OPTIONS LIST =====
+            if (widget.isSeries)
+              _optionTile(
+                icon: Oi.eye,
+                title: "Marcar como assistido",
+                trailing: _tag("Temporada"),
+                onTap: () {},
+              ),
+
+            if (widget.isSeries)
+              _optionTile(
+                icon: Cil.clock,
+                title: "Adicionar à watchlist",
+                trailing: _tag("Temporada"),
+                onTap: () {},
+              ),
+
+            //const SizedBox(height: 8),
             _optionTile(
-              icon: iconWatched,
-              title: "Assistido",
-              trailing: _tag("Temporada"),
+              icon: Majesticons.pencil_alt_line,
+              title: "Escrever resenha",
               onTap: () {},
             ),
 
-            _optionTile(
-              icon: Carbon.time,
-              title: "Watchlist",
-              trailing: _tag("Temporada"),
-              onTap: () {},
-            ),
-
-            const SizedBox(height: 8),
-
-            _optionTile(
-              icon:
-                  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 21h8m.174-14.188a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>',
-              title: "Escreva sua resenha",
-              onTap: () {},
-            ),
-
-            _optionTile(
-              icon: MaterialSymbols.list,
-              title: "Adicione a uma lista",
-              onTap: () {},
-            ),
+            if (widget.isSeries)
+              _optionTile(
+                icon: MaterialSymbols.list,
+                title: "Adicionar em uma lista",
+                onTap: () {},
+              ),
 
             const SizedBox(height: 24),
           ],
@@ -183,8 +470,8 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
             icon,
             color: active
                 ? index == 1
-                      ? Color(0xFF9E0000)
-                      : Color(0xFF7087FF).withAlpha(index == 0 ? 200 : 255)
+                      ? Color(0xFFCC4A4A)
+                      : Color(0xFF7087FF)
                 : Color(0xFF8D8D8D),
             size: 46,
           ),
@@ -204,8 +491,8 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
   }) {
     return ListTile(
       onTap: onTap,
-      
-      contentPadding: EdgeInsets.zero,
+
+      contentPadding: EdgeInsets.symmetric(horizontal: 16),
       leading: Iconify(icon, color: Color(0xFF8D8D8D), size: 30),
       title: Text(title),
       trailing: trailing,

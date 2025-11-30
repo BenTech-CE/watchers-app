@@ -73,8 +73,9 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
                 ),
 
                 // Estrelas
+                if (widget.review.stars != null)
                 Row(
-                  children: _buildStarRating(widget.review.stars),
+                  children: _buildStarRating(widget.review.stars!),
                 ),
 
                 // Ícone de Coração

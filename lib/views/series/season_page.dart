@@ -2,11 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/genders.dart';
+import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/series/full_season_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/views/series/series_options_sheet.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/review_card.dart';
@@ -47,8 +50,10 @@ class _SeasonPageState extends State<SeasonPage> {
       final String seriesId = args['seriesId'];
       final String seasonNumber = args['seasonNumber'];
       final FullSeriesModel series = args['series'];
-
       final seriesProvider = context.read<SeriesProvider>();
+      final userProvider = context.read<UserProvider>();
+
+      userProvider.clearCurrentUserInteractionData("season");
 
       final result = await seriesProvider.getSeasonDetails(
         seriesId,
@@ -60,6 +65,11 @@ class _SeasonPageState extends State<SeasonPage> {
           season = result;
           this.series = series;
         });
+
+        userProvider.setCurrentUserInteractionData(
+          "season",
+          result?.userData ?? UserInteractionData.empty(),
+        );
       }
     });
   }
@@ -150,18 +160,23 @@ class _SeasonPageState extends State<SeasonPage> {
     // abas de detalhes
     final List<String> detailTabs = ['Episódios', 'Detalhes', 'Resenhas'];
 
-    final Map<String, int> starRatingDistribution = {
-      '0.5': 12,
-      '1.0': 54,
-      '1.5': 18,
-      '2.0': 44,
-      '2.5': 32,
-      '3.0': 98,
-      '3.5': 293,
-      '4.0': 486,
-      '4.5': 346,
-      '5.0': 383,
-    };
+    void _sheetReview(BuildContext context) {
+      final userProvider = context.read<UserProvider>();
+      //userProvider.setCurrentUserInteractionData(season?.userData ?? UserInteractionData.empty());
+
+      showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (BuildContext context) => SeriesOptionsSheet(
+          title: season?.name ?? 'Temporada ${season?.seasonNumber ?? ''}',
+          id: series?.id.toString() ?? '',
+          scope: "season",
+          isSeries: false,
+          seasonNumber: season?.seasonNumber,
+        ),
+      );
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -308,7 +323,7 @@ class _SeasonPageState extends State<SeasonPage> {
                                     Text(season!.overview ?? ''),
                                   GestureDetector(
                                     onTap: () {
-                                      // implementar ação
+                                      _sheetReview(context);
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
@@ -766,11 +781,23 @@ class _SeasonPageState extends State<SeasonPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 16,
       children: [
-        Text(
-          "Resenhas de ${season?.name ?? 'Temporada ${season?.seasonNumber ?? ''}'}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
+        RichText(
+          text: TextSpan(
+            text: "Resenhas de ",
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+            children: [
+              TextSpan(
+                text:
+                    "${season!.name ?? "Temporada ${season!.seasonNumber ?? ''}"}",
+                style: AppTextStyles.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ),
         ...season?.reviews

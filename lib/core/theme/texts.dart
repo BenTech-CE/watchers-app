@@ -4,7 +4,7 @@ import 'package:watchers/core/theme/colors.dart';
 /// Centraliza todos os estilos de texto do aplicativo para fácil acesso e manutenção.
 class AppTextStyles {
   // Estilo base privado para definir a fonte padrão.
-  static const TextStyle _base = TextStyle(fontFamily: 'Montserrat');
+  static const TextStyle _base = TextStyle(fontFamily: 'Montserrat', color: tColorPrimary);
 
   // Efeito de brilho/sombra padrão para ser reutilizado.
   static const List<Shadow> _brightShadows = [

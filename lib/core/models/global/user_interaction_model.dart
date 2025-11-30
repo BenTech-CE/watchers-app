@@ -25,4 +25,15 @@ class UserInteractionData {
       isLiked: json['is_liked'] as bool,
     );
   }
+
+  factory UserInteractionData.empty() {
+    return UserInteractionData(
+      isWatched: false,
+      inWatchlist: false,
+      reviewId: null,
+      stars: null,
+      reviewText: null,
+      isLiked: false,
+    );
+  }
 }
