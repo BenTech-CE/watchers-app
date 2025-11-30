@@ -25,6 +25,7 @@ class AppTheme {
     ),
     bottomSheetTheme: const BottomSheetThemeData(
       dragHandleColor: bgColorButton,
+      dragHandleSize: Size(60, 4),
       backgroundColor: bgColor,
       surfaceTintColor: Colors.white,
       shape: RoundedRectangleBorder(
