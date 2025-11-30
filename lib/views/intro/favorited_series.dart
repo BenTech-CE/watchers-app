@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:watchers/core/theme/texts.dart';
@@ -50,7 +51,9 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _watchedSeries.addAll(ModalRoute.of(context)!.settings.arguments as Set<SerieModel>);
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, Set<SerieModel>>;
+      _watchedSeries.addAll(args["watchedSeries"] ?? {});
+      _selectedSeries.addAll(args["favoritedSeries"] ?? {});
       _fetchSeriesTrending();
     });
 
@@ -139,11 +142,10 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
   }
 
   void _sendFavoriteSeries() async {
-    final ListsProvider listsProvider = context.read<ListsProvider>();
+    final UserProvider userProvider = context.read<UserProvider>();
 
-    await listsProvider.addSeriesToList(
-      "favorites",
-      _selectedSeries.map((into) => int.parse(into.id)).toList(),
+    await userProvider.addSeriesFavorites(  
+      _selectedSeries.map((into) => into.id).toList(),
     );
 
     _navigateToNext();

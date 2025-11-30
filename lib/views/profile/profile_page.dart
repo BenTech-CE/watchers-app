@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -22,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchWatchedSeries();
+      //_fetchWatchedSeries();
       _fetchFavoritedSeries();
     });
   }
@@ -32,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void _fetchWatchedSeries() async {
+  /*void _fetchWatchedSeries() async {
     final ListsProvider listsProvider = context.read<ListsProvider>();
 
     final watchedSeries = await listsProvider.getListSeries("watched");
@@ -41,7 +42,6 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         this.watchedSeries = watchedSeries;
       });
-      
 
       if (listsProvider.errorMessage != null) {
         ScaffoldMessenger.of(
@@ -49,22 +49,18 @@ class _ProfilePageState extends State<ProfilePage> {
         ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
       }
     }
-  }
+  }*/
 
   void _fetchFavoritedSeries() async {
-    final ListsProvider listsProvider = context.read<ListsProvider>();
+    final UserProvider userProvider = context.read<UserProvider>();
 
-    final favoritedSeries = await listsProvider.getListSeries("favorites");
+    await userProvider.getSeriesFavorites();
 
     if (mounted) {
-      setState(() {
-        this.favoritedSeries = favoritedSeries;
-      });
-
-      if (listsProvider.errorMessage != null) {
+      if (userProvider.errorMessage != null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+        ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
       }
     }
   }
@@ -72,6 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final authInfo = context.watch<AuthProvider>();
+    final userProvider = context.watch<UserProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -107,13 +104,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-            Text("Séries assistidas: ${watchedSeries.length}"),
+            //Text("Séries assistidas: ${watchedSeries.length}"),
             /*Column(
                   children: watchedSeries
                       .map((serie) => Text(serie.name))
                       .toList(),
                 ),*/
-            Text("Séries favoritas: ${favoritedSeries.length}"),
+            //Text("Séries favoritas: ${favoritedSeries.length}"),
             /*Column(
                   children: favoritedSeries
                       .map((serie) => Text(serie.name))
@@ -126,12 +123,19 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: const Text('Sair'),
             ),
-            ElevatedButton(
+            /*ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/onboarding/watched');
+                Navigator.pushNamed(
+                  context,
+                  '/onboarding/favorited',
+                  arguments: {
+                    "watchedSeries": userProvider.seriesWatched.toSet(),
+                    "favoritedSeries": userProvider.seriesFavorites.toSet(),
+                  },
+                );
               },
-              child: const Text('Ir para Intro'),
-            ),
+              child: const Text('Editar Favoritos'),
+            ),*/
           ],
         ),
       ),

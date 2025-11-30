@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:watchers/core/theme/texts.dart';
@@ -134,15 +135,23 @@ class _WatchedSeriesState extends State<WatchedSeries> {
   }
 
   void _navigateToNext() {
-    Navigator.pushReplacementNamed(context, '/onboarding/favorited', arguments: _selectedSeries);
+    Navigator.pushReplacementNamed(
+      context,
+      '/onboarding/favorited',
+      arguments: {
+        "watchedSeries": _selectedSeries.toSet(),
+        "favoritedSeries": <SerieModel>{},
+      },
+    );
   }
 
   void _sendWatchedSeries() async {
-    final ListsProvider listsProvider = context.read<ListsProvider>();
+    final UserProvider userProvider = context.read<UserProvider>();
 
-    await listsProvider.addSeriesToList(
-      "watched",
-      _selectedSeries.map((into) => int.parse(into.id)).toList(),
+    await userProvider.addSeriesWatched(
+      _selectedSeries.map((into) => into.id).toList(),
+      null,
+      null,
     );
 
     _navigateToNext();
@@ -210,7 +219,9 @@ class _WatchedSeriesState extends State<WatchedSeries> {
                         ? _searchResults
                         : _allSeries;
 
-                    if ((provider.isLoadingSearch || provider.isLoadingTrending) && seriesToShow.isEmpty) {
+                    if ((provider.isLoadingSearch ||
+                            provider.isLoadingTrending) &&
+                        seriesToShow.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }
 

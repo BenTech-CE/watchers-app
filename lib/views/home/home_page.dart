@@ -29,8 +29,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("called again...");
-
       _fetchTrendingSeries();
       _fetchRecentsSeries();
     });
