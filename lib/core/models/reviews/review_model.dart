@@ -53,7 +53,6 @@ class ReviewModel {
 
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) "id": id,
       "season_number": seasonNumber,
       "episode_number": episodeNumber,
       "stars": stars,

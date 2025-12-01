@@ -175,9 +175,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
     updateProviderState(newLiked: liked);
 
     ReviewModel review = ReviewModel(
-      id: userProvider
-          .currentUserInteractionData(widget.scope)
-          .reviewId, // ID atual (pode ser null/vazio se nunca interagiu)
+      id: null,
       stars: rating != 0 ? rating.toDouble() : null,
       content: userProvider.currentUserInteractionData(widget.scope).reviewText,
       liked: liked, // O novo valor
@@ -189,7 +187,6 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
       seasonNumber: widget.seasonNumber,
       episodeNumber: widget.episodeNumber,
     );
-    print(jsonEncode(review.toJson()));
 
     try {
       final savedReview = await userProvider.saveReviewSeries(
@@ -242,9 +239,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
 
     // 3. Monta o objeto Review preservando os outros dados (like, texto)
     ReviewModel review = ReviewModel(
-      id: userProvider
-          .currentUserInteractionData(widget.scope)
-          .reviewId, // Mantém ID se existir
+      id: null, // Mantém ID se existir
       stars: newRating, // O valor novo
       content: userProvider
           .currentUserInteractionData(widget.scope)
