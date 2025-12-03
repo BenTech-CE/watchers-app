@@ -158,7 +158,9 @@ class _ListPopularCardState extends State<ListPopularCard> with SingleTickerProv
                     overflow: TextOverflow.ellipsis,
                     isSmallComponent
                         ? "${widget.list.likeCount.toString()} curtidas"
-                        : widget.list.author.username,
+                        : (widget.list.author.fullName != null && widget.list.author.fullName!.isNotEmpty) 
+                              ? widget.list.author.fullName! 
+                              : "@${widget.list.author.username}",
                     style: TextStyle(
                       color: isSmallComponent
                           ? Color(0xFF828282)

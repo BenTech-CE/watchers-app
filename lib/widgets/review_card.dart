@@ -115,46 +115,53 @@ class _ReviewCardState extends State<ReviewCard> {
                   // --- Row (Avaliação) ---
                   Row(
                     children: [
-                      // --- Row (Usuário) ---
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Colors.grey[700],
-                            backgroundImage: avatarUrl != null
-                                ? NetworkImage(avatarUrl)
-                                : null,
-                            child: avatarUrl == null
-                                ? const Icon(
-                                    Icons.person,
-                                    size: 14,
-                                    color: Colors.white,
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 5),
-                          SizedBox(
-                            width: 60,
-                            height: 16,
-                            child: Text(
-                              widget.review.author.username,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                      // 1. Avatar
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundColor: Colors.grey[700],
+                        backgroundImage: avatarUrl != null
+                            ? NetworkImage(avatarUrl)
+                            : null,
+                        child: avatarUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 14,
                                 color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
+                              )
+                            : null,
                       ),
-                      Spacer(),
-                      // Helper para construir as estrelas
+                      const SizedBox(width: 5),
+
+                      // 2. Nome do Usuário (Expanded resolve o erro e substitui o Spacer)
+                      // O Expanded aqui vai forçar o texto a ocupar todo o espaço disponível
+                      // empurrando as estrelas para o canto direito.
+                      Expanded(
+                        child: Text(
+                          widget.review.author.fullName != null && widget.review.author.fullName!.isNotEmpty 
+                              ? widget.review.author.fullName! 
+                              : "@${widget.review.author.username}",
+                          overflow: TextOverflow.ellipsis, // Corta com "..." se for muito longo
+                          maxLines: 1,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+
+                      // Espaço mínimo entre nome e estrelas para não grudarem
+                      const SizedBox(width: 8), 
+
+                      // 3. Estrelas
                       if (widget.review.stars != null)
                         ..._buildStarRating(widget.review.stars!),
+
                       Container(width: 4),
+                      
+                      // 4. Ícone de Favorito
                       Icon(
                         _isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorited ? Color(0xFFCC4A4A) : Colors.white,
+                        color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.white,
                         size: 16,
                       ),
                     ],

@@ -436,7 +436,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
             */
 
             //const SizedBox(height: 8),
-            _optionTile(
+            /*_optionTile(
               icon: Majesticons.pencil_alt_line,
               title: "Escrever resenha",
               onTap: () {},
@@ -448,6 +448,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
                 title: "Adicionar em uma lista",
                 onTap: () {},
               ),
+              */
 
             const SizedBox(height: 24),
           ],

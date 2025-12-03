@@ -62,7 +62,7 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
                 // Nome do Usuário
                 Expanded(
                   child: Text(
-                    widget.review.author.username,
+                    widget.review.author.fullName != null && widget.review.author.fullName!.isNotEmpty ? widget.review.author.fullName! : "@${widget.review.author.username}",
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,

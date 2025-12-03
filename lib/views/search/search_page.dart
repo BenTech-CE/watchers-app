@@ -498,8 +498,8 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
         listsProvider.isLoadingTrending 
-          ? const ListSeriesSkeleton(itemCount: 1)
-          : SizedBox(
+          ? const ListSeriesSkeleton(itemCount: 4)
+          : SizedBox( 
           width: screenWidth,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,

@@ -81,13 +81,15 @@ class ReviewSeries {
 class ReviewAuthor {
   final String id;
   final String username;
+  final String? fullName;
   final String? avatarUrl;
 
-  ReviewAuthor({required this.id, required this.username, this.avatarUrl});
+  ReviewAuthor({required this.id, required this.username, this.fullName, this.avatarUrl});
 
   factory ReviewAuthor.fromJson(Map<String, dynamic> json) => ReviewAuthor(
     id: json["id"],
     username: json["username"],
+    fullName: json["full_name"],
     avatarUrl: json["avatar_url"],
   );
 }

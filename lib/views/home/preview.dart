@@ -11,6 +11,11 @@ class Preview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+      ),
       body: Center(
         child: Text("Essa página ainda não existe.", style: AppTextStyles.bodyLarge),
       ),

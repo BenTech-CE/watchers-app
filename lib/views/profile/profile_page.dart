@@ -220,7 +220,9 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: StarsChart(data: userProvider.currentUser?.starDistribution ?? []),
             ),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.lists.isNotEmpty == true)
             LineSeparator(),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -228,6 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: userProvider.isLoadingUser
@@ -240,7 +243,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
             ),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.watchlist.isNotEmpty == true)
             LineSeparator(),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.watchlist.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -248,11 +253,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.watchlist.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: ListSeries(series: userProvider.currentUser?.watchlist ?? []),
             ),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.reviews.isNotEmpty == true)
             LineSeparator(),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.reviews.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -260,6 +268,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
+            if (!userProvider.isLoadingUser && userProvider.currentUser?.reviews.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: userProvider.isLoadingUser
