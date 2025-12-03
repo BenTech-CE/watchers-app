@@ -369,13 +369,13 @@ class _SeasonPageState extends State<SeasonPage> {
                                   Row(
                                     children: [
                                       Text(
-                                        "Avaliações",
+                                        "Avaliações dos usuários",
                                         style: AppTextStyles.bodyLarge.copyWith(
                                           fontWeight: FontWeight.w600,
                                           color: tColorSecondary,
                                         ),
                                       ),
-                                      Spacer(),
+                                      /*Spacer(),
                                       Text(
                                         "0 ",
                                         style: AppTextStyles.bodyLarge.copyWith(
@@ -388,7 +388,7 @@ class _SeasonPageState extends State<SeasonPage> {
                                         Icons.favorite_rounded,
                                         color: tColorSecondary,
                                         size: 18,
-                                      ),
+                                      ),*/
                                     ],
                                   ),
                                   StarsChart(

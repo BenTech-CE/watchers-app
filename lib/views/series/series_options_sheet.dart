@@ -311,23 +311,29 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Avalie",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: Text(
+                      "Avalie",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   Container(width: 6),
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      height: 1.2,
-                      color: colorPrimary,
-                      fontWeight: FontWeight.w700,
+                  Flexible(
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        height: 1.2,
+                        color: colorTertiary,
+                        fontWeight: FontWeight.w700,
+                        overflow: TextOverflow.clip
+                      ),
                     ),
                   ),
                 ],
@@ -412,7 +418,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
             LineSeparator(),
 
             // ===== OPTIONS LIST =====
-            if (widget.isSeries)
+            /*if (widget.isSeries)
               _optionTile(
                 icon: Oi.eye,
                 title: "Marcar como assistido",
@@ -427,6 +433,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
                 trailing: _tag("Temporada"),
                 onTap: () {},
               ),
+            */
 
             //const SizedBox(height: 8),
             _optionTile(

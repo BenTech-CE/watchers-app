@@ -7,9 +7,11 @@ import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
+import 'package:watchers/core/providers/reviews/reviews_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/home/preview.dart';
+import 'package:watchers/widgets/card_skeleton.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
 import 'package:watchers/widgets/list_series_skeleton.dart';
@@ -31,6 +33,8 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchTrendingSeries();
       _fetchRecentsSeries();
+      _fetchTrendingLists();
+      _fetchTrendingReviews();
     });
   }
 
@@ -51,6 +55,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _fetchTrendingLists() async {
+    final ListsProvider listsProvider = context.read<ListsProvider>();
+
+    await listsProvider.getTrendingLists();
+  
+    if (listsProvider.errorMessage != null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+    }
+  }
+
+  void _fetchTrendingReviews() async {
+    final ReviewsProvider reviewsProvider = context.read<ReviewsProvider>();
+
+    await reviewsProvider.getTrendingReviews();
+  
+    if (reviewsProvider.errorMessage != null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(reviewsProvider.errorMessage!)));
+    }
+  }
+
   void _fetchRecentsSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
@@ -67,6 +95,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final authInfo = context.watch<AuthProvider>();
     final seriesProvider = context.watch<SeriesProvider>();
+    final ReviewsProvider reviewsProvider = context.watch<ReviewsProvider>();
+    final ListsProvider listsProvider = context.watch<ListsProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -125,7 +155,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              Column(spacing: 12, children: [ReviewCard(review: meuReview)]),
+              reviewsProvider.isLoadingTrending
+                  ? ListReviewsSkeleton(itemCount: 3)
+                  : Column(
+                      spacing: 12,
+                      children: [
+                        for (var review in reviewsProvider.trendingReviews.sublist(0, reviewsProvider.trendingReviews.length > 3 ? 3 : reviewsProvider.trendingReviews.length))
+                          ReviewCard(review: review),
+                      ],
+                    ),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,55 +180,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              Column(
-                spacing: 12,
-                children: [
-                  ListPopularCard(
-                    list: ListModel(
-                      id: "1",
-                      name: "Favoritos do mês",
-                      createdAt: "2024-01-01",
-                      likeCount: 17,
-                      commentCount: 2,
-                      description: "Minhas séries favoritas que assisti esse mês! confira aí 👀",
-                      author: ListAuthorModel(
-                        id: authInfo.user!.id,
-                        username: 'm.claraxz',
-                        avatarUrl:
-                            'https://picsum.photos/200',
-                      ),
-                      thumbnails: [
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg',
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/el1KQzwdIm17I3A6cYPfsVIWhfX.jpg',
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/Ac8ruycRXzgcsndTZFK6ouGA0FA.jpg',
+              listsProvider.isLoadingTrending
+                  ? ListReviewsSkeleton(itemCount: 3)
+                  : Column(
+                      spacing: 12,
+                      children: [
+                        for (var list in listsProvider.trendingLists.sublist(0, listsProvider.trendingLists.length > 3 ? 3 : listsProvider.trendingLists.length))
+                          ListPopularCard(list: list),
                       ],
                     ),
-                  ),
-                  ListPopularCard(
-                    list: ListModel(
-                      id: "2",
-                      name: "Halloween 👻",
-                      createdAt: "2024-01-01",
-                      likeCount: 32,
-                      commentCount: 5,
-                      description: null,
-                      author: ListAuthorModel(
-                        id: authInfo.user!.id,
-                        username: 'rizdechapeu',
-                        avatarUrl:
-                            'https://picsum.photos/200',
-                      ),
-                      thumbnails: [
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gMTfrLvrDaD0zrhpLZ7zXIIpKfJ.jpg',
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/pbV2eLnKSIm1epSZt473UYfqaeZ.jpg',
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/9j67wXS4uhPueFBwhAIoD4GxOP3.jpg',
-                        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/j25YTaf8Vx5tBM7NP4ReBzDK3l7.jpg',
-                      ],
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(height: kToolbarHeight * 2),
             ],
           ),

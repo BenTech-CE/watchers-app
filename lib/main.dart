@@ -8,6 +8,7 @@ import 'package:watchers/core/providers/global/search_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
+import 'package:watchers/core/providers/reviews/reviews_provider.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/theme/theme.dart';
 import 'package:watchers/views/auth/login_view.dart';
@@ -18,6 +19,7 @@ import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/series/episode_page.dart';
+import 'package:watchers/views/series/genre_series.dart';
 import 'package:watchers/views/series/recent_series.dart';
 import 'package:watchers/views/series/best_series.dart';
 import 'package:watchers/views/series/season_page.dart';
@@ -70,6 +72,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => UserProvider(authService: authService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ReviewsProvider(authService: authService),
+        ),
       ],
       child: MaterialApp(
         title: 'Watchers',
@@ -86,6 +91,7 @@ class MyApp extends StatelessWidget {
           '/series/detail': (context) => const SeriesPage(),
           '/series/season': (context) => const SeasonPage(),
           '/series/episode': (context) => const EpisodePage(),
+          '/series/genre': (context) => const GenreSeries(),
         },
         home: const AuthWrapper(),
       ),

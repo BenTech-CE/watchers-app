@@ -15,6 +15,7 @@ class SeriesProvider with ChangeNotifier {
   bool _isLoadingTrending = false;
   bool _isLoadingRecents = false;
   bool _isLoadingSearch = false;
+  bool _isLoadingByGenre = false;
   bool _isLoadingDetails = false;
   
 
@@ -22,6 +23,7 @@ class SeriesProvider with ChangeNotifier {
   bool get isLoadingTrending => _isLoadingTrending;
   bool get isLoadingRecents => _isLoadingRecents;
   bool get isLoadingSearch => _isLoadingSearch;
+  bool get isLoadingByGenre => _isLoadingByGenre;
   bool get isLoadingDetails => _isLoadingDetails;
 
   List<SerieModel> _trendingSeries = [];
@@ -68,6 +70,20 @@ class SeriesProvider with ChangeNotifier {
       _setError(e.toString());
     } finally {
       _setLoadingSearch(false);
+    }
+    return [];
+  }
+
+  Future<List<SerieModel>> getSeriesByGenre(int genre) async {
+    _setLoadingByGenre(true);
+    try {
+      clearError();
+      return await _seriesService.getSeriesByGenre(genre);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingByGenre(false);
     }
     return [];
   }
@@ -122,6 +138,11 @@ class SeriesProvider with ChangeNotifier {
 
   void _setLoadingSearch(bool loading) {
     _isLoadingSearch = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingByGenre(bool loading) {
+    _isLoadingByGenre = loading;
     notifyListeners();
   }
 

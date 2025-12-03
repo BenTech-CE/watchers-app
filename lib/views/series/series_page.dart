@@ -338,13 +338,13 @@ class _SeriesPageState extends State<SeriesPage> {
                                   Row(
                                     children: [
                                       Text(
-                                        "Avaliações",
+                                        "Avaliações dos usuários",
                                         style: AppTextStyles.bodyLarge.copyWith(
                                           fontWeight: FontWeight.w600,
                                           color: tColorSecondary,
                                         ),
                                       ),
-                                      Spacer(),
+                                      /*Spacer(),
                                       Text(
                                         "0 ",
                                         style: AppTextStyles.bodyLarge.copyWith(
@@ -357,7 +357,7 @@ class _SeriesPageState extends State<SeriesPage> {
                                         Icons.favorite_rounded,
                                         color: tColorSecondary,
                                         size: 18,
-                                      ),
+                                      ),*/
                                     ],
                                   ),
                                   StarsChart(

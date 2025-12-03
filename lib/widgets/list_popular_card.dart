@@ -4,6 +4,7 @@ import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:watchers/widgets/image_card.dart';
 
 class ListPopularCard extends StatefulWidget {
   final ListModel list;
@@ -15,10 +16,30 @@ class ListPopularCard extends StatefulWidget {
   _ListPopularCardState createState() => _ListPopularCardState();
 }
 
-class _ListPopularCardState extends State<ListPopularCard> {
+class _ListPopularCardState extends State<ListPopularCard> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+
+    _animation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutSine,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -29,17 +50,17 @@ class _ListPopularCardState extends State<ListPopularCard> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 4,
-            children: [seriesthubmnails(), content(avatarUrl)],
+            children: [seriesthubmnails(_animation), content(avatarUrl)],
           )
         : Row(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 12,
-            children: [seriesthubmnails(), content(avatarUrl)],
+            children: [seriesthubmnails(_animation), content(avatarUrl)],
           );
   }
 
-  SizedBox seriesthubmnails() {
+  SizedBox seriesthubmnails(Animation<double>? animation) {
     bool isSmallComponent =
         widget.smallComponent != null && widget.smallComponent != false;
     return SizedBox(
@@ -62,10 +83,24 @@ class _ListPopularCardState extends State<ListPopularCard> {
               return ThumbNailAlign(
                 thumbnail: widget.list.thumbnails[i],
                 alignment: alignments[i],
+                animation: animation,
                 smallComponent: isSmallComponent,
               );
             },
           ),
+          // se a lista tive menos de 4 thumbnails, preenche com containers vazios
+          for (int i = widget.list.thumbnails.length; i < 4; i++)
+            ThumbNailAlign(
+              thumbnail: '',
+              alignment: [
+                Alignment.topCenter,
+                Alignment.centerLeft,
+                Alignment.centerRight,
+                Alignment.bottomCenter,
+              ][i],
+              animation: animation,
+              smallComponent: isSmallComponent,
+            ),
         ],
       ),
     );
@@ -198,11 +233,13 @@ class ThumbNailAlign extends StatelessWidget {
     super.key,
     required this.thumbnail,
     required this.alignment,
+    this.animation,
     this.smallComponent,
   });
 
   final AlignmentGeometry alignment;
   final String thumbnail;
+  final Animation<double>? animation;
   final bool? smallComponent;
 
   @override
@@ -224,7 +261,7 @@ class ThumbNailAlign extends StatelessWidget {
               ),
             ],
           ),
-          child: _buildImage(thumbnail),
+          child: ImageCard(url: thumbnail, onTap: () {}, animation: animation,),
         ),
       ),
     );

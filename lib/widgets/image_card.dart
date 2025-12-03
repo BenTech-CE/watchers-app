@@ -54,9 +54,9 @@ class ImageCard extends StatelessWidget {
               const Icon(
                 Icons.image_not_supported,
                 color: Colors.grey,
-                size: 32,
+                size: 24,
               ),
-              const SizedBox(height: 8),
+              if (fallbackText != null) const SizedBox(height: 8),
               if (fallbackText != null)
                 Text(fallbackText ?? '', textAlign: TextAlign.center),
             ],
@@ -72,7 +72,7 @@ class ImageCard extends StatelessWidget {
         print(error);
         return Container(
           color: bColorPrimary,
-          child: const Icon(Icons.broken_image, color: Colors.grey, size: 50),
+          child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 24),
         );
       },
       progressIndicatorBuilder: (context, url, downloadProgress) {

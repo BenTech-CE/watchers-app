@@ -14,11 +14,14 @@ import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/genre_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/global/search_provider.dart';
+import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/button.dart';
+import 'package:watchers/widgets/card_skeleton.dart';
 import 'package:watchers/widgets/genre_card.dart';
+import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/input.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
 import 'package:watchers/widgets/list_series.dart';
@@ -35,46 +38,6 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   List<GenreModel> genres = listGenres;
-  List<ListModel> listsPopular = [
-    ListModel(
-      id: "1",
-      name: "Favoritos do mês",
-      createdAt: "2024-01-01",
-      likeCount: 17,
-      commentCount: 2,
-      description: null,
-      author: ListAuthorModel(
-        id: "123",
-        username: 'm.claraxz',
-        avatarUrl: 'https://picsum.photos/200',
-      ),
-      thumbnails: [
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg',
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/el1KQzwdIm17I3A6cYPfsVIWhfX.jpg',
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/vz2oBcS23lZ35LmDC7mQqThrg8v.jpg',
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/Ac8ruycRXzgcsndTZFK6ouGA0FA.jpg',
-      ],
-    ),
-    ListModel(
-      id: "2",
-      name: "Halloween 👻",
-      createdAt: "2024-01-01",
-      likeCount: 32,
-      commentCount: 5,
-      description: null,
-      author: ListAuthorModel(
-        id: "345",
-        username: 'rizdechapeu',
-        avatarUrl: 'https://picsum.photos/200',
-      ),
-      thumbnails: [
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gMTfrLvrDaD0zrhpLZ7zXIIpKfJ.jpg',
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/pbV2eLnKSIm1epSZt473UYfqaeZ.jpg',
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/9j67wXS4uhPueFBwhAIoD4GxOP3.jpg',
-        'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/j25YTaf8Vx5tBM7NP4ReBzDK3l7.jpg',
-      ],
-    ),
-  ];
 
   List<SerieModel> searchedSeries = [];
   List<ProfileModel> searchedUsers = [];
@@ -372,15 +335,11 @@ class _SearchPageState extends State<SearchPage> {
                             SizedBox(
                               width: 50,
                               height: 50,
-                              child: CircleAvatar(
-                                radius: 12,
-                                backgroundColor: Colors.grey[700],
-                                backgroundImage: NetworkImage(avatarUrl),
-                              ),
+                              child: ImageCard(url: avatarUrl, onTap: () {}, borderRadius: BorderRadius.circular(99),),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              user.fullName,
+                              user.fullName != null && user.fullName!.isNotEmpty ? user.fullName! : "@${user.username}",
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.titleSmall.copyWith(
                                 color: Color(0xffCCCCCC),
@@ -451,6 +410,8 @@ class _SearchPageState extends State<SearchPage> {
     SeriesProvider seriesProvider,
     double screenWidth,
   ) {
+    final listsProvider = context.read<ListsProvider>();
+
     return Column(
       children: [
         Row(
@@ -508,7 +469,13 @@ class _SearchPageState extends State<SearchPage> {
                 genres.length,
                 (index) => Padding(
                   padding: const EdgeInsets.only(right: 12.0),
-                  child: GenreCard(genre: genres[index], onTap: () {}),
+                  child: GenreCard(genre: genres[index], onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/series/genre',
+                      arguments: { 'genre': genres[index] },
+                    );
+                  }),
                 ),
               ),
             ),
@@ -530,7 +497,9 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ],
         ),
-        SizedBox(
+        listsProvider.isLoadingTrending 
+          ? const ListSeriesSkeleton(itemCount: 1)
+          : SizedBox(
           width: screenWidth,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -539,13 +508,13 @@ class _SearchPageState extends State<SearchPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: List.generate(
-                  listsPopular.length,
+                  listsProvider.trendingLists.length,
                   (index) => Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: SizedBox(
                       width: screenWidth * 0.25,
                       child: ListPopularCard(
-                        list: listsPopular[index],
+                        list: listsProvider.trendingLists[index],
                         smallComponent: true,
                       ),
                     ),

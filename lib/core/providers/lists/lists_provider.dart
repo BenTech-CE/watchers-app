@@ -12,9 +12,14 @@ class ListsProvider with ChangeNotifier {
 
   String? _errorMessage;
   bool _isLoading = false;
+  bool _isLoadingTrending = false;
 
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  bool get isLoadingTrending => _isLoadingTrending;
+
+  List<ListModel> _trendingLists = [];
+  List<ListModel> get trendingLists => _trendingLists;
 
   Future<List<ListModel>> getAllLists() async {
     _setLoading(true);
@@ -28,6 +33,20 @@ class ListsProvider with ChangeNotifier {
       _setLoading(false);
     }
     return [];
+  }
+
+  Future<void> getTrendingLists() async {
+    _setLoadingTrending(true);
+    try {
+      clearError();
+      _trendingLists = await _listsService.getTrendingLists();
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingTrending(false);
+    }
+    return;
   }
 
   Future<List<SerieModel>> getListSeries(String id) async {
@@ -82,6 +101,11 @@ class ListsProvider with ChangeNotifier {
 
   void _setLoading(bool loading) {
     _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingTrending(bool loading) {
+    _isLoadingTrending = loading;
     notifyListeners();
   }
 

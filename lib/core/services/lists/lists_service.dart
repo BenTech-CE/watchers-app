@@ -53,6 +53,39 @@ class ListsService {
     }
   }
 
+  Future<List<ListModel>> getTrendingLists() async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.trendingLists,
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<ListModel> lists = [];
+        for (var list in jsonResponse["results"]) {
+          lists.add(ListModel.fromJson(list));
+        }
+        return lists;
+      } else {
+        throw ListsServiceException(
+          'Erro ao buscar todas as listas: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao buscar todas as listas: $e');
+    }
+  }
+
   Future<List<SerieModel>> getListSeries(String id) async {
     try {
       if (!authService.isAuthenticated) {

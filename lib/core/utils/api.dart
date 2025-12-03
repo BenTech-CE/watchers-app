@@ -18,10 +18,13 @@ class Api {
       Uri.parse('${baseUrl}series/$id');
   static Uri seasonDetailsEndpoint(String seriesId, String seasonNumber) =>
       Uri.parse('${baseUrl}series/$seriesId/season/$seasonNumber');
+  static Uri genreEndpoint(int genre) =>
+      Uri.parse('${baseUrl}series/genre/$genre');
 
   // LIST
 
   static final Uri allLists = Uri.parse('${baseUrl}lists/');
+  static final Uri trendingLists = Uri.parse('${baseUrl}lists/trending');
   static Uri listSeries(String id) => Uri.parse('${baseUrl}lists/$id/items');
   static Uri listDetails(String id) => Uri.parse('${baseUrl}lists/$id');
 
@@ -38,8 +41,14 @@ class Api {
   static final Uri userSeriesWatchlistEnpoint = Uri.parse(
     '${baseUrl}user/watchlist',
   );
+
+
+  // REVIEWS
   static Uri userReviewsSeries(String seriesId) =>
       Uri.parse('${baseUrl}reviews/$seriesId');
+  static final Uri reviewsTrendingEndpoint = Uri.parse(
+    '${baseUrl}reviews/trending',
+  );
 }
 
 class Headers {

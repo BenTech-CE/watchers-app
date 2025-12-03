@@ -1,7 +1,7 @@
 class ProfileModel {
   final String id;
   final String username;
-  final String fullName;
+  final String? fullName;
   final String avatarUrl;
 
   ProfileModel({
@@ -15,7 +15,7 @@ class ProfileModel {
     return ProfileModel(
       id: json['id'].toString(),
       username: json['username'] ?? '',
-      fullName: json['full_name'] ?? '',
+      fullName: json['full_name'],
       avatarUrl: json['avatar_url'] ?? '',
     );
   }

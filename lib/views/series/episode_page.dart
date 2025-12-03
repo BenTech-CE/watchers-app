@@ -288,7 +288,7 @@ class _EpisodePageState extends State<EpisodePage> {
                                       episode!.overview!.isNotEmpty)
                                     Text(episode!.overview ?? ''),
 
-                                  GestureDetector(
+                                  /*GestureDetector(
                                     onTap: () {
                                       //_sheetReview(context);
                                     },
@@ -336,7 +336,7 @@ class _EpisodePageState extends State<EpisodePage> {
                                   Row(
                                     children: [
                                       Text(
-                                        "Avaliações",
+                                        "Avaliações dos usuários",
                                         style: AppTextStyles.bodyLarge.copyWith(
                                           fontWeight: FontWeight.w600,
                                           color: tColorSecondary,
@@ -358,7 +358,7 @@ class _EpisodePageState extends State<EpisodePage> {
                                       ),
                                     ],
                                   ),
-                                  StarsChart(data: []),
+                                  StarsChart(data: []),*/
                                 ],
                               ),
                             ),

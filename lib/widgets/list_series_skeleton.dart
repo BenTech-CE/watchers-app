@@ -141,3 +141,77 @@ class _SkeletonCard extends StatelessWidget {
     );
   }
 }
+
+class SerieSkeletonCard extends StatelessWidget {
+  final Animation<double> animation;
+
+  const SerieSkeletonCard({required this.animation});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            decoration: BoxDecoration(
+              color: bColorPrimary,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Gradiente base
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        bColorPrimary,
+                        bColorPrimary.withOpacity(0.8),
+                        bColorPrimary,
+                      ],
+                    ),
+                  ),
+                ),
+                // Shimmer effect animado
+                Positioned(
+                  left: animation.value * MediaQuery.of(context).size.width * 0.25,
+                  right: -animation.value * MediaQuery.of(context).size.width * 0.25,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withOpacity(0.1),
+                          Colors.white.withOpacity(0.15),
+                          Colors.white.withOpacity(0.1),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+                // Ícone de imagem no centro
+                Center(
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: 48,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
