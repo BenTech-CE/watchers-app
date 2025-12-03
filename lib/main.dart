@@ -93,6 +93,7 @@ class MyApp extends StatelessWidget {
           '/series/season': (context) => const SeasonPage(),
           '/series/episode': (context) => const EpisodePage(),
           '/series/genre': (context) => const GenreSeries(),
+          '/review/add': (context) => const RecentSeries(),
           '/profile/edit': (context) => const Preview(),
           '/profile': (context) => const ProfilePage(),
         },

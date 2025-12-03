@@ -143,6 +143,8 @@ class _SeriesPageState extends State<SeriesPage> {
           id: series?.id.toString() ?? '',
           scope: "series",
           isSeries: true,
+          posterPath: posterPath,
+          logoPath: logoPath
         ),
       );
     }

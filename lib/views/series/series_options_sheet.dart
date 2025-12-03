@@ -19,8 +19,11 @@ class SeriesOptionsSheet extends StatefulWidget {
   final String id;
   final String scope;
   final bool isSeries;
+  final String? posterPath;
+  final String? logoPath;
   final int? seasonNumber;
   final int? episodeNumber;
+
   const SeriesOptionsSheet({
     super.key,
     required this.title,
@@ -29,6 +32,8 @@ class SeriesOptionsSheet extends StatefulWidget {
     required this.isSeries,
     this.seasonNumber,
     this.episodeNumber,
+    this.posterPath,
+    this.logoPath,
   });
 
   @override
@@ -288,16 +293,36 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
     }
   }
 
+  void _navigateToAddReview() {
+    Navigator.pushReplacementNamed(
+      context,
+      '/review/add',
+      arguments: {
+        "title": widget.title,
+        "id": widget.id,
+        "scope": "series",
+        "isSeries": true,
+        "posterPath": widget.posterPath,
+        "logoPath": widget.logoPath,
+        "seasonNumber": widget.seasonNumber,
+        "episodeNumber": widget.episodeNumber,
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     final userProvider = context.read<UserProvider>();
     // Inicializa o estado com base nos dados da série
-    
+
     watched = userProvider.currentUserInteractionData(widget.scope).isWatched;
     liked = userProvider.currentUserInteractionData(widget.scope).isLiked;
-    watchlist = userProvider.currentUserInteractionData(widget.scope).inWatchlist;
-    rating = (userProvider.currentUserInteractionData(widget.scope).stars ?? 0).toDouble();
+    watchlist = userProvider
+        .currentUserInteractionData(widget.scope)
+        .inWatchlist;
+    rating = (userProvider.currentUserInteractionData(widget.scope).stars ?? 0)
+        .toDouble();
   }
 
   @override
@@ -332,7 +357,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
                         height: 1.2,
                         color: colorTertiary,
                         fontWeight: FontWeight.w700,
-                        overflow: TextOverflow.clip
+                        overflow: TextOverflow.clip,
                       ),
                     ),
                   ),
@@ -436,12 +461,15 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
             */
 
             //const SizedBox(height: 8),
-            /*_optionTile(
+            _optionTile(
               icon: Majesticons.pencil_alt_line,
               title: "Escrever resenha",
-              onTap: () {},
+              onTap: () {
+                _navigateToAddReview();
+              },
             ),
 
+            /*
             if (widget.isSeries)
               _optionTile(
                 icon: MaterialSymbols.list,
@@ -449,7 +477,6 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
                 onTap: () {},
               ),
               */
-
             const SizedBox(height: 24),
           ],
         ),

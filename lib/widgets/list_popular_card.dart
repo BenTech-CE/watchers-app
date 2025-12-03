@@ -16,7 +16,8 @@ class ListPopularCard extends StatefulWidget {
   _ListPopularCardState createState() => _ListPopularCardState();
 }
 
-class _ListPopularCardState extends State<ListPopularCard> with SingleTickerProviderStateMixin {
+class _ListPopularCardState extends State<ListPopularCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
@@ -164,19 +165,23 @@ class _ListPopularCardState extends State<ListPopularCard> with SingleTickerProv
                     ),
                   ),
                   const SizedBox(width: 5),
-                  Text(
-                    overflow: TextOverflow.ellipsis,
-                    isSmallComponent
-                        ? "${widget.list.likeCount.toString()} curtidas"
-                        : (widget.list.author.fullName != null && widget.list.author.fullName!.isNotEmpty) 
-                              ? widget.list.author.fullName! 
-                              : "@${widget.list.author.username}",
-                    style: TextStyle(
-                      color: isSmallComponent
-                          ? Color(0xFF828282)
-                          : Colors.white,
-                      fontSize: isSmallComponent ? 10 : 12,
-                      fontWeight: FontWeight.w500,
+                  Flexible(
+                    child: Text(
+                      overflow: TextOverflow.ellipsis,
+                      isSmallComponent
+                          ? "${widget.list.likeCount.toString()} curtidas"
+                          : (widget.list.author.fullName != null &&
+                                widget.list.author.fullName!.isNotEmpty)
+                          ? widget.list.author.fullName!
+                          : "@${widget.list.author.username}",
+
+                      style: TextStyle(
+                        color: isSmallComponent
+                            ? Color(0xFF828282)
+                            : Colors.white,
+                        fontSize: isSmallComponent ? 10 : 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -273,7 +278,7 @@ class ThumbNailAlign extends StatelessWidget {
               ),
             ],
           ),
-          child: ImageCard(url: thumbnail, onTap: () {}, animation: animation,),
+          child: ImageCard(url: thumbnail, onTap: () {}, animation: animation),
         ),
       ),
     );
