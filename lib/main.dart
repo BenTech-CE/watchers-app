@@ -16,9 +16,11 @@ import 'package:watchers/views/auth/register_view.dart';
 import 'package:watchers/views/home/home_page.dart';
 import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
+import 'package:watchers/views/list/trending_lists.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/profile/profile_page.dart';
+import 'package:watchers/views/review/trending_reviews.dart';
 import 'package:watchers/views/series/episode_page.dart';
 import 'package:watchers/views/series/genre_series.dart';
 import 'package:watchers/views/series/recent_series.dart';
@@ -93,6 +95,8 @@ class MyApp extends StatelessWidget {
           '/series/season': (context) => const SeasonPage(),
           '/series/episode': (context) => const EpisodePage(),
           '/series/genre': (context) => const GenreSeries(),
+          '/review/trending': (context) => const TrendingReviews(),
+          '/list/trending': (context) => const TrendingLists(),
           '/review/add': (context) => const RecentSeries(),
           '/profile/edit': (context) => const Preview(),
           '/profile': (context) => const ProfilePage(),

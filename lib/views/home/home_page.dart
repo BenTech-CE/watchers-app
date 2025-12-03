@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, "/review/trending");},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.chevron_right_outlined, size: 32),
@@ -173,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {Navigator.pushNamed(context, "/list/trending");},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.chevron_right_outlined, size: 32),
