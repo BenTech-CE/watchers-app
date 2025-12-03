@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
@@ -31,6 +32,9 @@ class UserProvider with ChangeNotifier {
   bool _isLoadingDeleteWatched = false;
   bool _isLoadingDeleteWatchlist = false;
 
+  bool _isLoadingUser = false;
+  bool get isLoadingUser => _isLoadingUser;
+
   String? get errorMessage => _errorMessage;
 
   bool get isLoadingGetFavorites => _isLoadingGetFavorites;
@@ -52,7 +56,38 @@ class UserProvider with ChangeNotifier {
   List<SerieModel> _seriesWatchlist = [];
   List<SerieModel> get seriesWatchlist => _seriesWatchlist;
 
+  FullUserModel? _currentUser;
+  FullUserModel? get currentUser => _currentUser;
+
   // GET
+
+  Future<void> getCurrentUser() async {
+    _setLoadingUser(true);
+    try {
+      clearError();
+      _currentUser = await _userService.getCurrentUser();
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingUser(false);
+    }
+    return;
+  }
+
+  Future<FullUserModel?> getUserById(String id) async {
+    _setLoadingUser(true);
+    try {
+      clearError();
+      return await _userService.getUserById(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+      return null;
+    } finally {
+      _setLoadingUser(false);
+    }
+  }
 
   Future<void> getSeriesFavorites() async {
     _setLoadingGetFavorites(true);
@@ -278,6 +313,11 @@ class UserProvider with ChangeNotifier {
 
   void _setLoadingDeleteWatchlist(bool loading) {
     _isLoadingDeleteWatchlist = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingUser(bool loading) {
+    _isLoadingUser = loading;
     notifyListeners();
   }
 

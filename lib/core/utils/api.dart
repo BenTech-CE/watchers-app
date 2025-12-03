@@ -41,7 +41,11 @@ class Api {
   static final Uri userSeriesWatchlistEnpoint = Uri.parse(
     '${baseUrl}user/watchlist',
   );
-
+  static final Uri currentUserEndpoint = Uri.parse(
+    '${baseUrl}user/me',
+  );
+  static Uri userByIdEndpoint(String id) =>
+      Uri.parse('${baseUrl}user/$id');
 
   // REVIEWS
   static Uri userReviewsSeries(String seriesId) =>

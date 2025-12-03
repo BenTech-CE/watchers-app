@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -22,6 +23,64 @@ class UserService {
   UserService({required this.authService});
 
   // GET
+  Future<FullUserModel> getCurrentUser() async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.currentUserEndpoint,
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+       print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return FullUserModel.fromJson(jsonResponse);
+      } else {
+        throw UserServiceException(
+          'Erro ao buscar o usuário atual: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e, st) {
+      print('Stack Trace: $st');
+      throw UserServiceException('Erro ao buscar o usuário atual: $e');
+    }
+  }
+
+  Future<FullUserModel> getUserById(String id) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.userByIdEndpoint(id),
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return FullUserModel.fromJson(jsonResponse);
+      } else {
+        throw UserServiceException(
+          'Erro ao buscar o usuário: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao buscar o usuário: $e');
+    }
+  }
 
   Future<List<SerieModel>> getSeries(ListType type) async {
     try {

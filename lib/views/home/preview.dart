@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
+import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/review_card_in_serie.dart';
 
@@ -9,13 +10,10 @@ class Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(height: 300),
-        ReviewCardInSerie(review: meuReview),
-      ],
+    return Scaffold(
+      body: Center(
+        child: Text("Essa página ainda não existe.", style: AppTextStyles.bodyLarge),
+      ),
     );
   }
 }

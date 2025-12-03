@@ -6,6 +6,16 @@ import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
+import 'package:watchers/core/theme/colors.dart';
+import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/views/search/search_page.dart';
+import 'package:watchers/widgets/card_skeleton.dart';
+import 'package:watchers/widgets/image_card.dart';
+import 'package:watchers/widgets/list_popular_card.dart';
+import 'package:watchers/widgets/list_series.dart';
+import 'package:watchers/widgets/review_card.dart';
+import 'package:watchers/widgets/series_card.dart';
+import 'package:watchers/widgets/stars_chart.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -23,8 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      //_fetchWatchedSeries();
-      _fetchFavoritedSeries();
+      _fetchUserData();
     });
   }
 
@@ -33,36 +42,9 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  /*void _fetchWatchedSeries() async {
-    final ListsProvider listsProvider = context.read<ListsProvider>();
-
-    final watchedSeries = await listsProvider.getListSeries("watched");
-
-    if (mounted) {
-      setState(() {
-        this.watchedSeries = watchedSeries;
-      });
-
-      if (listsProvider.errorMessage != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
-      }
-    }
-  }*/
-
-  void _fetchFavoritedSeries() async {
-    final UserProvider userProvider = context.read<UserProvider>();
-
-    await userProvider.getSeriesFavorites();
-
-    if (mounted) {
-      if (userProvider.errorMessage != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
-      }
-    }
+  void _fetchUserData() {
+    final userProvider = context.read<UserProvider>();
+    userProvider.getCurrentUser();
   }
 
   @override
@@ -74,71 +56,226 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: SizedBox(
-          width: 138,
-          height: 28,
-          child: SvgPicture.asset("assets/logo/logowatchers.svg"),
-        ),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile/edit');
+            },
+            icon: Icon(Icons.settings, color: tColorPrimary)
+          ),
+        ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 20,
           children: [
-            const Text('Usuário atual:'),
-            Text('Username: ${authInfo.user?.username}'),
-            Text('E-mail: ${authInfo.user?.email}'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "AccessToken: ${authInfo.accessToken?.substring(0, 15)}...",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: IntrinsicHeight(
+                child: Row(
+                  // 2. Isso força a Column de texto a esticar para a mesma altura da imagem (100px)
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: ImageCard(
+                        url: authInfo.user?.avatarUrl,
+                        onTap: () {},
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+                    const SizedBox(width: 20), // Espaçamento entre imagem e texto
+                    // 3. Use Expanded para a coluna de texto ocupar a largura restante
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start, // Alinha textos à esquerda
+                        children: [
+                          Text(
+                            userProvider.currentUser?.fullName ??
+                                userProvider.currentUser?.username ??
+                                '',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            "@${userProvider.currentUser?.username ?? ''}",
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: tColorSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            userProvider.currentUser?.bio ??
+                                "Biografia não definida.",
+                            maxLines: 2,
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              fontStyle: FontStyle.italic,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+              
+                          // 4. O Spacer agora funciona pois a coluna tem altura fixa (100px)
+                          const Spacer(),
+              
+                          Row(
+                            spacing: 16,
+                            children: [
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          "${userProvider.currentUser?.followerCount ?? 0}",
+                                      style: AppTextStyles.bodyLarge.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: " Seguidores",
+                                      style: AppTextStyles.bodyLarge,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          "${userProvider.currentUser?.followingCount ?? 0}",
+                                      style: AppTextStyles.bodyLarge.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: " Seguindo",
+                                      style: AppTextStyles.bodyLarge,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () async {
-                    await Clipboard.setData(
-                      ClipboardData(text: authInfo.accessToken!),
+              ),
+            ),
+            LineSeparator(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Text(
+                'Séries Favoritas',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            GridView.builder(
+              shrinkWrap: true, 
+              // 3. Importante: Desativa a rolagem do Grid (quem rola é o SingleChildScrollView)
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              gridDelegate: 
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 23,
+                  mainAxisSpacing: 23,
+                  childAspectRatio: 2 / 3,
+                ),
+              itemCount: (userProvider.currentUser?.favorites.length ?? 0) > 3 ? 3 : userProvider.currentUser?.favorites.length ?? 0,
+              itemBuilder: (context, index) {
+                final series = userProvider.currentUser?.favorites[index];
+                return SeriesCard(
+                  series: series!,
+                  isSelected: false,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/series/detail',
+                      arguments: series.id,
                     );
-                  },
-                  icon: Icon(Icons.copy),
-                  iconSize: 24,
-                ),
-              ],
-            ),
-            //Text("Séries assistidas: ${watchedSeries.length}"),
-            /*Column(
-                  children: watchedSeries
-                      .map((serie) => Text(serie.name))
-                      .toList(),
-                ),*/
-            //Text("Séries favoritas: ${favoritedSeries.length}"),
-            /*Column(
-                  children: favoritedSeries
-                      .map((serie) => Text(serie.name))
-                      .toList(),
-                ),*/
-            ElevatedButton(
-              onPressed: () {
-                authInfo.signOut();
-                Navigator.pushReplacementNamed(context, '/login');
-              },
-              child: const Text('Sair'),
-            ),
-            /*ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/onboarding/favorited',
-                  arguments: {
-                    "watchedSeries": userProvider.seriesWatched.toSet(),
-                    "favoritedSeries": userProvider.seriesFavorites.toSet(),
                   },
                 );
               },
-              child: const Text('Editar Favoritos'),
-            ),*/
+            ),
+            LineSeparator(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Text(
+                'Avaliações do Usuário',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: StarsChart(data: userProvider.currentUser?.starDistribution ?? []),
+            ),
+            LineSeparator(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Text(
+                'Listas',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: userProvider.isLoadingUser
+                ? ListReviewsSkeleton(itemCount: 3)
+                : Column(
+                    spacing: 12,
+                    children: [
+                      for (var list in userProvider.currentUser?.lists ?? [])
+                        ListPopularCard(list: list),
+                    ],
+                  ),
+            ),
+            LineSeparator(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Text(
+                'Assistir futuramente',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: ListSeries(series: userProvider.currentUser?.watchlist ?? []),
+            ),
+            LineSeparator(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Text(
+                'Resenhas',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: userProvider.isLoadingUser
+                ? ListReviewsSkeleton(itemCount: 3)
+                : Column(
+                    spacing: 12,
+                    children: [
+                      for (var review in userProvider.currentUser?.reviews ?? [])
+                        ReviewCard(review: review),
+                    ],
+                  ),
+            ),
+            const SizedBox(height: kToolbarHeight + 20),
           ],
         ),
-      ),
+      )
     );
   }
 }
