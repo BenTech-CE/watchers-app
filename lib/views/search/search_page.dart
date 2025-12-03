@@ -261,9 +261,11 @@ class _SearchPageState extends State<SearchPage> {
               // SERIES
               if (searchedSeries.isNotEmpty)
                 Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: List.generate(searchedSeries.length, (index) {
                     final series = searchedSeries[index];
                     return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () {
                         Navigator.pushNamed(
                           context,
@@ -326,29 +328,39 @@ class _SearchPageState extends State<SearchPage> {
                   children: List.generate(searchedUsers.length, (index) {
                     final user = searchedUsers[index];
                     final avatarUrl = user.avatarUrl;
-                    return Column(
-                      children: [
-                        LineSeparator(),
-                        Container(height: 8),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: ImageCard(url: avatarUrl, onTap: () {}, borderRadius: BorderRadius.circular(99),),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              user.fullName != null && user.fullName!.isNotEmpty ? user.fullName! : "@${user.username}",
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.titleSmall.copyWith(
-                                color: Color(0xffCCCCCC),
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/profile',
+                          arguments: user.id,
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          LineSeparator(),
+                          Container(height: 8),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: ImageCard(url: avatarUrl, onTap: () {}, borderRadius: BorderRadius.circular(99),),
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(height: 8),
-                      ],
+                              const SizedBox(width: 8),
+                              Text(
+                                user.fullName != null && user.fullName!.isNotEmpty ? user.fullName! : "@${user.username}",
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.titleSmall.copyWith(
+                                  color: Color(0xffCCCCCC),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(height: 8),
+                        ],
+                      ),
                     );
                   }),
                 ),
@@ -410,7 +422,7 @@ class _SearchPageState extends State<SearchPage> {
     SeriesProvider seriesProvider,
     double screenWidth,
   ) {
-    final listsProvider = context.read<ListsProvider>();
+    final listsProvider = context.watch<ListsProvider>();
 
     return Column(
       children: [

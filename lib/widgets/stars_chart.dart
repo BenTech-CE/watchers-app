@@ -5,8 +5,9 @@ import 'package:watchers/core/theme/colors.dart';
 class StarsChart extends StatefulWidget {
   final List<StarDistributionModel> data;
   final double maxBarHeight;
+  final bool onlyShowQuantity;
 
-  const StarsChart({super.key, required this.data, this.maxBarHeight = 80.0});
+  const StarsChart({super.key, required this.data, this.maxBarHeight = 80.0, this.onlyShowQuantity = false});
 
   @override
   State<StarsChart> createState() => _StarsChartState();
@@ -48,6 +49,13 @@ class _StarsChartState extends State<StarsChart> {
         : totalWeightedSum / totalCount;
 
     return averageRating;
+  }
+
+  int _quantity() {
+    return widget.data.fold(
+      0,
+      (previousValue, element) => previousValue + element.quantity,
+    );
   }
 
   /// Helper para construir a lista de ícones de estrela
@@ -125,15 +133,34 @@ class _StarsChartState extends State<StarsChart> {
         ),
         Column(
           children: [
+            if (widget.onlyShowQuantity && _highlightedRating == null)
+              Text(
+                "Total de\navaliações:",
+                style: TextStyle(
+                  color: tColorGray,
+                  fontSize: 12,
+                  overflow: TextOverflow.clip,
+                  height: 1.1
+                  
+                ),
+                textAlign: TextAlign.center,
+              ),
             Text(
-              _highlightedRating != null ? _highlightedRating!.quantity.toString() : _calcMedia().toStringAsFixed(1),
+              _highlightedRating != null ? _highlightedRating!.quantity.toString() : widget.onlyShowQuantity ? _quantity().toString() : _calcMedia().toStringAsFixed(1),
               style: TextStyle(
                 color: tColorSecondary,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Row(children: _buildStarRating(_highlightedRating != null ? _highlightedRating!.starRating : _calcMedia().roundToDouble())),
+            Visibility(
+              visible: !widget.onlyShowQuantity || (widget.onlyShowQuantity && _highlightedRating != null),
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: Row(children: _buildStarRating(_highlightedRating != null ? _highlightedRating!.starRating : _calcMedia().roundToDouble())),
+            ),
+
           ],
         ),
       ],

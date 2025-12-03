@@ -48,15 +48,24 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
               spacing: 12,
               children: [
                 // Avatar (Maior que no design anterior)
-                CircleAvatar(
-                  radius: 20, 
-                  backgroundColor: Colors.grey[800],
-                  backgroundImage: avatarUrl != null
-                      ? NetworkImage(avatarUrl)
-                      : null,
-                  child: avatarUrl == null
-                      ? const Icon(Icons.person, color: Colors.white)
-                      : null,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/profile',
+                      arguments: widget.review.author.id,
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 20, 
+                    backgroundColor: Colors.grey[800],
+                    backgroundImage: avatarUrl != null
+                        ? NetworkImage(avatarUrl)
+                        : null,
+                    child: avatarUrl == null
+                        ? const Icon(Icons.person, color: Colors.white)
+                        : null,
+                  ),
                 ),
 
                 // Nome do Usuário

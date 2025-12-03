@@ -66,7 +66,14 @@ class _ReviewCardState extends State<ReviewCard> {
               child: ImageCard(
                 borderRadius: BorderRadius.circular(12),
                 url: widget.review.series.posterUrl,
-                onTap: () {}, // Substituir: Levar à tela da série!
+                onTap: () {
+                  // Navega para a página da série
+                  Navigator.pushNamed(
+                    context,
+                    '/series/detail',
+                    arguments: widget.review.series.id.toString(),
+                  );
+                }, // Substituir: Levar à tela da série!
               ),
             ),
 
@@ -104,7 +111,7 @@ class _ReviewCardState extends State<ReviewCard> {
                       child: Text(
                         widget.review.type == "season"
                             ? "Temporada ${widget.review.seasonNumber}"
-                            : "Episódio ${widget.review.episodeNumber}",
+                            : "T${widget.review.seasonNumber} Episódio ${widget.review.episodeNumber}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -116,19 +123,29 @@ class _ReviewCardState extends State<ReviewCard> {
                   Row(
                     children: [
                       // 1. Avatar
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.grey[700],
-                        backgroundImage: avatarUrl != null
-                            ? NetworkImage(avatarUrl)
-                            : null,
-                        child: avatarUrl == null
-                            ? const Icon(
-                                Icons.person,
-                                size: 14,
-                                color: Colors.white,
-                              )
-                            : null,
+                      GestureDetector(
+                        onTap: () {
+                          // Navega para a página do perfil do usuário
+                          Navigator.pushNamed(
+                            context,
+                            '/profile',
+                            arguments: widget.review.author.id,
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.grey[700],
+                          backgroundImage: avatarUrl != null
+                              ? NetworkImage(avatarUrl)
+                              : null,
+                          child: avatarUrl == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 14,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
                       ),
                       const SizedBox(width: 5),
 

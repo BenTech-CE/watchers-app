@@ -135,22 +135,32 @@ class _ListPopularCardState extends State<ListPopularCard> with SingleTickerProv
               // USER
               Row(
                 children: [
-                  SizedBox(
-                    width: isSmallComponent ? 18 : 24,
-                    height: isSmallComponent ? 18 : 24,
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.grey[700],
-                      backgroundImage: avatarUrl != null
-                          ? NetworkImage(avatarUrl)
-                          : null,
-                      child: avatarUrl == null
-                          ? const Icon(
-                              Icons.person,
-                              size: 14,
-                              color: Colors.white,
-                            )
-                          : null,
+                  GestureDetector(
+                    onTap: () {
+                      // Navega para a página do perfil do usuário
+                      Navigator.pushNamed(
+                        context,
+                        '/profile',
+                        arguments: widget.list.author.id,
+                      );
+                    },
+                    child: SizedBox(
+                      width: isSmallComponent ? 18 : 24,
+                      height: isSmallComponent ? 18 : 24,
+                      child: CircleAvatar(
+                        radius: 12,
+                        backgroundColor: Colors.grey[700],
+                        backgroundImage: avatarUrl != null
+                            ? NetworkImage(avatarUrl)
+                            : null,
+                        child: avatarUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 14,
+                                color: Colors.white,
+                              )
+                            : null,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 5),

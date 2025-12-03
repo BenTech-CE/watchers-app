@@ -59,6 +59,9 @@ class UserProvider with ChangeNotifier {
   FullUserModel? _currentUser;
   FullUserModel? get currentUser => _currentUser;
 
+  FullUserModel? _selUser;
+  FullUserModel? get selectedUser => _selUser;  
+
   // GET
 
   Future<void> getCurrentUser() async {
@@ -75,15 +78,14 @@ class UserProvider with ChangeNotifier {
     return;
   }
 
-  Future<FullUserModel?> getUserById(String id) async {
+  Future<void> getUserById(String id) async {
     _setLoadingUser(true);
     try {
       clearError();
-      return await _userService.getUserById(id);
+      _selUser = await _userService.getUserById(id);
     } catch (e) {
       print(e);
       _setError(e.toString());
-      return null;
     } finally {
       _setLoadingUser(false);
     }

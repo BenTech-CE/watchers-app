@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
@@ -28,6 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
   List<SerieModel> watchedSeries = [];
   List<SerieModel> favoritedSeries = [];
 
+  FullUserModel? user;
+  bool externalUser = true;
+
   @override
   void initState() {
     super.initState();
@@ -42,9 +46,27 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void _fetchUserData() {
+  void _fetchUserData() async{
     final userProvider = context.read<UserProvider>();
-    userProvider.getCurrentUser();
+
+    dynamic userId = ModalRoute.of(context)?.settings.arguments;
+
+    if (userId != null) {
+      await userProvider.getUserById(userId);
+
+      setState(() {
+        user = userProvider.selectedUser;
+        externalUser = true;        
+      });
+
+    } else {
+      await userProvider.getCurrentUser();
+      setState(() {
+        user = userProvider.currentUser;
+        externalUser = false;        
+      });
+
+    }
   }
 
   @override
@@ -60,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
         scrolledUnderElevation: 0,
         
         actions: [
-          IconButton(
+          if (!externalUser) IconButton(
             onPressed: () {
               Navigator.pushNamed(context, '/profile/edit');
             },
@@ -84,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: 100,
                       height: 100,
                       child: ImageCard(
-                        url: authInfo.user?.avatarUrl,
+                        url: externalUser ? user?.avatarUrl : authInfo.user?.avatarUrl,
                         onTap: () {},
                         borderRadius: BorderRadius.circular(99),
                       ),
@@ -98,8 +120,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             CrossAxisAlignment.start, // Alinha textos à esquerda
                         children: [
                           Text(
-                            userProvider.currentUser?.fullName ??
-                                userProvider.currentUser?.username ??
+                            user?.fullName ??
+                                user?.username ??
                                 '',
                             style: AppTextStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.bold,
@@ -107,14 +129,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           Text(
-                            "@${userProvider.currentUser?.username ?? ''}",
+                            "@${user?.username ?? ''}",
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: tColorSecondary,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            userProvider.currentUser?.bio ??
+                            user?.bio ??
                                 "Biografia não definida.",
                             maxLines: 2,
                             style: AppTextStyles.bodyLarge.copyWith(
@@ -134,7 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          "${userProvider.currentUser?.followerCount ?? 0}",
+                                          "${user?.followerCount ?? 0}",
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -151,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          "${userProvider.currentUser?.followingCount ?? 0}",
+                                          "${user?.followingCount ?? 0}",
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -172,7 +194,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
+            if (!userProvider.isLoadingUser && user?.favorites.isNotEmpty == true)
             LineSeparator(),
+            if (!userProvider.isLoadingUser && user?.favorites.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -180,6 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
+            if (!userProvider.isLoadingUser && user?.favorites.isNotEmpty == true)
             GridView.builder(
               shrinkWrap: true, 
               // 3. Importante: Desativa a rolagem do Grid (quem rola é o SingleChildScrollView)
@@ -192,9 +217,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisSpacing: 23,
                   childAspectRatio: 2 / 3,
                 ),
-              itemCount: (userProvider.currentUser?.favorites.length ?? 0) > 3 ? 3 : userProvider.currentUser?.favorites.length ?? 0,
+              itemCount: (user?.favorites.length ?? 0) > 3 ? 3 : user?.favorites.length ?? 0,
               itemBuilder: (context, index) {
-                final series = userProvider.currentUser?.favorites[index];
+                final series = user?.favorites[index];
                 return SeriesCard(
                   series: series!,
                   isSelected: false,
@@ -218,11 +243,11 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: StarsChart(data: userProvider.currentUser?.starDistribution ?? []),
+              child: StarsChart(data: user?.starDistribution ?? [], onlyShowQuantity: true,),
             ),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -230,37 +255,40 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.lists.isNotEmpty == true)
+            if (userProvider.isLoadingUser)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: ListReviewsSkeleton(itemCount: 5,)
+              ),
+            if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: userProvider.isLoadingUser
-                ? ListReviewsSkeleton(itemCount: 3)
-                : Column(
-                    spacing: 12,
-                    children: [
-                      for (var list in userProvider.currentUser?.lists ?? [])
-                        ListPopularCard(list: list),
-                    ],
-                  ),
+              child: Column(
+                spacing: 12,
+                children: [
+                  for (var list in user?.lists ?? [])
+                    ListPopularCard(list: list),
+                ],
+              ),
             ),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.watchlist.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.watchlist.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
-                'Assistir futuramente',
+                'Assistir Futuramente',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.watchlist.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: ListSeries(series: userProvider.currentUser?.watchlist ?? []),
+              child: ListSeries(series: user?.watchlist ?? []),
             ),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.reviews.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.reviews.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -268,7 +296,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
-            if (!userProvider.isLoadingUser && userProvider.currentUser?.reviews.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: userProvider.isLoadingUser
@@ -276,12 +304,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 : Column(
                     spacing: 12,
                     children: [
-                      for (var review in userProvider.currentUser?.reviews ?? [])
+                      for (var review in user?.reviews ?? [])
                         ReviewCard(review: review),
                     ],
                   ),
             ),
-            const SizedBox(height: kToolbarHeight + 20),
+            const SizedBox(height: kBottomNavigationBarHeight + 20),
           ],
         ),
       )

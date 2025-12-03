@@ -18,6 +18,7 @@ import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
+import 'package:watchers/views/profile/profile_page.dart';
 import 'package:watchers/views/series/episode_page.dart';
 import 'package:watchers/views/series/genre_series.dart';
 import 'package:watchers/views/series/recent_series.dart';
@@ -93,6 +94,7 @@ class MyApp extends StatelessWidget {
           '/series/episode': (context) => const EpisodePage(),
           '/series/genre': (context) => const GenreSeries(),
           '/profile/edit': (context) => const Preview(),
+          '/profile': (context) => const ProfilePage(),
         },
         home: const AuthWrapper(),
       ),
