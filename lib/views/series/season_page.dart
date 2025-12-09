@@ -162,18 +162,21 @@ class _SeasonPageState extends State<SeasonPage> {
 
     void _sheetReview(BuildContext context) {
       final userProvider = context.read<UserProvider>();
-      //userProvider.setCurrentUserInteractionData(season?.userData ?? UserInteractionData.empty());
+      //userProvider.setCurrentUserInteractionData(series?.userData ?? UserInteractionData.empty());
 
       showModalBottomSheet<void>(
         context: context,
         showDragHandle: true,
         isScrollControlled: true,
         builder: (BuildContext context) => SeriesOptionsSheet(
-          title: season?.name ?? 'Temporada ${season?.seasonNumber ?? ''}',
+          title: series?.name ?? "",
           id: series?.id.toString() ?? '',
           scope: "season",
           isSeries: false,
+          posterPath: posterPath,
+          logoPath: logoPath,
           seasonNumber: season?.seasonNumber,
+          episodeNumber: null,
         ),
       );
     }

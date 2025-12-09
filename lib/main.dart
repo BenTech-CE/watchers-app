@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ import 'package:watchers/views/list/trending_lists.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/profile/profile_page.dart';
+import 'package:watchers/views/review/review_add_page.dart';
 import 'package:watchers/views/review/trending_reviews.dart';
 import 'package:watchers/views/series/episode_page.dart';
 import 'package:watchers/views/series/genre_series.dart';
@@ -97,7 +99,7 @@ class MyApp extends StatelessWidget {
           '/series/genre': (context) => const GenreSeries(),
           '/review/trending': (context) => const TrendingReviews(),
           '/list/trending': (context) => const TrendingLists(),
-          '/review/add': (context) => const RecentSeries(),
+          '/review/add': (context) => const ReviewAddPage(),
           '/profile/edit': (context) => const Preview(),
           '/profile': (context) => const ProfilePage(),
         },
@@ -115,13 +117,59 @@ class AuthWrapper extends StatefulWidget {
   State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class _AuthWrapperState extends State<AuthWrapper>
+    with SingleTickerProviderStateMixin {
   bool _isRefreshing = true;
+  bool _isTransitioning = false;
+  Widget? _nextPage;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _refreshSessionAndCheckAuth();
+
+    // Configura animação de fade
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    // Fade in ao iniciar, depois verifica sessão
+    _animationController.forward().then((_) {
+      _refreshSessionAndCheckAuth();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _transitionToPage(Widget page) async {
+    if (_isTransitioning) return;
+    
+    setState(() {
+      _isTransitioning = true;
+      _nextPage = page;
+    });
+
+    // Fade out
+    await _animationController.reverse();
+
+    if (mounted) {
+      setState(() {
+        _isRefreshing = false;
+      });
+    }
   }
 
   Future<void> _refreshSessionAndCheckAuth() async {
@@ -133,18 +181,18 @@ class _AuthWrapperState extends State<AuthWrapper> {
         await Supabase.instance.client.auth.refreshSession();
       }
 
-      // Finaliza o loading após refresh (ou se não havia sessão)
+      // Determina a página de destino
+      final session = Supabase.instance.client.auth.currentSession;
+      final targetPage = session != null ? const MainPage() : const LoginView();
+
+      // Faz a transição com fade out
       if (mounted) {
-        setState(() {
-          _isRefreshing = false;
-        });
+        await _transitionToPage(targetPage);
       }
     } catch (error) {
       // Erro ao fazer refresh, provavelmente sessão expirada
       if (mounted) {
-        setState(() {
-          _isRefreshing = false;
-        });
+        await _transitionToPage(const LoginView());
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -158,33 +206,36 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // Enquanto está fazendo refresh, mostra loading
+    final screenWidth = MediaQuery.of(context).size.width;
+    final logoWidth = screenWidth * 0.4;
+    final logoHeight = logoWidth * 0.2;
+
+    // Enquanto está fazendo refresh, mostra loading com logo animada
     if (_isRefreshing) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Carregando...', style: TextStyle(fontSize: 16)),
-            ],
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SizedBox(
+              width: logoWidth,
+              height: logoHeight,
+              child: SvgPicture.asset("assets/logo/logowatchers.svg"),
+            ),
           ),
         ),
       );
     }
 
-    // Após refresh, escuta mudanças de autenticação
+    // Após o fade out, mostra a página de destino
+    if (_nextPage != null) {
+      return _nextPage!;
+    }
+
+    // Fallback: escuta mudanças de autenticação em tempo real
     return StreamBuilder(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         final authState = snapshot.data;
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
 
         if (snapshot.hasError) {
           return const LoginView();

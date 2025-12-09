@@ -13,6 +13,7 @@ import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/search/search_page.dart';
 import 'package:iconify_flutter/icons/oi.dart';
+import 'package:watchers/widgets/star_rating.dart';
 
 class SeriesOptionsSheet extends StatefulWidget {
   final String title;
@@ -294,14 +295,19 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
   }
 
   void _navigateToAddReview() {
+    final UserProvider userProvider = context.read<UserProvider>();
+    final currentInteraction =
+        userProvider.currentUserInteractionData(widget.scope);
+    final String? content = currentInteraction.reviewText;
+
     Navigator.pushReplacementNamed(
       context,
       '/review/add',
       arguments: {
         "title": widget.title,
         "id": widget.id,
-        "scope": "series",
-        "isSeries": true,
+        "content": content,
+        "scope": widget.scope,
         "posterPath": widget.posterPath,
         "logoPath": widget.logoPath,
         "seasonNumber": widget.seasonNumber,
@@ -408,25 +414,13 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
 
             // ===== STAR RATING =====
             Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(5, (index) {
-                  final i = index + 1;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                    child: GestureDetector(
-                      onTap: () => changeRating(i.toDouble()),
-                      child: Iconify(
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path fill="currentColor" d="M394 480a16 16 0 0 1-9.39-3L256 383.76L127.39 477a16 16 0 0 1-24.55-18.08L153 310.35L23 221.2a16 16 0 0 1 9-29.2h160.38l48.4-148.95a16 16 0 0 1 30.44 0l48.4 149H480a16 16 0 0 1 9.05 29.2L359 310.35l50.13 148.53A16 16 0 0 1 394 480"/></svg>',
-                        color: rating >= i
-                            ? Color(0xFFFFCC00)
-                            : Color(0xFF8D8D8D),
-                        size: 50,
-                      ),
-                    ),
-                  );
-                }),
+              child: StarRating(
+                rating: rating,
+                onRatingChanged: (newRating) {
+                  changeRating(newRating);
+                },
+                size: 50,
+                spacing: 6,
               ),
             ),
 

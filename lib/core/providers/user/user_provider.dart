@@ -258,6 +258,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<ReviewModel> saveReviewSeries(ReviewModel review, String serieId) async {
+    _setLoadingUser(true);
     try {
       clearError();
       return await _userService.saveReviewSeries(review, serieId);
@@ -265,6 +266,8 @@ class UserProvider with ChangeNotifier {
       print(e);
       _setError(e.toString());
       rethrow;
+    } finally {
+      _setLoadingUser(false);
     }
   }
 

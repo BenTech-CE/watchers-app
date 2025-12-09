@@ -92,25 +92,6 @@ class _EpisodePageState extends State<EpisodePage> {
     }
   }
 
-  void _sheetReview(BuildContext context) {
-    final userProvider = context.read<UserProvider>();
-    //userProvider.setCurrentUserInteractionData(UserInteractionData.empty());
-
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (BuildContext context) => SeriesOptionsSheet(
-        title: episode?.name ?? 'Episódio ${episode?.episodeNumber ?? ''}',
-        id: series?.id.toString() ?? '',
-        scope: "episode",
-        isSeries: false,
-        seasonNumber: episode?.seasonNumber,
-        episodeNumber: episode?.episodeNumber,
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
@@ -158,6 +139,27 @@ class _EpisodePageState extends State<EpisodePage> {
 
     // abas de detalhes
     final List<String> detailTabs = ['Detalhes', 'Resenhas'];
+
+    void _sheetReview(BuildContext context) {
+      final userProvider = context.read<UserProvider>();
+      //userProvider.setCurrentUserInteractionData(series?.userData ?? UserInteractionData.empty());
+
+      showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (BuildContext context) => SeriesOptionsSheet(
+          title: series?.name ?? "",
+          id: series?.id.toString() ?? '',
+          scope: "episode",
+          isSeries: false,
+          posterPath: posterPath,
+          logoPath: null,
+          seasonNumber: episode?.seasonNumber,
+          episodeNumber: episode?.episodeNumber,
+        ),
+      );
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
