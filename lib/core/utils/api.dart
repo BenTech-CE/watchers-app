@@ -9,6 +9,9 @@ class Api {
   static final Uri seriesTrendingEndpoint = Uri.parse(
     '${baseUrl}series/trending',
   );
+  static final Uri seriesTopRatedEndpoint = Uri.parse(
+    '${baseUrl}series/toprated',
+  );
   static final Uri seriesRecentsEndpoint = Uri.parse(
     '${baseUrl}series/recents',
   );

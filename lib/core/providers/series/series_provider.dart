@@ -13,6 +13,7 @@ class SeriesProvider with ChangeNotifier {
 
   String? _errorMessage;
   bool _isLoadingTrending = false;
+  bool _isLoadingTopRated = false;
   bool _isLoadingRecents = false;
   bool _isLoadingSearch = false;
   bool _isLoadingByGenre = false;
@@ -21,6 +22,7 @@ class SeriesProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
   bool get isLoadingTrending => _isLoadingTrending;
+  bool get isLoadingTopRated => _isLoadingTopRated;
   bool get isLoadingRecents => _isLoadingRecents;
   bool get isLoadingSearch => _isLoadingSearch;
   bool get isLoadingByGenre => _isLoadingByGenre;
@@ -28,6 +30,9 @@ class SeriesProvider with ChangeNotifier {
 
   List<SerieModel> _trendingSeries = [];
   List<SerieModel> get trendingSeries => _trendingSeries;
+
+  List<SerieModel> _topRatedSeries = [];
+  List<SerieModel> get topRatedSeries => _topRatedSeries;
 
   List<SerieModel> _recentsSeries = [];
   List<SerieModel> get recentsSeries => _recentsSeries;
@@ -42,6 +47,20 @@ class SeriesProvider with ChangeNotifier {
       _setError(e.toString());
     } finally {
       _setLoadingTrending(false);
+    }
+    return;
+  }
+
+  Future<void> getSeriesTopRated() async {
+    _setLoadingTopRated(true);
+    try {
+      clearError();
+      _topRatedSeries = await _seriesService.getSeriesTopRated();      
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingTopRated(false);
     }
     return;
   }
@@ -128,6 +147,11 @@ class SeriesProvider with ChangeNotifier {
 
   void _setLoadingRecents(bool loading) {
     _isLoadingRecents = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingTopRated(bool loading) {
+    _isLoadingTopRated = loading;
     notifyListeners();
   }
 

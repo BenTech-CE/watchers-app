@@ -26,40 +26,40 @@ class GenreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: 80,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 5,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: genre.color.withAlpha(100),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Iconify(
-                  genre.icon,
-                  size: 48,
-                  color: lighten(genre.color, 0.15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: genre.color.withAlpha(100),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Iconify(
+                    genre.icon,
+                    size: 40,
+                    color: lighten(genre.color, 0.15),
+                  ),
                 ),
               ),
             ),
-            Text(
-              genre.name,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: tColorGray,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            genre.name,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: tColorGray,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

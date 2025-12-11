@@ -22,7 +22,7 @@ class _TrendingListsState extends State<TrendingLists> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: Text("Listas populares", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
+        title: Text("Listas Populares", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
       body: SafeArea(
         child: ListView.separated(

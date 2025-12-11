@@ -54,7 +54,7 @@ class _BestSeriesState extends State<BestSeries> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: Text("Melhores avaliadas", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
+        title: Text("Séries Em Alta", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
       body: SafeArea(
         child: Padding(

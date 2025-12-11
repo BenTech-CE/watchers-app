@@ -20,7 +20,7 @@ class _TrendingReviewsState extends State<TrendingReviews> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: Text("Resenhas populares", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
+        title: Text("Resenhas Populares", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
       body: SafeArea(
         child: ListView.separated(

@@ -58,6 +58,18 @@ class _SearchPageState extends State<SearchPage> {
   bool _isSearching = false;
   Timer? _debounceTimer;
 
+  void _fetchRecentsSeries() async {
+    final SeriesProvider seriesProvider = context.read<SeriesProvider>();
+
+    await seriesProvider.getSeriesRecents();
+  
+    if (seriesProvider.errorMessage != null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +94,10 @@ class _SearchPageState extends State<SearchPage> {
       }
 
       _onSearchChanged();
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _fetchRecentsSeries();
     });
   }
 
@@ -152,6 +168,8 @@ class _SearchPageState extends State<SearchPage> {
     final seriesProvider = context.watch<SeriesProvider>();
     final screenWidth = MediaQuery.of(context).size.width;
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -166,7 +184,7 @@ class _SearchPageState extends State<SearchPage> {
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -195,7 +213,7 @@ class _SearchPageState extends State<SearchPage> {
               if (!_isSearching)
                 _buildSearchOverview(context, seriesProvider, screenWidth),
 
-              SizedBox(height: kToolbarHeight * 2),
+              SizedBox(height: _isSearching ? (bottomPadding + 20) : 20),
             ],
           ),
         ),
@@ -430,12 +448,12 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Melhores avaliados',
+              'Lançamentos Recentes',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/series/best");
+                Navigator.pushNamed(context, "/series/recent");
               },
               constraints: BoxConstraints(),
               padding: EdgeInsets.zero,
@@ -443,62 +461,17 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ],
         ),
-        if (seriesProvider.isLoadingTrending)
+        if (seriesProvider.isLoadingRecents)
           const ListSeriesSkeleton(itemCount: 10),
-        if (seriesProvider.trendingSeries.isNotEmpty &&
-            seriesProvider.isLoadingTrending == false)
-          ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
+        if (seriesProvider.recentsSeries.isNotEmpty &&
+            seriesProvider.isLoadingRecents == false)
+          ListSeries(series: seriesProvider.recentsSeries.sublist(0, 10)),
         SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Buscar por gênero',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            // esse botão foi oculto pois não faz sentido uma pagina para mostrar os generos se aqui ja mostram todos.
-            Visibility(
-              visible: false,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              child: IconButton(
-                onPressed: () {},
-                constraints: BoxConstraints(),
-                padding: EdgeInsets.zero,
-                icon: Icon(Icons.chevron_right_outlined, size: 32),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          width: screenWidth,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: List.generate(
-                genres.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: GenreCard(genre: genres[index], onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/series/genre',
-                      arguments: { 'genre': genres[index] },
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Listas populares',
+              'Listas Populares',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             IconButton(
@@ -536,6 +509,51 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
+        SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Todos os Gêneros',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            // esse botão foi oculto pois não faz sentido uma pagina para mostrar os generos se aqui ja mostram todos.
+            Visibility(
+              visible: false,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: IconButton(
+                onPressed: () {},
+                constraints: BoxConstraints(),
+                padding: EdgeInsets.zero,
+                icon: Icon(Icons.chevron_right_outlined, size: 32),
+              ),
+            ),
+          ],
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            mainAxisSpacing: 6,
+            crossAxisSpacing: 6,
+            childAspectRatio: 0.85,
+          ),
+          itemCount: genres.length,
+          itemBuilder: (context, index) => GenreCard(
+            genre: genres[index],
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/series/genre',
+                arguments: {'genre': genres[index]},
+              );
+            },
+          ),
+        ),
+        
       ],
     );
   }

@@ -32,9 +32,10 @@ class _HomePageState extends State<HomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchTrendingSeries();
-      _fetchRecentsSeries();
+      _fetchTopRatedSeries();
       _fetchTrendingLists();
       _fetchTrendingReviews();
+      
     });
   }
 
@@ -79,10 +80,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _fetchRecentsSeries() async {
+
+
+  void _fetchTopRatedSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
-    await seriesProvider.getSeriesRecents();
+    await seriesProvider.getSeriesTopRated();
   
     if (seriesProvider.errorMessage != null && mounted) {
       ScaffoldMessenger.of(
@@ -119,34 +122,34 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(height: 22),
-              if (seriesProvider.trendingSeries.isNotEmpty)
-                BannerSeries(series: seriesProvider.trendingSeries.sublist(0, 5)),
+              if (seriesProvider.topRatedSeries.isNotEmpty)
+                BannerSeries(series: seriesProvider.topRatedSeries.sublist(0, 5)),
               Container(height: 22),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Lançamentos recentes',
+                    'Séries Em Alta',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
-                    onPressed: () {Navigator.pushNamed(context, "/series/recent");},
+                    onPressed: () {Navigator.pushNamed(context, "/series/best");},
                     constraints: BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.chevron_right_outlined, size: 32),
                   ),
                 ],
               ),
-              if (seriesProvider.isLoadingRecents)
+              if (seriesProvider.isLoadingTrending)
                 const ListSeriesSkeleton(itemCount: 10),
-              if (seriesProvider.recentsSeries.isNotEmpty && seriesProvider.isLoadingRecents == false)
-                ListSeries(series: seriesProvider.recentsSeries.sublist(0, 10)),
+              if (seriesProvider.trendingSeries.isNotEmpty && seriesProvider.isLoadingTrending == false)
+                ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Resenhas populares',
+                    'Resenhas Populares',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   IconButton(
