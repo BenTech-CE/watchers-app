@@ -5,6 +5,7 @@ import 'package:watchers/core/mocks/genders.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/series/full_season_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
+import 'package:watchers/core/models/series/genre_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
@@ -146,7 +147,7 @@ class _SeasonPageState extends State<SeasonPage> {
     final List<String> genresToDisplay = [
       if (series?.genres != null && series!.genres!.isNotEmpty)
         ...series!.genres!.map(
-          (genre) => listGenres.firstWhere((g) => g.id == genre.id).name,
+          (genre) => allGenres.firstWhere((g) => g.id == genre.id, orElse: () => GenreModel(id: 0, icon: "", color: Colors.black, name: "n/a")).name
         ),
     ];
 
@@ -478,7 +479,7 @@ class _SeasonPageState extends State<SeasonPage> {
     final List<String> genresToDisplay = [
       if (series?.genres != null && series!.genres!.isNotEmpty)
         ...series!.genres!.map(
-          (genre) => listGenres.firstWhere((g) => g.id == genre.id).name,
+          (genre) => allGenres.firstWhere((g) => g.id == genre.id, orElse: () => GenreModel(id: 0, icon: "", color: Colors.black, name: "n/a")).name
         ),
     ];
 
