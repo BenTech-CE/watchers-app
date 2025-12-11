@@ -50,37 +50,41 @@ class _RecentSeriesState extends State<RecentSeries> {
   Widget build(BuildContext context) {
     final seriesProvider = context.watch<SeriesProvider>();
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text("Lançamentos Recentes", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: GridView.builder(
-          gridDelegate: 
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 23,
-              mainAxisSpacing: 23,
-              childAspectRatio: 2 / 3,
-            ),
-          itemCount: seriesProvider.recentsSeries.length,
-          itemBuilder: (context, index) {
-            final series = seriesProvider.recentsSeries[index];
-            return SeriesCard(
-              series: series,
-              isSelected: false,
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/series/detail',
-                  arguments: series.id,
-                );
-              },
-            );
-          },
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: GridView.builder(
+            gridDelegate: 
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 23,
+                mainAxisSpacing: 23,
+                childAspectRatio: 2 / 3,
+              ),
+            itemCount: seriesProvider.recentsSeries.length,
+            itemBuilder: (context, index) {
+              final series = seriesProvider.recentsSeries[index];
+              return SeriesCard(
+                series: series,
+                isSelected: false,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/series/detail',
+                    arguments: series.id,
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

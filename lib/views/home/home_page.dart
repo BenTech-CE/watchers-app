@@ -98,6 +98,8 @@ class _HomePageState extends State<HomePage> {
     final ReviewsProvider reviewsProvider = context.watch<ReviewsProvider>();
     final ListsProvider listsProvider = context.watch<ListsProvider>();
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -112,7 +114,7 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -189,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                           ListPopularCard(list: list),
                       ],
                     ),
-              SizedBox(height: kToolbarHeight * 2),
+              SizedBox(height: bottomPadding + 20),
             ],
           ),
         ),

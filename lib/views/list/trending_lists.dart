@@ -24,15 +24,17 @@ class _TrendingListsState extends State<TrendingLists> {
         centerTitle: true,
         title: Text("Listas populares", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        separatorBuilder: (BuildContext context, int index) {
-          return const SizedBox(height: 23,);
-        },
-        itemCount: listsProvider.trendingLists.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListPopularCard(list: listsProvider.trendingLists[index]);
-        },
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          separatorBuilder: (BuildContext context, int index) {
+            return const SizedBox(height: 23,);
+          },
+          itemCount: listsProvider.trendingLists.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListPopularCard(list: listsProvider.trendingLists[index]);
+          },
+        ),
       ),
     );
   }

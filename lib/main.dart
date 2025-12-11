@@ -17,12 +17,14 @@ import 'package:watchers/views/auth/register_view.dart';
 import 'package:watchers/views/home/home_page.dart';
 import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
+import 'package:watchers/views/list/list_details_page.dart';
 import 'package:watchers/views/list/trending_lists.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/profile/edit_profile_page.dart';
 import 'package:watchers/views/profile/profile_page.dart';
 import 'package:watchers/views/review/review_add_page.dart';
+import 'package:watchers/views/review/review_details_page.dart';
 import 'package:watchers/views/review/trending_reviews.dart';
 import 'package:watchers/views/series/episode_page.dart';
 import 'package:watchers/views/series/genre_series.dart';
@@ -30,9 +32,15 @@ import 'package:watchers/views/series/recent_series.dart';
 import 'package:watchers/views/series/best_series.dart';
 import 'package:watchers/views/series/season_page.dart';
 import 'package:watchers/views/series/series_page.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializa dados de formatação de data para pt_BR
+  await initializeDateFormatting('pt_BR', null);
+  Intl.defaultLocale = 'pt_BR';
 
   // só funciona se não for web
   if (!kIsWeb) {
@@ -100,7 +108,9 @@ class MyApp extends StatelessWidget {
           '/series/genre': (context) => const GenreSeries(),
           '/review/trending': (context) => const TrendingReviews(),
           '/list/trending': (context) => const TrendingLists(),
+          '/list/detail': (context) => const ListDetailsPage(),
           '/review/add': (context) => const ReviewAddPage(),
+          '/review/detail': (context) => const ReviewDetailsPage(),
           '/profile/edit': (context) => const EditProfilePage(),
           '/profile': (context) => const ProfilePage(),
         },

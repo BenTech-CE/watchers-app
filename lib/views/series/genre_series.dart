@@ -77,46 +77,48 @@ class _GenreSeriesState extends State<GenreSeries> with SingleTickerProviderStat
         centerTitle: true,
         title: Text(genre?.name ?? "", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: seriesProvider.isLoadingByGenre ? GridView.builder(
-          gridDelegate: 
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 23,
-              mainAxisSpacing: 23,
-              childAspectRatio: 2 / 3,
-            ),
-          itemCount: 20,
-          itemBuilder: (context, index) {
-            return SerieSkeletonCard(
-              animation: _animation,
-            );
-          },
-        ) : GridView.builder(
-          gridDelegate: 
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 23,
-              mainAxisSpacing: 23,
-              childAspectRatio: 2 / 3,
-            ),
-          itemCount: genreSeries.length,
-          itemBuilder: (context, index) {
-            final series = genreSeries[index];
-            return SeriesCard(
-              series: series,
-              isSelected: false,
-              animation: _animation,
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/series/detail',
-                  arguments: series.id,
-                );
-              },
-            );
-          },
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: seriesProvider.isLoadingByGenre ? GridView.builder(
+            gridDelegate: 
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 23,
+                mainAxisSpacing: 23,
+                childAspectRatio: 2 / 3,
+              ),
+            itemCount: 20,
+            itemBuilder: (context, index) {
+              return SerieSkeletonCard(
+                animation: _animation,
+              );
+            },
+          ) : GridView.builder(
+            gridDelegate: 
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 23,
+                mainAxisSpacing: 23,
+                childAspectRatio: 2 / 3,
+              ),
+            itemCount: genreSeries.length,
+            itemBuilder: (context, index) {
+              final series = genreSeries[index];
+              return SeriesCard(
+                series: series,
+                isSelected: false,
+                animation: _animation,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/series/detail',
+                    arguments: series.id,
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

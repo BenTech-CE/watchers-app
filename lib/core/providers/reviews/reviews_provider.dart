@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/reviews/full_review_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
@@ -35,6 +36,21 @@ class ReviewsProvider with ChangeNotifier {
       _setLoadingTrending(false);
     }
     return;
+  }
+
+  Future<FullReviewModel?> getReviewById(String reviewId) async {
+    _setLoading(true);
+    try {
+      clearError();
+      final review = await _reviewsService.getReviewById(reviewId);
+      return review;
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+      return null;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   void clearError() {

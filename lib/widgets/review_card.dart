@@ -45,94 +45,84 @@ class _ReviewCardState extends State<ReviewCard> {
     final screenWidth = MediaQuery.of(context).size.width;
     final serieCardSize = screenWidth * 0.25; // 25% da largura da tela
 
-    return Container(
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(cardRadius),
-      ),
-      clipBehavior:
-          Clip.antiAlias, // Garante que o conteúdo interno respeite as bordas
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: sizePadding,
-          children: [
-            // --- 1. ClipRRect (para a Imagem) ---
-            SizedBox(
-              width: serieCardSize,
-              height: serieCardSize * 1.5,
-              child: ImageCard(
-                borderRadius: BorderRadius.circular(12),
-                url: widget.review.series.posterUrl,
-                onTap: () {
-                  // Navega para a página da série
-                  Navigator.pushNamed(
-                    context,
-                    '/series/detail',
-                    arguments: widget.review.series.id.toString(),
-                  );
-                }, // Substituir: Levar à tela da série!
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/review/detail', arguments: widget.review);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(cardRadius),
+        ),
+        clipBehavior:
+            Clip.antiAlias, // Garante que o conteúdo interno respeite as bordas
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: sizePadding,
+            children: [
+              // --- 1. ClipRRect (para a Imagem) ---
+              SizedBox(
+                width: serieCardSize,
+                height: serieCardSize * 1.5,
+                child: ImageCard(
+                  borderRadius: BorderRadius.circular(12),
+                  url: widget.review.series.posterUrl,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/review/detail', arguments: widget.review);
+                  }, // Substituir: Levar à tela da série!
+                ),
               ),
-            ),
-
-            // --- 2. Expanded (para as Informações) ---
-            Expanded(
-              child: Column(
-                spacing: 8,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- Text (Título) ---
-                  Text(
-                    widget.review.series.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+      
+              // --- 2. Expanded (para as Informações) ---
+              Expanded(
+                child: Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // --- Text (Título) ---
+                    Text(
+                      widget.review.series.name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  // --- Container (Badge "Temporada 1") ---
-                  // Só mostra o badge se a informação existir
-                  if (widget.review.type == "season" ||
-                      widget.review.type == "episode")
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 2.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorTertiary.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Text(
-                        widget.review.type == "season"
-                            ? "Temporada ${widget.review.seasonNumber}"
-                            : "T${widget.review.seasonNumber} Episódio ${widget.review.episodeNumber}",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+      
+                    // --- Container (Badge "Temporada 1") ---
+                    // Só mostra o badge se a informação existir
+                    if (widget.review.type == "season" ||
+                        widget.review.type == "episode")
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 2.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorTertiary.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Text(
+                          widget.review.type == "season"
+                              ? "Temporada ${widget.review.seasonNumber}"
+                              : "T${widget.review.seasonNumber} Episódio ${widget.review.episodeNumber}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
-                    ),
-
-                  // --- Row (Avaliação) ---
-                  Row(
-                    children: [
-                      // 1. Avatar
-                      GestureDetector(
-                        onTap: () {
-                          // Navega para a página do perfil do usuário
-                          Navigator.pushNamed(
-                            context,
-                            '/profile',
-                            arguments: widget.review.author.id,
-                          );
-                        },
-                        child: CircleAvatar(
+      
+                    // --- Row (Avaliação) ---
+                    Row(
+                      children: [
+                        // 1. Avatar
+                        CircleAvatar(
                           radius: 12,
                           backgroundColor: Colors.grey[700],
                           backgroundImage: avatarUrl != null
@@ -146,50 +136,50 @@ class _ReviewCardState extends State<ReviewCard> {
                                 )
                               : null,
                         ),
-                      ),
-                      const SizedBox(width: 5),
-
-                      // 2. Nome do Usuário (Expanded resolve o erro e substitui o Spacer)
-                      // O Expanded aqui vai forçar o texto a ocupar todo o espaço disponível
-                      // empurrando as estrelas para o canto direito.
-                      Expanded(
-                        child: Text(
-                          widget.review.author.fullName != null && widget.review.author.fullName!.isNotEmpty 
-                              ? widget.review.author.fullName! 
-                              : "@${widget.review.author.username}",
-                          overflow: TextOverflow.ellipsis, // Corta com "..." se for muito longo
-                          maxLines: 1,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
+                        const SizedBox(width: 5),
+      
+                        // 2. Nome do Usuário (Expanded resolve o erro e substitui o Spacer)
+                        // O Expanded aqui vai forçar o texto a ocupar todo o espaço disponível
+                        // empurrando as estrelas para o canto direito.
+                        Expanded(
+                          child: Text(
+                            widget.review.author.fullName != null && widget.review.author.fullName!.isNotEmpty 
+                                ? widget.review.author.fullName! 
+                                : "@${widget.review.author.username}",
+                            overflow: TextOverflow.ellipsis, // Corta com "..." se for muito longo
+                            maxLines: 1,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-
-                      // Espaço mínimo entre nome e estrelas para não grudarem
-                      const SizedBox(width: 8), 
-
-                      // 3. Estrelas
-                      if (widget.review.stars != null)
-                        ..._buildStarRating(widget.review.stars!),
-
-                      Container(width: 4),
-                      
-                      // 4. Ícone de Favorito
-                      Icon(
-                        _isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.white,
-                        size: 16,
-                      ),
-                    ],
-                  ),
-
-                  // --- Text.rich (Review "Lorem ipsum...") ---
-                  _buildReviewText(),
-                ],
+      
+                        // Espaço mínimo entre nome e estrelas para não grudarem
+                        const SizedBox(width: 8), 
+      
+                        // 3. Estrelas
+                        if (widget.review.stars != null)
+                          ..._buildStarRating(widget.review.stars!),
+      
+                        Container(width: 4),
+                        
+                        // 4. Ícone de Favorito
+                        Icon(
+                          _isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+      
+                    // --- Text.rich (Review "Lorem ipsum...") ---
+                    _buildReviewText(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

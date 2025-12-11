@@ -56,31 +56,33 @@ class _BestSeriesState extends State<BestSeries> {
         centerTitle: true,
         title: Text("Melhores avaliadas", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: GridView.builder(
-          gridDelegate: 
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 23,
-              mainAxisSpacing: 23,
-              childAspectRatio: 2 / 3,
-            ),
-          itemCount: seriesProvider.trendingSeries.length,
-          itemBuilder: (context, index) {
-            final series = seriesProvider.trendingSeries[index];
-            return SeriesCard(
-              series: series,
-              isSelected: false,
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  '/series/detail',
-                  arguments: series.id,
-                );
-              },
-            );
-          },
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: GridView.builder(
+            gridDelegate: 
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 23,
+                mainAxisSpacing: 23,
+                childAspectRatio: 2 / 3,
+              ),
+            itemCount: seriesProvider.trendingSeries.length,
+            itemBuilder: (context, index) {
+              final series = seriesProvider.trendingSeries[index];
+              return SeriesCard(
+                series: series,
+                isSelected: false,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/series/detail',
+                    arguments: series.id,
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

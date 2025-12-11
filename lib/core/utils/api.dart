@@ -50,6 +50,8 @@ class Api {
   // REVIEWS
   static Uri userReviewsSeries(String seriesId) =>
       Uri.parse('${baseUrl}reviews/$seriesId');
+  static Uri reviewByIdEndpoint(String reviewId) =>
+      Uri.parse('${baseUrl}reviews/$reviewId');
   static final Uri reviewsTrendingEndpoint = Uri.parse(
     '${baseUrl}reviews/trending',
   );
