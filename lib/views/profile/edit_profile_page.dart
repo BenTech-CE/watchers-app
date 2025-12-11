@@ -422,7 +422,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   children: [
-                    Image.asset("assets/logo/tmdb-4x.png", width: 70,),
+                    GestureDetector(
+                      onLongPress: () {
+                        Clipboard.setData(ClipboardData(text: authInfo.accessToken ?? "https://www.themoviedb.org/"));
+                      },
+                      child: Image.asset("assets/logo/tmdb-4x.png", width: 70,)
+                    ),
                     const SizedBox(height: 8),
                     Text("Este aplicativo utiliza a API do TMDB, mas não é endossado nem certificado pelo TMDB.", 
                       textAlign: TextAlign.center,

@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/akar_icons.dart';
+import 'package:iconify_flutter/icons/bi.dart';
+import 'package:iconify_flutter/icons/fa6_solid.dart';
+import 'package:iconify_flutter/icons/humbleicons.dart';
+import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -67,6 +74,18 @@ class _ProfilePageState extends State<ProfilePage> {
       });
 
     }
+  }
+
+  Widget _buildChevronAction(VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
+      ),
+    );
   }
 
   @override
@@ -247,14 +266,70 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: StarsChart(data: user?.starDistribution ?? [], onlyShowQuantity: true,),
             ),
+            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
+            LineSeparator(),
+            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Assistir Futuramente (${user?.watchlist.length ?? 0})',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/review/trending");}),
+                ],
+              ),
+            ),
+            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: ListSeries(series: user?.watchlist.sublist(0, user!.watchlist.length > 10 ? 10 : user!.watchlist.length) ?? []),
+            ),
+            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
+            LineSeparator(),
+            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Resenhas (${user?.reviews.length ?? 0})',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/review/trending");}),
+                ],
+              ),
+            ),
+            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: userProvider.isLoadingUser
+                ? ListReviewsSkeleton(itemCount: 3)
+                : Column(
+                    spacing: 12,
+                    children: [
+                      for (var review in user?.reviews.sublist(0, user!.reviews.length > 3 ? 3 : user!.reviews.length) ?? [])
+                        ReviewCard(review: review),
+                    ],
+                  ),
+            ),
             if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
             LineSeparator(),
             if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: const Text(
-                'Listas',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Listas (${user?.lists.length ?? 0})',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/review/trending");}),
+                ],
               ),
             ),
             if (userProvider.isLoadingUser)
@@ -268,48 +343,10 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 spacing: 12,
                 children: [
-                  for (var list in user?.lists ?? [])
+                  for (var list in user?.lists.sublist(0, user!.lists.length > 3 ? 3 : user!.lists.length) ?? [])
                     ListPopularCard(list: list),
                 ],
               ),
-            ),
-            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
-            LineSeparator(),
-            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: const Text(
-                'Assistir Futuramente',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ),
-            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: ListSeries(series: user?.watchlist ?? []),
-            ),
-            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
-            LineSeparator(),
-            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: const Text(
-                'Resenhas',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ),
-            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: userProvider.isLoadingUser
-                ? ListReviewsSkeleton(itemCount: 3)
-                : Column(
-                    spacing: 12,
-                    children: [
-                      for (var review in user?.reviews ?? [])
-                        ReviewCard(review: review),
-                    ],
-                  ),
             ),
             SizedBox(height: bottomPadding),
           ],

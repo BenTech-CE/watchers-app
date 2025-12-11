@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
                   iconProfile,
                   size: 30,
                   color: iconTheme?.resolve({
-                    if (_selectedIndex == 3) WidgetState.selected,
+                    if (_selectedIndex == 2) WidgetState.selected,
                   })?.color,
                 ),
                 label: 'Perfil',
