@@ -14,7 +14,7 @@ class FullUserModel {
   final int followerCount;
   final bool privateWatchlist;
   final List<ListModel> lists;
-  final List<SerieModel> favorites;
+  List<SerieModel> favorites;
   final List<ReviewModel> reviews;
   final List<SerieModel> watchlist;
   final List<StarDistributionModel> starDistribution;

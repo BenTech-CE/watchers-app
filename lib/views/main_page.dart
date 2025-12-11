@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [HomePage(), Preview(), SearchPage(), ProfilePage()],
+        children: const [HomePage(), /*Preview(),*/ SearchPage(), ProfilePage()],
       ),
       extendBody: true,
       bottomNavigationBar: ClipRect(
@@ -50,10 +50,10 @@ class _MainPageState extends State<MainPage> {
                 ),
                 label: 'Início',
               ),
-              NavigationDestination(
+              /*NavigationDestination(
                 icon: Icon(LucideIcons.popcorn, size: 30),
                 label: 'Descobrir',
-              ),
+              ),*/
               NavigationDestination(
                 icon: Icon(Icons.search, size: 30),
                 label: 'Procurar',

@@ -20,6 +20,7 @@ import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/list/trending_lists.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
+import 'package:watchers/views/profile/edit_profile_page.dart';
 import 'package:watchers/views/profile/profile_page.dart';
 import 'package:watchers/views/review/review_add_page.dart';
 import 'package:watchers/views/review/trending_reviews.dart';
@@ -100,7 +101,7 @@ class MyApp extends StatelessWidget {
           '/review/trending': (context) => const TrendingReviews(),
           '/list/trending': (context) => const TrendingLists(),
           '/review/add': (context) => const ReviewAddPage(),
-          '/profile/edit': (context) => const Preview(),
+          '/profile/edit': (context) => const EditProfilePage(),
           '/profile': (context) => const ProfilePage(),
         },
         home: const AuthWrapper(),

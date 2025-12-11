@@ -63,21 +63,21 @@ class ListsProvider with ChangeNotifier {
     return [];
   }
 
-  Future<List<SerieModel>> addSeriesToList(
+  Future<void> addSeriesToList(
     String id,
     List<int> seriesIds,
   ) async {
     _setLoading(true);
     try {
       clearError();
-      return await _listsService.addSeriesToList(id, seriesIds);
+      await _listsService.addSeriesToList(id, seriesIds);
     } catch (e) {
       print(e);
       _setError(e.toString());
     } finally {
       _setLoading(false);
     }
-    return [];
+    return;
   }
 
   Future<ListModel?> getListDetails(String id) async {

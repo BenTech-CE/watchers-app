@@ -74,6 +74,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final authInfo = context.watch<AuthProvider>();
     final userProvider = context.watch<UserProvider>();
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -106,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: 100,
                       height: 100,
                       child: ImageCard(
-                        url: externalUser ? user?.avatarUrl : authInfo.user?.avatarUrl,
+                        url: user?.avatarUrl,
                         onTap: () {},
                         borderRadius: BorderRadius.circular(99),
                       ),
@@ -309,7 +311,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
             ),
-            const SizedBox(height: kBottomNavigationBarHeight + 20),
+            SizedBox(height: bottomPadding),
           ],
         ),
       )

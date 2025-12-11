@@ -31,6 +31,8 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
   //   Series(id: "5", posterUrl: "https://media.themoviedb.org/t/p/w600_and_h900_bestv2/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg"),
   // ];
 
+  bool isFromExternal = false;
+
   final List<SerieModel> _allSeries = [];
   final List<SerieModel> _searchResults = [];
   bool _isSearching = false;
@@ -54,6 +56,9 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
       final args = ModalRoute.of(context)!.settings.arguments as Map<String, Set<SerieModel>>;
       _watchedSeries.addAll(args["watchedSeries"] ?? {});
       _selectedSeries.addAll(args["favoritedSeries"] ?? {});
+      if (args["favoritedSeries"] != null) {
+        isFromExternal = true;
+      }
       _fetchSeriesTrending();
     });
 
@@ -138,6 +143,12 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
   }
 
   void _navigateToNext() {
+    if (isFromExternal) {
+      final userProvider = context.read<UserProvider>();
+      userProvider.currentUser?.favorites = _selectedSeries.toList();
+      Navigator.pop(context);
+      return;
+    }
     Navigator.pushReplacementNamed(context, '/home');
   }
 

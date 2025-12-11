@@ -498,11 +498,11 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Listas para você',
+              'Listas populares',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {Navigator.pushNamed(context, "/list/trending");},
               constraints: BoxConstraints(),
               padding: EdgeInsets.zero,
               icon: Icon(Icons.chevron_right_outlined, size: 32),
