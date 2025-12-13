@@ -340,8 +340,8 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                 Row(
                                   children: [
                                     const Icon(
-                                      Icons.favorite,
-                                      size: 20,
+                                      Icons.favorite_outline,
+                                      size: 24,
                                       color: Color(0xFF747474) //Color(0xFFCC4A4A),
                                     ),
                                     const SizedBox(width: 6),
@@ -350,7 +350,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 14
+                                        fontSize: 16
                                       ),
                                     ),
                                   ],
@@ -359,7 +359,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                   children: [
                                     const Iconify(
                                       Mdi.comment_multiple,
-                                      size: 20,
+                                      size: 24,
                                       color: Color(0xFF747474),
                                     ),
                                     const SizedBox(width: 6),
@@ -368,7 +368,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 14
+                                        fontSize: 16
                                       ),
                                     ),
                                   ],

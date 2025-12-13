@@ -37,6 +37,7 @@ class ListModel {
   final String createdAt;
   final int likeCount;
   final int commentCount;
+  final bool isPrivate;
   final String? description;
   final ListAuthorModel author;
   final List<String> thumbnails;
@@ -47,6 +48,7 @@ class ListModel {
     required this.createdAt,
     required this.likeCount,
     required this.commentCount,
+    required this.isPrivate,
     this.description,
     required this.author,
     required this.thumbnails,
@@ -59,6 +61,7 @@ class ListModel {
       createdAt: json['created_at'] ?? '',
       likeCount: json['like_count'] ?? 0,
       commentCount: json['comment_count'] ?? 0,
+      isPrivate: json['is_private'] ?? false,
       description: json['description'] ?? '',
       author: ListAuthorModel.fromJson(json['author']),
       thumbnails: List<String>.from(json['thumbnails'] ?? []),

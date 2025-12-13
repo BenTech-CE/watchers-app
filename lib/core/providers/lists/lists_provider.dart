@@ -81,6 +81,23 @@ class ListsProvider with ChangeNotifier {
     return;
   }
 
+  Future<void> removeSeriesFromList(
+    String id,
+    List<int> seriesIds,
+  ) async {
+    _setLoading(true);
+    try {
+      clearError();
+      await _listsService.removeSeriesFromList(id, seriesIds);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+    return;
+  }
+
   Future<FullListModel?> getListDetails(String id) async {
     _setLoading(true);
     try {

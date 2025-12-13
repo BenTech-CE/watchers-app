@@ -17,13 +17,18 @@ import 'package:watchers/views/auth/register_view.dart';
 import 'package:watchers/views/home/home_page.dart';
 import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
+import 'package:watchers/views/list/add_multiple_to_list_page.dart';
+import 'package:watchers/views/list/add_single_to_list_page.dart';
 import 'package:watchers/views/list/list_details_page.dart';
 import 'package:watchers/views/list/trending_lists.dart';
 import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/profile/diary_page.dart';
 import 'package:watchers/views/profile/edit_profile_page.dart';
+import 'package:watchers/views/profile/profile_lists_page.dart';
 import 'package:watchers/views/profile/profile_page.dart';
+import 'package:watchers/views/profile/profile_reviews_page.dart';
+import 'package:watchers/views/profile/profile_watchlist_page.dart';
 import 'package:watchers/views/review/review_add_page.dart';
 import 'package:watchers/views/review/review_details_page.dart';
 import 'package:watchers/views/review/trending_reviews.dart';
@@ -110,10 +115,15 @@ class MyApp extends StatelessWidget {
           '/review/trending': (context) => const TrendingReviews(),
           '/list/trending': (context) => const TrendingLists(),
           '/list/detail': (context) => const ListDetailsPage(),
+          '/list/addsingle': (context) => const AddSingleToListPage(),
+          '/list/addmultiple': (context) => const AddMultipleToListPage(),
           '/review/add': (context) => const ReviewAddPage(),
           '/review/detail': (context) => const ReviewDetailsPage(),
           '/profile/edit': (context) => const EditProfilePage(),
           '/profile/diary': (context) => const DiaryPage(),
+          '/profile/watchlist': (context) => const ProfileWatchlistPage(),
+          '/profile/reviews': (context) => const ProfileReviewsPage(),
+          '/profile/lists': (context) => const ProfileListsPage(),
           '/profile': (context) => const ProfilePage(),
         },
         home: const AuthWrapper(),

@@ -316,6 +316,10 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
     );
   }
 
+  void _navigateToAddList() {
+    Navigator.pushReplacementNamed(context, '/list/addsingle', arguments: widget.id);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -463,14 +467,16 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
               },
             ),
 
-            /*
+            
             if (widget.isSeries)
               _optionTile(
                 icon: MaterialSymbols.list,
                 title: "Adicionar em uma lista",
-                onTap: () {},
+                onTap: () {
+                  _navigateToAddList();
+                },
               ),
-              */
+              
             const SizedBox(height: 24),
           ],
         ),

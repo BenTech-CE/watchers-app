@@ -93,7 +93,11 @@ class _ListPopularCardState extends State<ListPopularCard>
                 thumbnail: widget.list.thumbnails[i],
                 alignment: alignments[i],
                 animation: animation,
-                list: widget.list,
+                onTap: () =>Navigator.pushNamed(
+                  context,
+                  '/list/detail',
+                  arguments: widget.list,
+                ),
                 smallComponent: isSmallComponent,
               );
             },
@@ -108,7 +112,11 @@ class _ListPopularCardState extends State<ListPopularCard>
                 Alignment.centerRight,
                 Alignment.bottomCenter,
               ][i],
-              list: widget.list,
+              onTap: () =>Navigator.pushNamed(
+                context,
+                '/list/detail',
+                arguments: widget.list,
+              ),
               animation: animation,
               smallComponent: isSmallComponent,
             ),
@@ -248,30 +256,32 @@ class _ListPopularCardState extends State<ListPopularCard>
 class ThumbNailAlign extends StatelessWidget {
   const ThumbNailAlign({
     super.key,
+    required this.onTap,
     required this.thumbnail,
     required this.alignment,
-    required this.list,
     this.animation,
     this.smallComponent,
   });
 
+  final VoidCallback onTap;
   final AlignmentGeometry alignment;
   final String thumbnail;
-  final ListModel list;
   final Animation<double>? animation;
   final bool? smallComponent;
 
   @override
   Widget build(BuildContext context) {
+    final bRadius = BorderRadius.circular(smallComponent != null && smallComponent != false ? 10 : 15);
+
     return Align(
       alignment: alignment,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: bRadius,
         child: Container(
           width: smallComponent != null && smallComponent != false ? 36 : 64,
           height: smallComponent != null && smallComponent != false ? 53 : 95,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: bRadius,
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
@@ -280,11 +290,12 @@ class ThumbNailAlign extends StatelessWidget {
               ),
             ],
           ),
-          child: ImageCard(url: thumbnail, onTap: () => Navigator.pushNamed(
-            context,
-            '/list/detail',
-            arguments: list,
-          ), animation: animation),
+          child: ImageCard(
+            url: thumbnail, 
+            borderRadius: bRadius,
+            onTap: onTap,
+            animation: animation
+          ),
         ),
       ),
     );

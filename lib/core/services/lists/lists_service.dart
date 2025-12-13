@@ -120,7 +120,7 @@ class ListsService {
     }
   }
 
-  Future<List<SerieModel>> addSeriesToList(
+  Future<bool> addSeriesToList(
     String id,
     List<int> seriesIds,
   ) async {
@@ -141,11 +141,40 @@ class ListsService {
       final jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        final List<SerieModel> series = [];
-        for (var serie in jsonResponse["results"]) {
-          series.add(SerieModel.fromJson(serie));
-        }
-        return series;
+        return true;
+      } else {
+        throw ListsServiceException(
+          'Erro ao adicionar as séries na lista: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao adicionar as séries na lista: $e');
+    }
+  }
+
+  Future<bool> removeSeriesFromList(
+    String id,
+    List<int> seriesIds,
+  ) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.listSeries(id),
+        headers: Headers.auth(authService),
+        body: jsonEncode({'ids': seriesIds}),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return true;
       } else {
         throw ListsServiceException(
           'Erro ao adicionar as séries na lista: ${jsonResponse['error']}',
