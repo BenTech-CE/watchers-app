@@ -134,21 +134,42 @@ class _ListPopularCardState extends State<ListPopularCard>
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: isSmallComponent ? 8 : 16,
         children: [
-          SizedBox(
-            width: isSmallComponent ? 100 : double.maxFinite,
+          isSmallComponent ? SizedBox(
+            width: 100,
             child: Text(
               widget.list.name,
+              maxLines: 3,
               style: TextStyle(
-                fontSize: isSmallComponent ? 12 : 16,
-                fontWeight: isSmallComponent
-                    ? FontWeight.w500
-                    : FontWeight.bold,
-                overflow: TextOverflow.clip,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
                 color: Colors.white,
               ),
             ),
+          ) : Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.list.isPrivate) Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Iconify(Mdi.eye_off, size: 18, color: Colors.white,),
+              ),
+              if (widget.list.isPrivate) const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  widget.list.name+widget.list.name,
+                  maxLines: 2,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    overflow: TextOverflow.ellipsis,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 8,
             children: [
               // USER
@@ -203,6 +224,7 @@ class _ListPopularCardState extends State<ListPopularCard>
                     fontWeight: FontWeight.w500,
                     height: 1.4,
                   ),
+                  textAlign: TextAlign.left,
                 ),
             ],
           ),

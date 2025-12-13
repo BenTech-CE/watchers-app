@@ -26,8 +26,7 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
   final List<SerieModel> _searchResults = [];
   bool _isSearching = false;
 
-  // Set para armazenar o id das séries selecionadas
-  final Set<SerieModel> _selectedSeries = {};
+  List<SerieModel> _backupSeries = [];
 
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
@@ -40,8 +39,10 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final listId = ModalRoute.of(context)!.settings.arguments as String?;
+      final ListsProvider listsProvider = context.read<ListsProvider>();
 
       setState(() {
+        _backupSeries = List.from(listsProvider.listSeriesAdd);
         this.listId = listId;
       });
 
@@ -100,7 +101,10 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
 
     if (seriesProvider.trendingSeries.isNotEmpty && mounted) {
       setState(() {
-        _allSeries.addAll(seriesProvider.trendingSeries);
+        _allSeries.addAll(_backupSeries);
+        _allSeries.addAll(seriesProvider.trendingSeries.where(
+          (series) => !_backupSeries.any((s) => s.id == series.id),
+        ));
       });
     } else if (seriesProvider.errorMessage != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -121,32 +125,28 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
   }
 
   void _toggleSeriesSelection(SerieModel series) {
-    setState(() {
-      bool exists = _selectedSeries.any(
-        (seriesItem) => seriesItem.id == series.id,
-      );
-      if (exists) {
-        _selectedSeries.removeWhere((seriesItem) => seriesItem.id == series.id);
-      } else {
-        _selectedSeries.add(series);
-      }
-    });
+    final listsProvider = context.read<ListsProvider>();
+
+    bool exists = listsProvider.listSeriesAdd.any(
+      (seriesItem) => seriesItem.id == series.id,
+    );
+    
+    if (exists) {
+      listsProvider.removeFromListSeriesAdd(series);
+    } else {
+      listsProvider.addToListSeriesAdd(series);
+    }
   }
 
   void _navigateToNext() {
+    final listsProvider = context.read<ListsProvider>();
+
+    listsProvider.setListSeriesAdd(_backupSeries);
     Navigator.pop(context);
   }
 
   void _sendWatchedSeries() async {
-    final UserProvider userProvider = context.read<UserProvider>();
-
-    await userProvider.addSeriesWatched(
-      _selectedSeries.map((into) => into.id).toList(),
-      null,
-      null,
-    );
-
-    _navigateToNext();
+    Navigator.pop(context);
   }
 
   @override
@@ -171,7 +171,7 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
                 child: Consumer<SeriesProvider>(
                   builder: (context, provider, child) {
                     return TextInputWidget(
-                      label: "Procure séries que você já assistiu...",
+                      label: "Procure por séries...",
                       controller: _searchController,
                       icon: provider.isLoadingSearch && _isSearching
                           ? Icons.hourglass_empty
@@ -236,7 +236,7 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
                       itemCount: seriesToShow.length,
                       itemBuilder: (context, index) {
                         final series = seriesToShow[index];
-                        bool exists = _selectedSeries.any(
+                        bool exists = listsProvider.listSeriesAdd.any(
                           (seriesItem) => seriesItem.id == series.id,
                         );
 

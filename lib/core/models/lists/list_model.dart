@@ -1,4 +1,5 @@
 import 'package:watchers/core/models/lists/list_author_model.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
 
 enum ListType {
   Favorites(0),
@@ -61,7 +62,7 @@ class ListModel {
       createdAt: json['created_at'] ?? '',
       likeCount: json['like_count'] ?? 0,
       commentCount: json['comment_count'] ?? 0,
-      isPrivate: json['is_private'] ?? false,
+      isPrivate: json['private'] ?? false,
       description: json['description'] ?? '',
       author: ListAuthorModel.fromJson(json['author']),
       thumbnails: List<String>.from(json['thumbnails'] ?? []),

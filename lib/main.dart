@@ -19,6 +19,7 @@ import 'package:watchers/views/intro/favorited_series.dart';
 import 'package:watchers/views/intro/watched_series.dart';
 import 'package:watchers/views/list/add_multiple_to_list_page.dart';
 import 'package:watchers/views/list/add_single_to_list_page.dart';
+import 'package:watchers/views/list/create_list_page.dart';
 import 'package:watchers/views/list/list_details_page.dart';
 import 'package:watchers/views/list/trending_lists.dart';
 import 'package:watchers/views/main_page.dart';
@@ -117,6 +118,7 @@ class MyApp extends StatelessWidget {
           '/list/detail': (context) => const ListDetailsPage(),
           '/list/addsingle': (context) => const AddSingleToListPage(),
           '/list/addmultiple': (context) => const AddMultipleToListPage(),
+          '/list/create': (context) => const CreateListPage(),
           '/review/add': (context) => const ReviewAddPage(),
           '/review/detail': (context) => const ReviewDetailsPage(),
           '/profile/edit': (context) => const EditProfilePage(),

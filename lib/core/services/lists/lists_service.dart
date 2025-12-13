@@ -21,6 +21,44 @@ class ListsService {
   final AuthService authService;
   ListsService({required this.authService});
 
+  Future<ListModel> createList(
+    String name,
+    bool isPrivate,
+    String? description,
+    List<SerieModel> series,
+  ) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.createList,
+        headers: Headers.auth(authService),
+        body: jsonEncode({
+          'name': name,
+          'private': isPrivate,
+          'description': description,
+          'ids': series.map((s) => s.id).toList(),
+        }),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        final ListModel list = ListModel.fromJson(jsonResponse);
+        return list;
+      } else {
+        throw ListsServiceException(
+          'Erro ao criar a lista: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao criar a lista: $e');
+    }
+  }
+
   Future<List<ListModel>> getAllLists() async {
     try {
       if (!authService.isAuthenticated) {

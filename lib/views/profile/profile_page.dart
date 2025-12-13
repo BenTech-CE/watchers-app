@@ -53,7 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void _fetchUserData() async{
+  void _fetchUserData() async {
     final userProvider = context.read<UserProvider>();
 
     dynamic userId = ModalRoute.of(context)?.settings.arguments;
@@ -61,33 +61,53 @@ class _ProfilePageState extends State<ProfilePage> {
     if (userId != null) {
       await userProvider.getUserById(userId);
 
-      setState(() {
-        user = userProvider.selectedUser;
-        externalUser = true;        
-      });
-
+      if (mounted) {
+        setState(() {
+          user = userProvider.selectedUser;
+          externalUser = true;        
+        });
+      }
     } else {
       await userProvider.getCurrentUser();
-      setState(() {
-        user = userProvider.currentUser;
-        externalUser = false;        
-      });
-
+      if (mounted) {
+        setState(() {
+          user = userProvider.currentUser;
+          externalUser = false;        
+        });
+      }
     }
   }
 
-  Widget _buildChevronAction(VoidCallback onTap) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(999),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
+  void _refreshUserData() {
+    final userProvider = context.read<UserProvider>();
+    if (!externalUser) {
+      setState(() {
+        user = userProvider.currentUser;
+      });
+    }
+  }
+
+  Widget _buildChevronAction(VoidCallback onTap, [int? quantity]) {
+    return Row(
+      children: [
+        if (quantity != null)
+          Text(
+            quantity.toString(),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: tColorGray)
+          ),
+        Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -95,6 +115,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final authInfo = context.watch<AuthProvider>();
     final userProvider = context.watch<UserProvider>();
+
+    // Atualiza user automaticamente quando o provider muda
+    final displayUser = externalUser ? user : userProvider.currentUser;
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
@@ -133,7 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: 100,
                           height: 100,
                           child: ImageCard(
-                            url: user?.avatarUrl,
+                            url: displayUser?.avatarUrl,
                             onTap: () {},
                             borderRadius: BorderRadius.circular(99),
                           ),
@@ -149,8 +172,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             CrossAxisAlignment.start, // Alinha textos à esquerda
                         children: [
                           Text(
-                            user?.fullName ??
-                                user?.username ??
+                            displayUser?.fullName ??
+                                displayUser?.username ??
                                 '',
                             style: AppTextStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.bold,
@@ -158,14 +181,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           Text(
-                            "@${user?.username ?? ''}",
+                            "@${displayUser?.username ?? ''}",
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: tColorSecondary,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            user?.bio ??
+                            displayUser?.bio ??
                                 "Biografia não definida.",
                             maxLines: 2,
                             style: AppTextStyles.bodyLarge.copyWith(
@@ -185,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          "${user?.followerCount ?? 0}",
+                                          "${displayUser?.followerCount ?? 0}",
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -202,7 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          "${user?.followingCount ?? 0}",
+                                          "${displayUser?.followingCount ?? 0}",
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -223,9 +246,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            if (!userProvider.isLoadingUser && user?.favorites.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.favorites.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && user?.favorites.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.favorites.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: const Text(
@@ -233,7 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
-            if (!userProvider.isLoadingUser && user?.favorites.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.favorites.isNotEmpty == true)
             GridView.builder(
               shrinkWrap: true, 
               // 3. Importante: Desativa a rolagem do Grid (quem rola é o SingleChildScrollView)
@@ -246,9 +269,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisSpacing: 23,
                   childAspectRatio: 2 / 3,
                 ),
-              itemCount: (user?.favorites.length ?? 0) > 3 ? 3 : user?.favorites.length ?? 0,
+              itemCount: (displayUser?.favorites.length ?? 0) > 3 ? 3 : displayUser?.favorites.length ?? 0,
               itemBuilder: (context, index) {
-                final series = user?.favorites[index];
+                final series = displayUser?.favorites[index];
                 return SeriesCard(
                   series: series!,
                   isSelected: false,
@@ -272,43 +295,43 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: StarsChart(data: user?.starDistribution ?? [], onlyShowQuantity: true,),
+              child: StarsChart(data: displayUser?.starDistribution ?? [], onlyShowQuantity: true,),
             ),
-            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.watchlist.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.watchlist.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Assistir Futuramente (${user?.watchlist.length ?? 0})',
+                    'Assistir Futuramente',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/watchlist", arguments: externalUser);}),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/watchlist", arguments: externalUser);}, displayUser?.watchlist.length ?? 0),
                 ],
               ),
             ),
-            if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
-            ListSeries(series: user?.watchlist.sublist(0, user!.watchlist.length > 10 ? 10 : user!.watchlist.length) ?? []),
-            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.watchlist.isNotEmpty == true)
+            ListSeries(series: displayUser?.watchlist.sublist(0, displayUser.watchlist.length > 10 ? 10 : displayUser.watchlist.length) ?? []),
+            if (!userProvider.isLoadingUser && displayUser?.reviews.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.reviews.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Resenhas (${user?.reviews.length ?? 0})',
+                    'Resenhas',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/reviews", arguments: externalUser);}),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/reviews", arguments: externalUser);}, displayUser?.reviews.length ?? 0),
                 ],
               ),
             ),
-            if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.reviews.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: userProvider.isLoadingUser
@@ -316,24 +339,24 @@ class _ProfilePageState extends State<ProfilePage> {
                 : Column(
                     spacing: 12,
                     children: [
-                      for (var review in user?.reviews.sublist(0, user!.reviews.length > 3 ? 3 : user!.reviews.length) ?? [])
+                      for (var review in displayUser?.reviews.sublist(0, displayUser.reviews.length > 3 ? 3 : displayUser.reviews.length) ?? [])
                         ReviewCard(review: review),
                     ],
                   ),
             ),
-            if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.lists.isNotEmpty == true)
             LineSeparator(),
-            if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Listas (${user?.lists.length ?? 0})',
+                    'Listas',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/lists", arguments: externalUser);}),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/lists", arguments: externalUser);}, displayUser?.lists.length ?? 0),
                 ],
               ),
             ),
@@ -342,13 +365,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: ListReviewsSkeleton(itemCount: 5,)
               ),
-            if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && displayUser?.lists.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 spacing: 12,
                 children: [
-                  for (var list in user?.lists.sublist(0, user!.lists.length > 3 ? 3 : user!.lists.length) ?? [])
+                  for (var list in displayUser?.lists.sublist(0, displayUser.lists.length > 3 ? 3 : displayUser.lists.length) ?? [])
                     ListPopularCard(list: list),
                 ],
               ),
@@ -363,7 +386,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     'Diário de Séries',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/diary", arguments: user?.id);}),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/diary", arguments: displayUser?.id);}),
                 ],
               ),
             ),

@@ -441,13 +441,16 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                               ),
                               child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: Colors.grey[700],
-                                    // Substituir pelo avatar do usuário logado
-                                    child: userProvider.currentUser?.avatarUrl != null
-                                        ? Image.network(userProvider.currentUser!.avatarUrl!)
-                                        : const Icon(Icons.person, color: Colors.white)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(999),
+                                    child: CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor: Colors.grey[700],
+                                      // Substituir pelo avatar do usuário logado
+                                      child: userProvider.currentUser?.avatarUrl != null
+                                          ? Image.network(userProvider.currentUser!.avatarUrl!)
+                                          : const Icon(Icons.person, color: Colors.white)
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(

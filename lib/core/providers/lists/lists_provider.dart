@@ -22,6 +22,9 @@ class ListsProvider with ChangeNotifier {
   List<ListModel> _trendingLists = [];
   List<ListModel> get trendingLists => _trendingLists;
 
+  List<SerieModel> _listSeriesAdd = [];
+  List<SerieModel> get listSeriesAdd => _listSeriesAdd;
+
   Future<List<ListModel>> getAllLists() async {
     _setLoading(true);
     try {
@@ -112,8 +115,52 @@ class ListsProvider with ChangeNotifier {
     return null;
   }
 
+  Future<ListModel?> createList(
+    String name,
+    bool isPrivate,
+    String? description,
+    List<SerieModel> series,
+  ) async {
+    _setLoading(true);
+    try {
+      clearError();
+      return await _listsService.createList(
+        name,
+        isPrivate,
+        description,
+        series,
+      );
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+    return null;
+  }
+
   void clearError() {
     _errorMessage = null;
+    notifyListeners();
+  }
+
+  void setListSeriesAdd(List<SerieModel> series) {
+    _listSeriesAdd = series;
+    notifyListeners();
+  }
+
+  void addToListSeriesAdd(SerieModel series) {
+    _listSeriesAdd.add(series);
+    notifyListeners();
+  }
+
+  void removeFromListSeriesAdd(SerieModel series) {
+    _listSeriesAdd.removeWhere((s) => s.id == series.id);
+    notifyListeners();
+  }
+
+  void clearListSeriesAdd() {
+    _listSeriesAdd.clear();
     notifyListeners();
   }
 

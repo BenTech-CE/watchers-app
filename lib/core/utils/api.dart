@@ -27,6 +27,7 @@ class Api {
   // LIST
 
   static final Uri allLists = Uri.parse('${baseUrl}lists/');
+  static final Uri createList = Uri.parse('${baseUrl}lists/');
   static final Uri trendingLists = Uri.parse('${baseUrl}lists/trending');
   static Uri listSeries(String id) => Uri.parse('${baseUrl}lists/$id/items');
   static Uri listDetails(String id) => Uri.parse('${baseUrl}lists/$id');
