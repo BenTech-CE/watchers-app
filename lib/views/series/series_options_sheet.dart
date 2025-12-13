@@ -387,7 +387,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
                 children: [
                   _iconAction(
                     icon: Oi.eye,
-                    label: widget.isSeries ? "Completo" : "Assistido",
+                    label: "Assistido",
                     active: watched,
                     index: 0,
                     onTap: changeWatched,

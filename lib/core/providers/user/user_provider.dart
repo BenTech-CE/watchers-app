@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
+import 'package:watchers/core/models/auth/user_diary_model.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
@@ -23,6 +24,7 @@ class UserProvider with ChangeNotifier {
   bool _isLoadingGetFavorites = false;
   bool _isLoadingGetWatched = false;
   bool _isLoadingGetWatchlist = false;
+  bool _isLoadingGetDiary = false;
 
   bool _isLoadingAddFavorites = false;
   bool _isLoadingAddWatched = false;
@@ -40,6 +42,7 @@ class UserProvider with ChangeNotifier {
   bool get isLoadingGetFavorites => _isLoadingGetFavorites;
   bool get isLoadingGetWatched => _isLoadingGetWatched;
   bool get isLoadingGetWatchlist => _isLoadingGetWatchlist;
+  bool get isLoadingGetDiary => _isLoadingGetDiary;
 
   bool get isLoadingAddFavorites => _isLoadingAddFavorites;
   bool get isLoadingAddWatched => _isLoadingAddWatched;
@@ -88,6 +91,20 @@ class UserProvider with ChangeNotifier {
       _setError(e.toString());
     } finally {
       _setLoadingUser(false);
+    }
+  }
+
+  Future<List<UserDiaryModel>> getUserDiaryById(String id) async {
+    _setLoadingGetDiary(true);
+    try {
+      clearError();
+      return await _userService.getUserDiaryById(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+      return [];
+    } finally {
+      _setLoadingGetDiary(false);
     }
   }
 
@@ -288,6 +305,11 @@ class UserProvider with ChangeNotifier {
 
   void _setLoadingGetWatchlist(bool loading) {
     _isLoadingGetWatchlist = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingGetDiary(bool loading) {
+    _isLoadingGetDiary = loading;
     notifyListeners();
   }
 

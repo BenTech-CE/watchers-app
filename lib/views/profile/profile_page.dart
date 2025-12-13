@@ -83,7 +83,10 @@ class _ProfilePageState extends State<ProfilePage> {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
-        child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
+        ),
       ),
     );
   }
@@ -112,6 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 20,
@@ -123,14 +127,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   // 2. Isso força a Column de texto a esticar para a mesma altura da imagem (100px)
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: ImageCard(
-                        url: user?.avatarUrl,
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular(99),
-                      ),
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: ImageCard(
+                            url: user?.avatarUrl,
+                            onTap: () {},
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(width: 20), // Espaçamento entre imagem e texto
                     // 3. Use Expanded para a coluna de texto ocupar a largura restante
@@ -165,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
-              
+                          const SizedBox(height: 4),
                           // 4. O Spacer agora funciona pois a coluna tem altura fixa (100px)
                           const Spacer(),
               
@@ -270,7 +278,7 @@ class _ProfilePageState extends State<ProfilePage> {
             LineSeparator(),
             if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -283,15 +291,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             if (!userProvider.isLoadingUser && user?.watchlist.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: ListSeries(series: user?.watchlist.sublist(0, user!.watchlist.length > 10 ? 10 : user!.watchlist.length) ?? []),
-            ),
+            ListSeries(series: user?.watchlist.sublist(0, user!.watchlist.length > 10 ? 10 : user!.watchlist.length) ?? []),
             if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
             LineSeparator(),
             if (!userProvider.isLoadingUser && user?.reviews.isNotEmpty == true)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -320,7 +325,7 @@ class _ProfilePageState extends State<ProfilePage> {
             LineSeparator(),
             if (!userProvider.isLoadingUser && user?.lists.isNotEmpty == true)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -345,6 +350,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   for (var list in user?.lists.sublist(0, user!.lists.length > 3 ? 3 : user!.lists.length) ?? [])
                     ListPopularCard(list: list),
+                ],
+              ),
+            ),
+            LineSeparator(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Diário de Séries',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/diary", arguments: user?.id);}),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
@@ -80,7 +81,7 @@ class ListsProvider with ChangeNotifier {
     return;
   }
 
-  Future<ListModel?> getListDetails(String id) async {
+  Future<FullListModel?> getListDetails(String id) async {
     _setLoading(true);
     try {
       clearError();

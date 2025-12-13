@@ -46,19 +46,27 @@ class _ListPopularCardState extends State<ListPopularCard>
   @override
   Widget build(BuildContext context) {
     final String? avatarUrl = widget.list.author.avatarUrl;
-    return widget.smallComponent != null
-        ? Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 4,
-            children: [seriesthubmnails(_animation), content(avatarUrl)],
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 12,
-            children: [seriesthubmnails(_animation), content(avatarUrl)],
-          );
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Navigator.pushNamed(
+        context,
+        '/list/detail',
+        arguments: widget.list,
+      ),
+      child: widget.smallComponent != null
+          ? Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 4,
+              children: [seriesthubmnails(_animation), content(avatarUrl)],
+            )
+          : Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 12,
+              children: [seriesthubmnails(_animation), content(avatarUrl)],
+            ),
+    );
   }
 
   SizedBox seriesthubmnails(Animation<double>? animation) {
@@ -85,6 +93,7 @@ class _ListPopularCardState extends State<ListPopularCard>
                 thumbnail: widget.list.thumbnails[i],
                 alignment: alignments[i],
                 animation: animation,
+                list: widget.list,
                 smallComponent: isSmallComponent,
               );
             },
@@ -99,6 +108,7 @@ class _ListPopularCardState extends State<ListPopularCard>
                 Alignment.centerRight,
                 Alignment.bottomCenter,
               ][i],
+              list: widget.list,
               animation: animation,
               smallComponent: isSmallComponent,
             ),
@@ -136,32 +146,22 @@ class _ListPopularCardState extends State<ListPopularCard>
               // USER
               Row(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Navega para a página do perfil do usuário
-                      Navigator.pushNamed(
-                        context,
-                        '/profile',
-                        arguments: widget.list.author.id,
-                      );
-                    },
-                    child: SizedBox(
-                      width: isSmallComponent ? 18 : 24,
-                      height: isSmallComponent ? 18 : 24,
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.grey[700],
-                        backgroundImage: avatarUrl != null
-                            ? NetworkImage(avatarUrl)
-                            : null,
-                        child: avatarUrl == null
-                            ? const Icon(
-                                Icons.person,
-                                size: 14,
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
+                  SizedBox(
+                    width: isSmallComponent ? 18 : 24,
+                    height: isSmallComponent ? 18 : 24,
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.grey[700],
+                      backgroundImage: avatarUrl != null
+                          ? NetworkImage(avatarUrl)
+                          : null,
+                      child: avatarUrl == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 14,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 5),
@@ -208,7 +208,7 @@ class _ListPopularCardState extends State<ListPopularCard>
                     const Icon(
                       Icons.favorite,
                       size: 16,
-                      color: Color(0xFFCC4A4A),
+                      color: Color(0xFF747474),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -250,12 +250,14 @@ class ThumbNailAlign extends StatelessWidget {
     super.key,
     required this.thumbnail,
     required this.alignment,
+    required this.list,
     this.animation,
     this.smallComponent,
   });
 
   final AlignmentGeometry alignment;
   final String thumbnail;
+  final ListModel list;
   final Animation<double>? animation;
   final bool? smallComponent;
 
@@ -278,7 +280,11 @@ class ThumbNailAlign extends StatelessWidget {
               ),
             ],
           ),
-          child: ImageCard(url: thumbnail, onTap: () {}, animation: animation),
+          child: ImageCard(url: thumbnail, onTap: () => Navigator.pushNamed(
+            context,
+            '/list/detail',
+            arguments: list,
+          ), animation: animation),
         ),
       ),
     );

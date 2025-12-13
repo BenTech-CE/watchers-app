@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/fa6_solid.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/genders.dart';
 import 'package:watchers/core/models/auth/profile_model.dart';
@@ -183,13 +185,13 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(height: 32),
-              GestureDetector(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: Consumer<SeriesProvider>(
                   builder: (context, provider, child) {
@@ -208,14 +210,32 @@ class _SearchPageState extends State<SearchPage> {
                   },
                 ),
               ),
-              Container(height: 24),
-              if (_isSearching) _buildSearching(),
-              if (!_isSearching)
-                _buildSearchOverview(context, seriesProvider, screenWidth),
+            ),
+            Container(height: 24),
+            if (_isSearching) Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: _buildSearching(),
+            ),
+            if (!_isSearching)
+              _buildSearchOverview(context, seriesProvider, screenWidth),
+        
+            SizedBox(height: bottomPadding + 20),
+          ],
+        ),
+      ),
+    );
+  }
 
-              SizedBox(height: _isSearching ? (bottomPadding + 20) : 20),
-            ],
-          ),
+  Widget _buildChevronAction(VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
         ),
       ),
     );
@@ -443,45 +463,46 @@ class _SearchPageState extends State<SearchPage> {
     final listsProvider = context.watch<ListsProvider>();
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Lançamentos Recentes',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            IconButton(
-              onPressed: () {
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Lançamentos Recentes',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              _buildChevronAction(() {
                 Navigator.pushNamed(context, "/series/recent");
-              },
-              constraints: BoxConstraints(),
-              padding: EdgeInsets.zero,
-              icon: Icon(Icons.chevron_right_outlined, size: 32),
-            ),
-          ],
+              }),
+            ],
+          ),
         ),
+        SizedBox(height: 6),
         if (seriesProvider.isLoadingRecents)
           const ListSeriesSkeleton(itemCount: 10),
         if (seriesProvider.recentsSeries.isNotEmpty &&
             seriesProvider.isLoadingRecents == false)
           ListSeries(series: seriesProvider.recentsSeries.sublist(0, 10)),
         SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Listas Populares',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            IconButton(
-              onPressed: () {Navigator.pushNamed(context, "/list/trending");},
-              constraints: BoxConstraints(),
-              padding: EdgeInsets.zero,
-              icon: Icon(Icons.chevron_right_outlined, size: 32),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Listas Populares',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              _buildChevronAction(() {
+                Navigator.pushNamed(context, "/list/trending");
+              }),
+            ],
+          ),
         ),
+        SizedBox(height: 6),
         listsProvider.isLoadingTrending 
           ? const ListSeriesSkeleton(itemCount: 4)
           : SizedBox( 
@@ -489,14 +510,15 @@ class _SearchPageState extends State<SearchPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: List.generate(
-                  listsProvider.trendingLists.length,
-                  (index) => Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: IntrinsicHeight(
+                child: Row(
+                  spacing: 12.0,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: List.generate(
+                    listsProvider.trendingLists.length,
+                    (index) => SizedBox(
                       width: screenWidth * 0.25,
                       child: ListPopularCard(
                         list: listsProvider.trendingLists[index],
@@ -509,31 +531,19 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
-        SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Todos os Gêneros',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            // esse botão foi oculto pois não faz sentido uma pagina para mostrar os generos se aqui ja mostram todos.
-            Visibility(
-              visible: false,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              child: IconButton(
-                onPressed: () {},
-                constraints: BoxConstraints(),
-                padding: EdgeInsets.zero,
-                icon: Icon(Icons.chevron_right_outlined, size: 32),
-              ),
-            ),
-          ],
+        SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text(
+            'Todos os Gêneros',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.left,
+          ),
         ),
+        SizedBox(height: 6),
         GridView.builder(
           shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,

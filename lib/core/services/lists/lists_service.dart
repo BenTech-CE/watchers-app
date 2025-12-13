@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:http/http.dart' as http;
@@ -156,7 +157,7 @@ class ListsService {
     }
   }
 
-  Future<ListModel> getListDetails(String id) async {
+  Future<FullListModel> getListDetails(String id) async {
     try {
       if (!authService.isAuthenticated) {
         throw ListsServiceException('Usuário não autenticado');
@@ -173,7 +174,7 @@ class ListsService {
       final jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        final ListModel list = ListModel.fromJson(jsonResponse);
+        final FullListModel list = FullListModel.fromJson(jsonResponse);
         return list;
       } else {
         throw ListsServiceException(

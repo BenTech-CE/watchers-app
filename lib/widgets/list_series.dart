@@ -47,11 +47,12 @@ class _ListSeriesState extends State<ListSeries> with SingleTickerProviderStateM
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        child: Row(
-          children: List.generate(widget.series.length, (index) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: SizedBox(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            spacing: 10.0,
+            children: List.generate(widget.series.length, (index) {
+              return SizedBox(
                 width: serieCardSize,
                 height: serieCardSize * 1.5, // respeita proporção 2:3
                 child: SeriesCard(
@@ -66,9 +67,9 @@ class _ListSeriesState extends State<ListSeries> with SingleTickerProviderStateM
                     );
                   },
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+          ),
         ),
       ),
     );

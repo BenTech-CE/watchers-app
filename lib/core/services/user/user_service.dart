@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:watchers/core/models/auth/full_user_model.dart';
+import 'package:watchers/core/models/auth/user_diary_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -79,6 +80,39 @@ class UserService {
       }
     } catch (e) {
       throw UserServiceException('Erro ao buscar o usuário: $e');
+    }
+  }
+
+  Future<List<UserDiaryModel>> getUserDiaryById(String id) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.userDiaryById(id),
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<UserDiaryModel> diaryEntries = [];
+        for (var entry in jsonResponse["results"]) {
+          diaryEntries.add(UserDiaryModel.fromJson(entry));
+        }
+        return diaryEntries;
+      } else {
+        throw UserServiceException(
+          'Erro ao buscar o diário do usuário: ${jsonResponse['error']}',
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao buscar o diário do usuário: $e');
     }
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/fa6_solid.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/models/lists/list_author_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
@@ -94,6 +96,21 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Widget _buildChevronAction(VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox.square(dimension: 18, child: Iconify(Fa6Solid.chevron_right, color: tColorPrimary)),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authInfo = context.watch<AuthProvider>();
@@ -116,87 +133,96 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(height: 22),
-              if (seriesProvider.topRatedSeries.isNotEmpty)
-                BannerSeries(series: seriesProvider.topRatedSeries.sublist(0, 5)),
-              Container(height: 22),
-              Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            if (seriesProvider.topRatedSeries.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+                child: BannerSeries(series: seriesProvider.topRatedSeries.sublist(0, 5)),
+              ),
+            Container(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 8),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'Séries Em Alta',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  IconButton(
-                    onPressed: () {Navigator.pushNamed(context, "/series/best");},
-                    constraints: BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32),
-                  ),
+                  _buildChevronAction(() {
+                    Navigator.pushNamed(context, "/series/best");
+                  }),
                 ],
               ),
-              if (seriesProvider.isLoadingTrending)
-                const ListSeriesSkeleton(itemCount: 10),
-              if (seriesProvider.trendingSeries.isNotEmpty && seriesProvider.isLoadingTrending == false)
-                ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
-              SizedBox(height: 12),
-              Row(
+            ),
+            SizedBox(height: 6),
+            if (seriesProvider.isLoadingTrending)
+              const ListSeriesSkeleton(itemCount: 10),
+            if (seriesProvider.trendingSeries.isNotEmpty && seriesProvider.isLoadingTrending == false)
+              ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
+            SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 8),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'Resenhas Populares',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  IconButton(
-                    onPressed: () {Navigator.pushNamed(context, "/review/trending");},
-                    constraints: BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32),
-                  ),
+                  _buildChevronAction(() {
+                    Navigator.pushNamed(context, "/review/trending");
+                  }),
                 ],
               ),
-              reviewsProvider.isLoadingTrending
-                  ? ListReviewsSkeleton(itemCount: 3)
-                  : Column(
-                      spacing: 12,
-                      children: [
-                        for (var review in reviewsProvider.trendingReviews.sublist(0, reviewsProvider.trendingReviews.length > 3 ? 3 : reviewsProvider.trendingReviews.length))
-                          ReviewCard(review: review),
-                      ],
-                    ),
-              SizedBox(height: 12),
-              Row(
+            ),
+            SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0), 
+              child: reviewsProvider.isLoadingTrending
+                ? ListReviewsSkeleton(itemCount: 3)
+                : Column(
+                    spacing: 12,
+                    children: [
+                      for (var review in reviewsProvider.trendingReviews.sublist(0, reviewsProvider.trendingReviews.length > 3 ? 3 : reviewsProvider.trendingReviews.length))
+                        ReviewCard(review: review),
+                    ],
+                  ),
+            ),
+            SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 8),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'Listas Populares',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  IconButton(
-                    onPressed: () {Navigator.pushNamed(context, "/list/trending");},
-                    constraints: BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.chevron_right_outlined, size: 32),
-                  ),
+                  _buildChevronAction(() {
+                    Navigator.pushNamed(context, "/list/trending");
+                  }),
                 ],
               ),
-              listsProvider.isLoadingTrending
-                  ? ListReviewsSkeleton(itemCount: 3)
-                  : Column(
-                      spacing: 12,
-                      children: [
-                        for (var list in listsProvider.trendingLists.sublist(0, listsProvider.trendingLists.length > 3 ? 3 : listsProvider.trendingLists.length))
-                          ListPopularCard(list: list),
-                      ],
-                    ),
-              SizedBox(height: bottomPadding + 20),
-            ],
-          ),
+            ),
+            SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0), 
+              child: listsProvider.isLoadingTrending
+                ? ListReviewsSkeleton(itemCount: 3)
+                : Column(
+                    spacing: 12,
+                    children: [
+                      for (var list in listsProvider.trendingLists.sublist(0, listsProvider.trendingLists.length > 3 ? 3 : listsProvider.trendingLists.length))
+                        ListPopularCard(list: list),
+                    ],
+                  ),
+            ),
+
+            SizedBox(height: bottomPadding + 20),
+          ],
         ),
       ),
     );
