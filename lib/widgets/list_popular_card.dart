@@ -156,7 +156,7 @@ class _ListPopularCardState extends State<ListPopularCard>
               if (widget.list.isPrivate) const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  widget.list.name+widget.list.name,
+                  widget.list.name,
                   maxLines: 2,
                   style: TextStyle(
                     fontSize: 16,

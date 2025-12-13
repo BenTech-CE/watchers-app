@@ -141,7 +141,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
-          "Lista",
+          list?.name ?? "",
           style: AppTextStyles.bodyLarge.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.w600,

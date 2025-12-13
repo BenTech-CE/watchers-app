@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/lucide.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/icons.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
@@ -13,6 +16,7 @@ import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/views/profile/profile_picture_dialog.dart';
 import 'package:watchers/views/search/search_page.dart';
 import 'package:watchers/widgets/card_skeleton.dart';
 import 'package:watchers/widgets/image_card.dart';
@@ -21,6 +25,7 @@ import 'package:watchers/widgets/list_series.dart';
 import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
+import 'package:file_picker/file_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -43,10 +48,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _bioFocusNode = FocusNode();
   final _nameFocusNode = FocusNode();
   
+  final ImagePicker picker = ImagePicker();
+  XFile? _pickedImage;
+
   // Estados de edição
   bool _isEditingUsername = false;
   bool _isEditingBio = false;
   bool _isEditingName = false;
+
+  void _pickImage() async {
+    // Pick an image.
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _pickedImage = image;
+    });
+
+    if (image != null) {
+      showDialog(context: context, builder: (context) {
+        return ProfilePictureDialog(file: image,);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -195,17 +218,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     SizedBox(
                       width: 100,
                       height: 100,
-                      child: ImageCard(
-                        url: user?.avatarUrl,
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular(99),
-                      ),
+                      child: Builder(builder: (context) {
+                        /*if (_pickedImage != null) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.file(
+                              File(_pickedImage!.path),
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        } else */if (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.network(
+                              user!.avatarUrl!,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        } else {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Container(
+                              color: bColorPrimary,
+                              child: Icon(Icons.person, size: 50, color: tColorSecondary),
+                            ),
+                          );
+                        }
+                      }),
                     ),
                     const SizedBox(height: 12),
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        // TODO: Implementar edição de foto
+                        _pickImage();
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -249,7 +294,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       controller: _nameController,
                       focusNode: _nameFocusNode,
                       isEditing: _isEditingName,
-                      hintText: 'Seu nome completo',
+                      hintText: 'Seu nome',
                       onEdit: () {
                         setState(() => _isEditingName = true);
                         _nameFocusNode.requestFocus();
@@ -415,6 +460,37 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: tColorSecondary,
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Ocultar do Perfil',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Watchlist",
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          fontWeight: FontWeight.w500
+                        ),
+                      ),
+                      Switch(
+                        value: user?.privateWatchlist ?? false,
+                        onChanged: (value) {
+                          setState(() {
+                            user?.privateWatchlist = value;
+                          });
+                        }
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
             Center(

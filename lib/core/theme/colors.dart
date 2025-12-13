@@ -27,4 +27,4 @@ const bgColor = Color(0xFF161616);
 
 // ADICIONAIS
 const unselectedNavBarItemColor = Color(0xFF9A9A9A);
-const selectedNavBarItemColor = colorPrimary;
+const selectedNavBarItemColor = Color.fromARGB(255, 48, 113, 244);

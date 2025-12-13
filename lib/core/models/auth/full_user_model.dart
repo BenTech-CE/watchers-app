@@ -5,19 +5,19 @@ import 'package:watchers/core/models/series/serie_model.dart';
 
 class FullUserModel {
   final String id;
-  final String username;
-  final String? fullName;
-  final String? avatarUrl;
-  final String? bio;
+  String username;
+  String? fullName;
+  String? avatarUrl;
+  String? bio;
   final String createdAt;
-  final int followingCount;
-  final int followerCount;
-  final bool privateWatchlist;
-  final List<ListModel> lists;
+  int followingCount;
+  int followerCount;
+  bool privateWatchlist;
+  List<ListModel> lists;
   List<SerieModel> favorites;
-  final List<ReviewModel> reviews;
-  final List<SerieModel> watchlist;
-  final List<StarDistributionModel> starDistribution;
+  List<ReviewModel> reviews;
+  List<SerieModel> watchlist;
+  List<StarDistributionModel> starDistribution;
 
   FullUserModel({
     required this.id,

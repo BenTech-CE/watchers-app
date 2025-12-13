@@ -14,6 +14,19 @@ class FormValidators { // Classe de validadores de formulário
     if (value.length <= 3) {
       return 'Seu nome de usuário deve ter mais de 3 caracteres';
     }
+
+    if (value.contains(' ')) {
+      return 'Seu nome de usuário não pode conter espaços';
+    }
+
+    if (value.contains(RegExp(r'[^a-zA-Z0-9_\.]'))) {
+      return 'Seu nome de usuário só pode conter letras, números, pontos e underscores';
+    }
+
+    if (value.length > 32) {
+      return 'Seu nome de usuário deve ter no máximo 32 caracteres';
+    }
+
     //Verificar se já existe o Username no banco de dados.
     return null;
   }
