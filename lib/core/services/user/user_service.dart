@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/auth/user_diary_model.dart';
@@ -345,42 +346,56 @@ class UserService {
       }
 
       final Uint8List fileBytes = await image.readAsBytes();
+      final String mimeType = image.mimeType ?? 'image/jpeg';
       
       final request = http.MultipartRequest(
         'POST',
         Api.editAvatarEndpoint,
       );
-      print(request.url);
-      request.fields['_method'] = 'POST';
-      print(request.fields);
-      print(request.headers);
-      request.headers.addAll(Headers.auth(authService));
+      
+      // Adiciona headers de autenticação
+      final authHeaders = Headers.auth(authService);
+      // Remove Content-Type pois o MultipartRequest define automaticamente
+      authHeaders.remove('Content-Type');
+      request.headers.addAll(authHeaders);
 
-      final multipartFileBanner = http.MultipartFile.fromBytes(
+      final multipartFile = http.MultipartFile.fromBytes(
         'avatar', 
         fileBytes,
-        filename: image.name
+        filename: image.name,
+        contentType: MediaType.parse(mimeType),
       );
 
-      request.files.add(multipartFileBanner);
+      request.files.add(multipartFile);
 
-      final response = await request.send();
-      final responseBody = await response.stream.bytesToString();
+      // Não seguir redirects automaticamente para evitar conversão POST -> GET
+      final client = http.Client();
+      final streamedResponse = await client.send(request);
+      final response = await http.Response.fromStream(streamedResponse);
+      client.close();
 
-      // print('Status Code: ${response.statusCode}');
-      print('Response Body: ${responseBody}');
-
-      final jsonResponse = jsonDecode(responseBody);
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
         return jsonResponse['avatar_url'];
       } else {
-        throw UserServiceException(
-          jsonResponse['error'],
-          code: response.statusCode.toString(),
-        );
+        try {
+          final jsonResponse = jsonDecode(response.body);
+          throw UserServiceException(
+            jsonResponse['error'] ?? 'Erro desconhecido',
+            code: response.statusCode.toString(),
+          );
+        } catch (_) {
+          throw UserServiceException(
+            'Erro no servidor: ${response.statusCode}',
+            code: response.statusCode.toString(),
+          );
+        }
       }
     } catch (e) {
+      if (e is UserServiceException) rethrow;
       throw UserServiceException('Erro ao fazer upload do avatar: $e');
     }
   }

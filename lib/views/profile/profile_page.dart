@@ -18,6 +18,7 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/utils/number.dart';
 import 'package:watchers/views/search/search_page.dart';
+import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/card_skeleton.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
@@ -247,6 +248,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
+            if (!userProvider.isLoadingUser && externalUser)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: Button(
+                  label: "Seguir", 
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  trailingIcon: Iconify(Mdi.user_plus_outline, size: 20, color: tColorPrimary)
+                )
+              ),
+            ),
             if (!userProvider.isLoadingUser && displayUser?.favorites.isNotEmpty == true)
             LineSeparator(),
             if (!userProvider.isLoadingUser && displayUser?.favorites.isNotEmpty == true)
@@ -306,9 +320,15 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Assistir Futuramente',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  Row(
+                    spacing: 6,
+                    children: [
+                      if (user != null && user!.privateWatchlist) Iconify(Mdi.eye_off, size: 20, color: Colors.white,),
+                      Text(
+                        'Assistir Futuramente',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ],
                   ),
                   _buildChevronAction(() {Navigator.pushNamed(context, "/profile/watchlist", arguments: externalUser);}, displayUser?.watchlist.length ?? 0),
                 ],

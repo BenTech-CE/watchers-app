@@ -11,6 +11,7 @@ class Button extends StatelessWidget {
   final ButtonVariant variant;
   final bool loading;
   final bool disabled;
+  final Widget? trailingIcon;
 
   const Button({
     super.key,
@@ -21,6 +22,7 @@ class Button extends StatelessWidget {
     this.borderRadius = const BorderRadius.all(Radius.circular(16)),
     this.loading = false,
     this.disabled = false,
+    this.trailingIcon,
   });
 
   @override
@@ -45,7 +47,14 @@ class Button extends StatelessWidget {
                 height: 16,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : Text(label),
+            : trailingIcon != null ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 6,
+              children: [
+                Text(label, textAlign: TextAlign.center),
+                trailingIcon!,
+              ],
+            ) : Text(label),
       ),
     );
   }
