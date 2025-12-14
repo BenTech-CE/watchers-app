@@ -258,10 +258,10 @@ class _AddMultipleToListPageState extends State<AddMultipleToListPage> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            bottom: 0,
-            top: 0,
+            left: 20,
+            right: 20,
+            bottom: 20,
+            top: 20,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

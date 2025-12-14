@@ -16,6 +16,7 @@ import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/core/utils/number.dart';
 import 'package:watchers/views/search/search_page.dart';
 import 'package:watchers/widgets/card_skeleton.dart';
 import 'package:watchers/widgets/image_card.dart';
@@ -208,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          "${displayUser?.followerCount ?? 0}",
+                                          "${displayUser?.followerCount.toCompactString() ?? 0}",
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -225,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     TextSpan(
                                       text:
-                                          "${displayUser?.followingCount ?? 0}",
+                                          "${displayUser?.followingCount.toCompactString() ?? 0}",
                                       style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),

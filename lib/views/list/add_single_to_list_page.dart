@@ -3,6 +3,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
@@ -18,21 +19,32 @@ class AddSingleToListPage extends StatefulWidget {
 }
 
 class _AddSingleToListPageState extends State<AddSingleToListPage> {
-  String? serieId;
+  SerieModel? serie;
   Set<String> selectedListsIds = {};
 
+  Set<String> alreadyInListsIds = {};
+
   void _modifyList() async {
-    if (serieId == null) return;
+    if (serie == null) return;
 
     final listsProvider = context.read<ListsProvider>();
     final userProvider = context.read<UserProvider>();
 
-    for (final listId in selectedListsIds) {
-      await listsProvider.addSeriesToList(listId, [int.parse(serieId!)]);
+    final listsToAddSerie = selectedListsIds.difference(alreadyInListsIds);
+    final listsToRemoveSerie = alreadyInListsIds.difference(selectedListsIds);
+
+    for (final listId in listsToAddSerie) {
+      await listsProvider.addSeriesToList(listId, [int.parse(serie!.id)]);
     }
 
+    for (final listId in listsToRemoveSerie) {
+      await listsProvider.removeSeriesFromList(listId, [int.parse(serie!.id)]);
+    }
+
+    userProvider.setCurrentSeriesInLists(selectedListsIds.toList());
+
     // Atualiza as listas do usuário
-    userProvider.getCurrentUser();
+    await userProvider.getCurrentUser();
 
     if (listsProvider.errorMessage != null) {
       if (mounted) {
@@ -45,6 +57,10 @@ class _AddSingleToListPageState extends State<AddSingleToListPage> {
 
     if (mounted) {
       Navigator.pop(context);
+
+      ScaffoldMessenger.of(
+          context,
+      ).showSnackBar(const SnackBar(content: Text("Lista atualizada com sucesso!")));
     }
   }
 
@@ -53,9 +69,16 @@ class _AddSingleToListPageState extends State<AddSingleToListPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)!.settings.arguments as String?;
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      final UserProvider userProvider = context.read<UserProvider>();
+
       setState(() {
-        serieId = args;
+        serie = args['series'];
+        final inLists = userProvider.currentSeriesInLists;
+
+        alreadyInListsIds = Set.from(inLists);
+        selectedListsIds = Set.from(alreadyInListsIds);
       });
     });
   }
@@ -78,7 +101,17 @@ class _AddSingleToListPageState extends State<AddSingleToListPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 20,
           children: [
-            Button(label: "Criar Nova Lista", onPressed: () {}),
+            Button(label: "Criar Nova Lista", onPressed: () {
+              listsProvider.setListSeriesAdd([serie!]);
+
+              Navigator.pushNamed(
+                context,
+                '/list/create',
+                arguments: {
+                  'fromAddSingle': true,
+                },
+              );
+            }),
             Expanded(
               child: ListView.separated(
                 separatorBuilder: (BuildContext context, int index) {
@@ -110,10 +143,10 @@ class _AddSingleToListPageState extends State<AddSingleToListPage> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            bottom: 0,
-            top: 0,
+            left: 20,
+            right: 20,
+            bottom: 20,
+            top: 20,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -126,14 +159,15 @@ class _AddSingleToListPageState extends State<AddSingleToListPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
+                  disabled: listsProvider.isLoading || userProvider.isLoadingUser,
                 ),
               ),
               Expanded(
                 child: Button(
                   label: "Concluir",
                   onPressed: _modifyList,
-                  loading: listsProvider.isLoading,
-                  disabled: listsProvider.isLoading,
+                  loading: listsProvider.isLoading || userProvider.isLoadingUser,
+                  disabled: listsProvider.isLoading || userProvider.isLoadingUser,
                 ),
               ),
             ],

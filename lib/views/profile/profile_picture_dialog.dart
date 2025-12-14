@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/button.dart';
@@ -17,8 +19,24 @@ class ProfilePictureDialog extends StatefulWidget {
 }
 
 class _ProfilePictureDialogState extends State<ProfilePictureDialog> {
+  void _changeProfilePicture() async {
+    final UserProvider userProvider = context.read<UserProvider>();
+
+    await userProvider.updateUserAvatar(widget.file);
+
+    if (userProvider.errorMessage != null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
+    }
+
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = context.watch<UserProvider>();
+
     return AlertDialog(
       contentPadding: EdgeInsets.all(16),
       titlePadding: EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -67,12 +85,15 @@ class _ProfilePictureDialogState extends State<ProfilePictureDialog> {
           onPressed: () => Navigator.pop(context), 
           variant: ButtonVariant.secondary,
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          disabled: userProvider.isLoadingChangeField,
         ),
         Button(
           label: "Confirmar", 
-          onPressed: () => Navigator.pop(context), 
+          onPressed: () => _changeProfilePicture(), 
           variant: ButtonVariant.primary,
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          disabled: userProvider.isLoadingChangeField,
+          loading: userProvider.isLoadingChangeField,
         ),
       ],
     );

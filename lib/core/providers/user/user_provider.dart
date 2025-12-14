@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/auth/user_diary_model.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
@@ -21,6 +22,9 @@ class UserProvider with ChangeNotifier {
   UserInteractionData _currSeasonUID = UserInteractionData.empty();
   UserInteractionData _currEpisodeUID = UserInteractionData.empty();
 
+  List<String> _currSeriesInLists = [];
+  List<String> get currentSeriesInLists => _currSeriesInLists;
+
   String? _errorMessage;
   bool _isLoadingGetFavorites = false;
   bool _isLoadingGetWatched = false;
@@ -37,6 +41,9 @@ class UserProvider with ChangeNotifier {
 
   bool _isLoadingUser = false;
   bool get isLoadingUser => _isLoadingUser;
+
+  bool _isLoadingChangeField = false;
+  bool get isLoadingChangeField => _isLoadingChangeField;
 
   String? get errorMessage => _errorMessage;
 
@@ -289,6 +296,37 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateUserFields(Map<String, dynamic> fields) async {
+    _setLoadingChangeField(true);
+    try {
+      clearError();
+      await _userService.updateUserFields(fields);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingChangeField(false);
+    }
+    return;
+  }
+
+  Future<void> updateUserAvatar(XFile image) async {
+    _setLoadingChangeField(true);
+    try {
+      clearError();
+      final url = await _userService.uploadAvatar(image);
+      if (_currentUser != null) {
+        _currentUser!.avatarUrl = url;
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingChangeField(false);
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
@@ -349,8 +387,18 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void _setLoadingChangeField(bool loading) {
+    _isLoadingChangeField = loading;
+    notifyListeners();
+  }
+
   void _setError(String message) {
     _errorMessage = message;
+    notifyListeners();
+  }
+
+  void setCurrentSeriesInLists(List<String> listsIds) {
+    _currSeriesInLists = listsIds;
     notifyListeners();
   }
 

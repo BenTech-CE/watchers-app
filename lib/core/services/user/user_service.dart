@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/auth/user_diary_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
@@ -44,7 +46,7 @@ class UserService {
         return FullUserModel.fromJson(jsonResponse);
       } else {
         throw UserServiceException(
-          'Erro ao buscar o usuário atual: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -74,7 +76,7 @@ class UserService {
         return FullUserModel.fromJson(jsonResponse);
       } else {
         throw UserServiceException(
-          'Erro ao buscar o usuário: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -107,7 +109,7 @@ class UserService {
         return diaryEntries;
       } else {
         throw UserServiceException(
-          'Erro ao buscar o diário do usuário: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -148,7 +150,7 @@ class UserService {
         return series;
       } else {
         throw UserServiceException(
-          'Erro ao buscar séries ${type.name}: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -204,7 +206,7 @@ class UserService {
         return;
       } else {
         throw UserServiceException(
-          'Erro ao adicionar as séries ${type.name}: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -239,7 +241,7 @@ class UserService {
         return ReviewModel.fromJson(jsonResponse);
       } else {
         throw UserServiceException(
-          'Erro ao salvar a review da série: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -295,12 +297,91 @@ class UserService {
         return;
       } else {
         throw UserServiceException(
-          'Erro ao deletar as séries ${type.name}: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
     } catch (e) {
       throw UserServiceException('Erro ao deletar as séries ${type.name}: $e');
+    }
+  }
+
+  Future<void> updateUserFields(Map<String, dynamic> fields) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.patch(
+        Api.currentUserEndpoint,
+        headers: Headers.auth(authService),
+        body: jsonEncode(fields),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        throw UserServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao atualizar os dados do usuário: $e');
+    }
+  }
+
+  Future<String> uploadAvatar(
+    XFile image,
+  ) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final Uint8List fileBytes = await image.readAsBytes();
+      
+      final request = http.MultipartRequest(
+        'POST',
+        Api.editAvatarEndpoint,
+      );
+      print(request.url);
+      request.fields['_method'] = 'POST';
+      print(request.fields);
+      print(request.headers);
+      request.headers.addAll(Headers.auth(authService));
+
+      final multipartFileBanner = http.MultipartFile.fromBytes(
+        'avatar', 
+        fileBytes,
+        filename: image.name
+      );
+
+      request.files.add(multipartFileBanner);
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      // print('Status Code: ${response.statusCode}');
+      print('Response Body: ${responseBody}');
+
+      final jsonResponse = jsonDecode(responseBody);
+
+      if (response.statusCode == 200) {
+        return jsonResponse['avatar_url'];
+      } else {
+        throw UserServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao fazer upload do avatar: $e');
     }
   }
 }

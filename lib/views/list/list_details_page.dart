@@ -15,6 +15,7 @@ import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/utils/number.dart';
+import 'package:watchers/views/list/list_options_sheet.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_series_skeleton.dart';
 
@@ -150,30 +151,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
           if (list.author.id == userProvider.currentUser?.id && additionalData != null)
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/list/edit',
-                  arguments: {
-                    'name': list.name,
-                    'description': list.description,
-                    'id': list.id,
-                    'isPrivate': list.isPrivate,
-                    'series':
-                        additionalData.series
-                            .map(
-                              (e) => SerieModel(
-                                id: e.id.toString(),
-                                popularity: 0,
-                                originalName: '',
-                                name: '',
-                                overview: '',
-                                posterUrl: e.posterUrl,
-                                backgroundUrl: e.backgroundUrl,
-                              ),
-                            )
-                            .toList() ??
-                        [],
-                  },
+                showModalBottomSheet<void>(
+                  context: context,
+                  showDragHandle: true,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) => ListOptionsSheet(),
                 );
               },
               icon: Icon(Icons.settings, color: tColorPrimary)

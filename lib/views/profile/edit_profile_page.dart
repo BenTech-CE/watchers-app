@@ -16,6 +16,7 @@ import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
+import 'package:watchers/core/validators/validators.dart';
 import 'package:watchers/views/profile/profile_picture_dialog.dart';
 import 'package:watchers/views/search/search_page.dart';
 import 'package:watchers/widgets/card_skeleton.dart';
@@ -109,6 +110,131 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _emailController.text = authInfo.user?.email ?? "";
     });
 
+  }
+
+  void _changeUsername() async {
+    final userProvider = context.read<UserProvider>();
+
+    final username = _usernameController.text.trim();
+
+    final validationMessage = FormValidators.validateUsername(username);
+    print(user?.username);
+    if (validationMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(validationMessage),
+        ),
+      );
+
+      setState(() => _isEditingUsername = true);
+      _usernameFocusNode.requestFocus();
+
+      return;
+    } else if (username != user?.username) {
+      await userProvider.updateUserFields({
+        "username": username,
+      });
+
+      if (userProvider.errorMessage != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
+
+          setState(() => _isEditingUsername = true);
+          _usernameFocusNode.requestFocus();
+        }
+        return;
+      } else {
+        setState(() {
+          user?.username = username;
+        });
+      }
+    }
+  }
+
+  void _changeName() async {
+    final userProvider = context.read<UserProvider>();
+
+    final name = _nameController.text.trim();
+
+    if (name != user?.fullName) {
+      await userProvider.updateUserFields({
+        "full_name": name,
+      });
+
+      if (userProvider.errorMessage != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
+
+          setState(() => _isEditingName = true);
+          _nameFocusNode.requestFocus();
+        }
+        return;
+      } else {
+        setState(() {
+          user?.fullName = name;  
+        });
+      }
+    }
+  }
+
+  void _changeBio() async {
+    final userProvider = context.read<UserProvider>();
+
+    final bio = _bioController.text.trim();
+
+    if (bio != user?.bio) {
+      await userProvider.updateUserFields({
+        "bio": bio,
+      });
+
+      if (userProvider.errorMessage != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
+
+          setState(() => _isEditingBio = true);
+          _bioFocusNode.requestFocus();
+        }
+        return;
+      } else {
+        setState(() {
+          user?.bio = bio;  
+        });        
+      }
+    }
+  }
+
+  void _changePrivateWatchlist(bool newValue) async {
+    final userProvider = context.read<UserProvider>();
+
+    if (newValue != user?.privateWatchlist) {
+      setState(() {
+        user?.privateWatchlist = newValue;
+      });
+
+      await userProvider.updateUserFields({
+        "private_watchlist": newValue,
+      });
+
+      if (userProvider.errorMessage != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
+
+          setState(() {
+            user?.privateWatchlist = !newValue;
+          });
+        }
+
+        return;
+      }
+    }
   }
 
   // Largura fixa para o label, garantindo alinhamento dos campos
@@ -282,10 +408,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onSave: () {
                         setState(() => _isEditingUsername = false);
                         _usernameFocusNode.unfocus();
-                        // TODO: Salvar username no backend
+                        
+                        _changeUsername();
                       },
                       onSubmitted: () {
                         setState(() => _isEditingUsername = false);
+
+                        _changeUsername();
                       },
                     ),
                     const SizedBox(height: 20),
@@ -302,10 +431,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onSave: () {
                         setState(() => _isEditingName = false);
                         _nameFocusNode.unfocus();
-                        // TODO: Salvar nome no backend
+                        
+                        _changeName();
                       },
                       onSubmitted: () {
                         setState(() => _isEditingName = false);
+
+                        _changeName();
                       },
                     ),
                     const SizedBox(height: 20),
@@ -323,10 +455,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onSave: () {
                         setState(() => _isEditingBio = false);
                         _bioFocusNode.unfocus();
-                        // TODO: Salvar bio no backend
+                        
+                        _changeBio();
                       },
                       onSubmitted: () {
                         setState(() => _isEditingBio = false);
+
+                        _changeBio();
                       },
                     ),
                     const SizedBox(height: 20),
@@ -483,9 +618,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Switch(
                         value: user?.privateWatchlist ?? false,
                         onChanged: (value) {
-                          setState(() {
-                            user?.privateWatchlist = value;
-                          });
+                          _changePrivateWatchlist(value);
                         }
                       ),
                     ],
@@ -559,17 +692,31 @@ class _EditSaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: isEditing 
-          ? tColorPrimary.withOpacity(0.2)
-          : Color.fromARGB(44, 255, 255, 255),
-      borderRadius: BorderRadius.circular(999),
-      child: InkWell(
-        onTap: isEditing ? onSave : onEdit,
+    final bool isLoading = context.select<UserProvider, bool>((p) => p.isLoadingChangeField);
+
+    return Opacity(
+      // 2. VISUAL: Reduz a opacidade para 0.5 se estiver carregando (parece desativado)
+      opacity: isLoading ? 0.5 : 1.0,
+      child: Material(
+        color: isEditing 
+            ? tColorPrimary.withOpacity(0.2)
+            : const Color.fromARGB(44, 255, 255, 255),
         borderRadius: BorderRadius.circular(999),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-          child: Iconify(isEditing ? Mdi.content_save : lucideEdit, size: 14, color: tColorPrimary),
+        child: InkWell(
+          // 3. LÓGICA: Se isLoading for true, passamos NULL.
+          // Isso desativa o clique e o efeito visual de toque do InkWell.
+          onTap: isLoading 
+              ? null 
+              : (isEditing ? onSave : onEdit),
+          borderRadius: BorderRadius.circular(999),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+            child: Iconify(
+              isLoading ? lucideEdit : isEditing ? Mdi.content_save : lucideEdit, 
+              size: 14, 
+              color: tColorPrimary
+            ),
+          ),
         ),
       ),
     );

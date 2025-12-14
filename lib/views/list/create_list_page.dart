@@ -24,6 +24,8 @@ class _CreateListPageState extends State<CreateListPage> {
 
   bool isPrivate = false;
 
+  bool fromAddSingle = false;
+
   void _createList() async {
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
@@ -42,7 +44,7 @@ class _CreateListPageState extends State<CreateListPage> {
       return;
     }
 
-    await listsProvider.createList(
+    ListModel? result = await listsProvider.createList(
       _titleController.text.trim(),
       isPrivate,
       _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
@@ -58,11 +60,28 @@ class _CreateListPageState extends State<CreateListPage> {
       return;
     }
 
-    listsProvider.clearListSeriesAdd();
     await userProvider.getCurrentUser();
+    
+    listsProvider.clearListSeriesAdd();
 
     if (mounted) {
-      Navigator.pop(context, true); // Retorna true indicando que criou lista
+      if (fromAddSingle) {
+        final li = List<String>.from(userProvider.currentSeriesInLists);
+
+        if (result != null) {
+          li.add(result.id.toString());
+        }
+
+        userProvider.setCurrentSeriesInLists(li);
+
+        Navigator.of(context).popUntil(ModalRoute.withName('/series/detail'));
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Lista atualizada com sucesso!")));
+      } else {
+        Navigator.pop(context, true);
+      }
     }
   }
 
@@ -72,6 +91,16 @@ class _CreateListPageState extends State<CreateListPage> {
 
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+      if (args != null && args['fromAddSingle'] == true) {
+        setState(() {
+          fromAddSingle = true;
+        });
+      }
+    });
   }
 
   @override
@@ -292,14 +321,15 @@ class _CreateListPageState extends State<CreateListPage> {
                       listsProvider.clearListSeriesAdd();
                       Navigator.pop(context);
                     },
+                    disabled: listsProvider.isLoading || userProvider.isLoadingUser,
                   ),
                 ),
                 Expanded(
                   child: Button(
                     label: "Criar",
                     onPressed: _createList,
-                    loading: listsProvider.isLoading,
-                    disabled: listsProvider.isLoading,
+                    loading: listsProvider.isLoading || userProvider.isLoadingUser,
+                    disabled: listsProvider.isLoading || userProvider.isLoadingUser,
                   ),
                 ),
               ],

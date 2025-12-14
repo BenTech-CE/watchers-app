@@ -8,7 +8,9 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
+import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/views/search/search_page.dart';
@@ -24,6 +26,7 @@ class SeriesOptionsSheet extends StatefulWidget {
   final String? logoPath;
   final int? seasonNumber;
   final int? episodeNumber;
+  final SerieModel? series;
 
   const SeriesOptionsSheet({
     super.key,
@@ -35,6 +38,7 @@ class SeriesOptionsSheet extends StatefulWidget {
     this.episodeNumber,
     this.posterPath,
     this.logoPath,
+    this.series,
   });
 
   @override
@@ -317,7 +321,9 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
   }
 
   void _navigateToAddList() {
-    Navigator.pushReplacementNamed(context, '/list/addsingle', arguments: widget.id);
+    Navigator.pushReplacementNamed(context, '/list/addsingle', arguments: {
+      'series': widget.series,
+    });
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:watchers/core/mocks/genders.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/models/series/genre_model.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
@@ -63,6 +64,8 @@ class _SeriesPageState extends State<SeriesPage> {
           "series",
           result?.userData ?? UserInteractionData.empty(),
         );
+
+        userProvider.setCurrentSeriesInLists(result?.userLists?.map((e) => e.id).toList() ?? []);
       }
     });
   }
@@ -145,7 +148,15 @@ class _SeriesPageState extends State<SeriesPage> {
           scope: "series",
           isSeries: true,
           posterPath: posterPath,
-          logoPath: logoPath
+          logoPath: logoPath,
+          series: SerieModel(
+            id: series!.id.toString(), 
+            popularity: series!.popularity ?? 0, 
+            originalName: series!.originalName ?? '', 
+            name: series!.name ?? '', 
+            overview: series!.overview ?? '',
+            posterUrl: series!.posterPath != null ? "https://image.tmdb.org/t/p/w500${series!.posterPath!}" : '',
+          ),
         ),
       );
     }

@@ -101,10 +101,10 @@ class _EditListPageState extends State<EditListPage> {
         removedSeriesLADS.toList()
       );
     }
-
-    listsProvider.clearListSeriesAdd();
     
     await userProvider.getCurrentUser();
+
+    listsProvider.clearListSeriesAdd();
 
     if (mounted) {
       Navigator.pop(context, true); // Retorna true indicando que criou lista
@@ -409,14 +409,15 @@ class _EditListPageState extends State<EditListPage> {
                       listsProvider.clearListSeriesAdd();
                       Navigator.pop(context);
                     },
+                    disabled: listsProvider.isLoading || userProvider.isLoadingUser,
                   ),
                 ),
                 Expanded(
                   child: Button(
-                    label: "Criar",
+                    label: "Editar",
                     onPressed: _createList,
-                    loading: listsProvider.isLoading,
-                    disabled: listsProvider.isLoading,
+                    loading: listsProvider.isLoading || userProvider.isLoadingUser,
+                    disabled: listsProvider.isLoading || userProvider.isLoadingUser,
                   ),
                 ),
               ],

@@ -6,46 +6,47 @@ import 'package:watchers/core/models/reviews/review_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 
 class FullSeriesModel {
-  bool? adult;
-  String? backdropPath;
-  List<CreatedBy>? createdBy;
-  List<int>? episodeRunTime;
-  String? firstAirDate;
-  List<Genre>? genres;
-  String? homepage;
-  int? id;
-  bool? inProduction;
-  List<String>? languages;
-  String? lastAirDate;
-  EpisodeToAir? lastEpisodeToAir;
-  String? name;
-  EpisodeToAir? nextEpisodeToAir;
-  List<Network>? networks;
-  int? numberOfEpisodes;
-  int? numberOfSeasons;
-  List<String>? originCountry;
-  String? originalLanguage;
-  String? originalName;
-  String? overview;
-  double? popularity;
-  String? posterPath;
-  List<ProductionCompany>? productionCompanies;
-  List<ProductionCountry>? productionCountries;
-  List<Season>? seasons;
-  List<SpokenLanguage>? spokenLanguages;
-  String? status;
-  String? tagline;
-  String? type;
-  double? voteAverage;
-  int? voteCount;
-  Credits? credits;
-  Images? images;
-  Recommendations? recommendations;
-  ContentRatings? contentRatings;
+  final bool? adult;
+  final String? backdropPath;
+  final List<CreatedBy>? createdBy;
+  final List<int>? episodeRunTime;
+  final String? firstAirDate;
+  final List<Genre>? genres;
+  final String? homepage;
+  final int? id;
+  final bool? inProduction;
+  final List<String>? languages;
+  final String? lastAirDate;
+  final EpisodeToAir? lastEpisodeToAir;
+  final String? name;
+  final EpisodeToAir? nextEpisodeToAir;
+  final List<Network>? networks;
+  final int? numberOfEpisodes;
+  final int? numberOfSeasons;
+  final List<String>? originCountry;
+  final String? originalLanguage;
+  final String? originalName;
+  final String? overview;
+  final double? popularity;
+  final String? posterPath;
+  final List<ProductionCompany>? productionCompanies;
+  final List<ProductionCountry>? productionCountries;
+  final List<Season>? seasons;
+  final List<SpokenLanguage>? spokenLanguages;
+  final String? status;
+  final String? tagline;
+  final String? type;
+  final double? voteAverage;
+  final int? voteCount;
+  final Credits? credits;
+  final Images? images;
+  final Recommendations? recommendations;
+  final ContentRatings? contentRatings;
   UserInteractionData? userData;
   List<StarDistributionModel>? starDistribution;
   List<ReviewModel>? reviews;
   List<ListModel>? lists;
+  List<ListModel>? userLists;
 
   FullSeriesModel({
     this.adult,
@@ -88,6 +89,7 @@ class FullSeriesModel {
     this.starDistribution,
     this.reviews,
     this.lists,
+    this.userLists,
   });
 
   factory FullSeriesModel.fromJson(Map<String, dynamic> json) {
@@ -178,6 +180,10 @@ class FullSeriesModel {
       lists: (json['lists'] as List<dynamic>?)
           ?.map((e) => ListModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      userLists: (json['userLists'] as List<dynamic>?)
+          ?.map((e) => ListModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      
     );
   }
 }
