@@ -25,6 +25,9 @@ class ListsProvider with ChangeNotifier {
   List<SerieModel> _listSeriesAdd = [];
   List<SerieModel> get listSeriesAdd => _listSeriesAdd;
 
+  FullListModel? _currentListDetails;
+  FullListModel? get currentListDetails => _currentListDetails;
+
   Future<List<ListModel>> getAllLists() async {
     _setLoading(true);
     try {
@@ -101,18 +104,19 @@ class ListsProvider with ChangeNotifier {
     return;
   }
 
-  Future<FullListModel?> getListDetails(String id) async {
+  Future<void> getListDetails(String id) async {
+    _setCurrentListDetails(null);
     _setLoading(true);
     try {
       clearError();
-      return await _listsService.getListDetails(id);
+      _setCurrentListDetails(await _listsService.getListDetails(id));
     } catch (e) {
       print(e);
       _setError(e.toString());
     } finally {
       _setLoading(false);
     }
-    return null;
+    return;
   }
 
   Future<ListModel?> createList(
@@ -129,6 +133,34 @@ class ListsProvider with ChangeNotifier {
         isPrivate,
         description,
         series,
+      );
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+    return null;
+  }
+
+  Future<ListModel?> editList(
+    String id,
+    String name,
+    bool isPrivate,
+    String? description,
+    List<String> addedSeries,
+    List<String> removedSeries,
+  ) async {
+    _setLoading(true);
+    try {
+      clearError();
+      return await _listsService.editList(
+        id,
+        name,
+        isPrivate,
+        description,
+        addedSeries,
+        removedSeries,
       );
     } catch (e) {
       print(e);
@@ -161,6 +193,26 @@ class ListsProvider with ChangeNotifier {
 
   void clearListSeriesAdd() {
     _listSeriesAdd.clear();
+    notifyListeners();
+  }
+
+  void setNewDataForListDetails(String name, bool isPrivate, String? description, List<ListAdditionalDataSeries> addedSeries, List<ListAdditionalDataSeries> removedSeries) {
+    if (_currentListDetails != null) {
+      _currentListDetails!.listData.name = name;
+      _currentListDetails!.listData.isPrivate = isPrivate;
+      _currentListDetails!.listData.description = description;
+      for (var series in addedSeries) {
+        _currentListDetails!.additionalData.series.add(series);
+      }
+      for (var series in removedSeries) {
+        _currentListDetails!.additionalData.series.removeWhere((s) => s.id == series.id);
+      }
+      notifyListeners();
+    }
+  }
+
+  void _setCurrentListDetails(FullListModel? listDetails) {
+    _currentListDetails = listDetails;
     notifyListeners();
   }
 

@@ -16,9 +16,10 @@ class UserProvider with ChangeNotifier {
 
   UserInteractionData _currSeriesUID = UserInteractionData.empty();
   UserInteractionData currentUserInteractionData(String scope) =>
-      scope == 'series' ? _currSeriesUID : scope == 'season' ? _currSeasonUID : UserInteractionData.empty();
+      scope == 'series' ? _currSeriesUID : scope == 'season' ? _currSeasonUID : scope == 'episode' ? _currEpisodeUID : UserInteractionData.empty();
 
   UserInteractionData _currSeasonUID = UserInteractionData.empty();
+  UserInteractionData _currEpisodeUID = UserInteractionData.empty();
 
   String? _errorMessage;
   bool _isLoadingGetFavorites = false;
@@ -358,6 +359,8 @@ class UserProvider with ChangeNotifier {
       _currSeriesUID = data;
     } else if (scope == 'season') {
       _currSeasonUID = data;
+    } else if (scope == 'episode') {
+      _currEpisodeUID = data;
     }
     notifyListeners();
   }
@@ -367,6 +370,8 @@ class UserProvider with ChangeNotifier {
       _currSeriesUID = UserInteractionData.empty();
     } else if (scope == 'season') {
       _currSeasonUID = UserInteractionData.empty();
+    } else if (scope == 'episode') {
+      _currEpisodeUID = UserInteractionData.empty();
     }
     notifyListeners();
   }

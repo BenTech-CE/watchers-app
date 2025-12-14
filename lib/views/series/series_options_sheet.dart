@@ -385,9 +385,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Row(
-                mainAxisAlignment: widget.isSeries
-                    ? MainAxisAlignment.spaceBetween
-                    : MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _iconAction(
                     icon: Oi.eye,

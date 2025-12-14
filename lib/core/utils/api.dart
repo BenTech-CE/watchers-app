@@ -21,6 +21,9 @@ class Api {
       Uri.parse('${baseUrl}series/$id');
   static Uri seasonDetailsEndpoint(String seriesId, String seasonNumber) =>
       Uri.parse('${baseUrl}series/$seriesId/season/$seasonNumber');
+  static Uri episodeDetailsEndpoint(
+          String seriesId, String seasonNumber, String episodeNumber) =>
+      Uri.parse('${baseUrl}series/$seriesId/season/$seasonNumber/episode/$episodeNumber'); 
   static Uri genreEndpoint(int genre) =>
       Uri.parse('${baseUrl}series/genre/$genre');
 
@@ -48,6 +51,10 @@ class Api {
   static final Uri currentUserEndpoint = Uri.parse(
     '${baseUrl}user/me',
   );
+  static final Uri editAvatarEndpoint = Uri.parse(
+    '${baseUrl}user/me/avatar',
+  );
+
   static Uri userByIdEndpoint(String id) =>
       Uri.parse('${baseUrl}user/$id');
   static Uri userDiaryById(String id) =>

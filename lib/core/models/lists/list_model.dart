@@ -34,16 +34,16 @@ enum ListType {
 
 class ListModel {
   final String id;
-  final String name;
+  String name;
   final String createdAt;
-  final int likeCount;
-  final int commentCount;
-  final bool isPrivate;
-  final String? description;
+  int likeCount;
+  int commentCount;
+  bool isPrivate;
+  String? description;
   final ListAuthorModel author;
   final List<String> thumbnails;
 
-  const ListModel({
+  ListModel({
     required this.id,
     required this.name,
     required this.createdAt,

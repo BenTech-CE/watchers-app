@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/mocks/genders.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
+import 'package:watchers/core/models/series/full_episode_model.dart';
 import 'package:watchers/core/models/series/full_season_model.dart';
 import 'package:watchers/core/models/series/full_serie_model.dart';
 import 'package:watchers/core/models/series/genre_model.dart';
@@ -15,6 +16,7 @@ import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/views/series/series_options_sheet.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
+import 'package:watchers/widgets/review_card_in_serie.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:path/path.dart' as path;
@@ -28,6 +30,7 @@ class EpisodePage extends StatefulWidget {
 
 class _EpisodePageState extends State<EpisodePage> {
   SeasonEpisode? episode;
+  FullEpisodeModel? fullEp;
   FullSeriesModel? series;
   String? seasonPosterPath;
 
@@ -52,16 +55,29 @@ class _EpisodePageState extends State<EpisodePage> {
       final SeasonEpisode episode = args['episode'];
       final String seasonPosterPath = args['seasonPosterPath'];
       final FullSeriesModel series = args['series'];
-
+      final seriesProvider = context.read<SeriesProvider>();
       final userProvider = context.read<UserProvider>();
+
       userProvider.clearCurrentUserInteractionData("episode");
+
+      final result = await seriesProvider.getEpisodeDetails(
+        series.id.toString(),
+        episode.seasonNumber.toString(),
+        episode.episodeNumber.toString(),
+      );
 
       if (mounted) {
         setState(() {
           this.seasonPosterPath = seasonPosterPath;
           this.episode = episode;
+          fullEp = result;
           this.series = series;
         });
+
+        userProvider.setCurrentUserInteractionData(
+          "episode",
+          result?.userData ?? UserInteractionData.empty(),
+        );
       }
     });
   }
@@ -176,7 +192,7 @@ class _EpisodePageState extends State<EpisodePage> {
           ),
         ),
       ),
-      body: series != null
+      body: fullEp != null
           ? Stack(
               children: [
                 // Imagem de fundo fixa
@@ -291,9 +307,9 @@ class _EpisodePageState extends State<EpisodePage> {
                                       episode!.overview!.isNotEmpty)
                                     Text(episode!.overview ?? ''),
 
-                                  /*GestureDetector(
+                                  GestureDetector(
                                     onTap: () {
-                                      //_sheetReview(context);
+                                      _sheetReview(context);
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
@@ -345,7 +361,7 @@ class _EpisodePageState extends State<EpisodePage> {
                                           color: tColorSecondary,
                                         ),
                                       ),
-                                      Spacer(),
+                                      /*Spacer(),
                                       Text(
                                         "0 ",
                                         style: AppTextStyles.bodyLarge.copyWith(
@@ -358,10 +374,10 @@ class _EpisodePageState extends State<EpisodePage> {
                                         Icons.favorite_rounded,
                                         color: tColorSecondary,
                                         size: 18,
-                                      ),
+                                      ),*/
                                     ],
                                   ),
-                                  StarsChart(data: []),*/
+                                  StarsChart(data: fullEp!.starDistribution ?? []),
                                 ],
                               ),
                             ),
@@ -661,6 +677,8 @@ class _EpisodePageState extends State<EpisodePage> {
 
   Widget _buildReviews() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         RichText(
           text: TextSpan(
@@ -671,7 +689,8 @@ class _EpisodePageState extends State<EpisodePage> {
             ),
             children: [
               TextSpan(
-                text: "${episode!.name}",
+                text:
+                    episode!.name ?? "Episódio ${episode!.episodeNumber ?? ''}",
                 style: AppTextStyles.bodyLarge.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -680,6 +699,10 @@ class _EpisodePageState extends State<EpisodePage> {
             ],
           ),
         ),
+        ...fullEp?.reviews
+                ?.map((review) => ReviewCardInSerie(review: review))
+                .toList() ??
+            [],
       ],
     );
   }

@@ -8,6 +8,7 @@ import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/full_review_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/reviews/reviews_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
@@ -28,8 +29,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
   late AnimationController _animationController;
   late Animation<double> _animation;
 
-  ListModel? list;
-  ListAdditionalData? additionalData;
+  ListModel? listArg;
 
   final ScrollController _scrollController = ScrollController();
   int _appBarOpacity = 0;
@@ -95,17 +95,12 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
       final listArg = ModalRoute.of(context)!.settings.arguments as ListModel;
 
       setState(() {
-        list = listArg;
+        this.listArg = listArg;
       });
 
       final listsProvider = context.read<ListsProvider>();
       
-      final FullListModel? fullList = await listsProvider.getListDetails(listArg.id.toString());
-      if (fullList != null && mounted) {
-        setState(() {
-          additionalData = fullList.additionalData;
-        });
-      }
+      await listsProvider.getListDetails(listArg.id.toString());
 
       if (listsProvider.errorMessage != null && mounted) {
         ScaffoldMessenger.of(
@@ -130,8 +125,12 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    final randomBackground = additionalData != null && additionalData!.series.isNotEmpty
-        ? additionalData!.series[0].backgroundUrl
+    final listsProvider = context.watch<ListsProvider>();
+    final list = listsProvider.currentListDetails != null ? listsProvider.currentListDetails!.listData : listArg;
+    final additionalData = listsProvider.currentListDetails?.additionalData;
+
+    final randomBackground = additionalData != null && additionalData.series.isNotEmpty
+        ? additionalData.series[0].backgroundUrl
         : null;
 
     return list != null ? Scaffold(
@@ -141,12 +140,45 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
-          list?.name ?? "",
+          list.name ?? "",
           style: AppTextStyles.bodyLarge.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          if (list.author.id == userProvider.currentUser?.id && additionalData != null)
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/list/edit',
+                  arguments: {
+                    'name': list.name,
+                    'description': list.description,
+                    'id': list.id,
+                    'isPrivate': list.isPrivate,
+                    'series':
+                        additionalData.series
+                            .map(
+                              (e) => SerieModel(
+                                id: e.id.toString(),
+                                popularity: 0,
+                                originalName: '',
+                                name: '',
+                                overview: '',
+                                posterUrl: e.posterUrl,
+                                backgroundUrl: e.backgroundUrl,
+                              ),
+                            )
+                            .toList() ??
+                        [],
+                  },
+                );
+              },
+              icon: Icon(Icons.settings, color: tColorPrimary)
+            ),
+        ],
       ),
       body: Stack(
         children: [
@@ -218,7 +250,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              list?.name ?? "",
+                              list.name ?? "",
                               style: AppTextStyles.titleLarge
                                   .copyWith(
                                     fontWeight:
@@ -226,7 +258,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                   ),
                             ),
                             Text(
-                              list?.description ?? "",
+                              list.description ?? "",
                               style: AppTextStyles.bodyMedium
                             ),                      
                             // Avatar
@@ -238,16 +270,16 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                     Navigator.pushNamed(
                                       context,
                                       '/profile',
-                                      arguments: list?.author.id,
+                                      arguments: list.author.id,
                                     );
                                   },
                                   child: CircleAvatar(
                                     radius: 16, 
                                     backgroundColor: Colors.grey[800],
-                                    backgroundImage: list?.author.avatarUrl != null
+                                    backgroundImage: list.author.avatarUrl != null
                                         ? NetworkImage(list!.author.avatarUrl!)
                                         : null,
-                                    child: list?.author.avatarUrl == null
+                                    child: list.author.avatarUrl == null
                                         ? const Icon(Icons.person, color: Colors.white)
                                         : null,
                                   ),
@@ -261,11 +293,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                       Navigator.pushNamed(
                                         context,
                                         '/profile',
-                                        arguments: list?.author.id,
+                                        arguments: list.author.id,
                                       );
                                     },
                                     child: Text(
-                                      list?.author.fullName != null && list!.author.fullName!.isNotEmpty ? list!.author.fullName! : "@${list!.author.username}",
+                                      list.author.fullName != null && list!.author.fullName!.isNotEmpty ? list!.author.fullName! : "@${list!.author.username}",
                                       style: const TextStyle(
                                         color: tColorPrimary,
                                         fontSize: 16,
@@ -289,7 +321,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      (list?.likeCount ?? 0).toString(),
+                                      (list.likeCount ?? 0).toString(),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -372,7 +404,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                               child: Row(
                                 spacing: 8,
                                 children: [
-                                  for (ListLikedUser user in additionalData?.likedBy ?? [])
+                                  for (ListLikedUser user in additionalData.likedBy ?? [])
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(
@@ -395,7 +427,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                         ),
                                       ),
                                     ),
-                                  if ((list?.likeCount ?? 0) > 10)
+                                  if ((list.likeCount ?? 0) > 10)
                                     Container(
                                       width: 40,
                                       height: 40,

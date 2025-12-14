@@ -31,75 +31,74 @@ class _ReviewCardInSerieState extends State<ReviewCardInSerie> {
     // Cor de fundo escura conforme a imagem (quase preto)
     final cardColor = Color(0xFF1F1F1F); 
 
-    return Container(
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15.0), // Bordas mais arredondadas conforme a foto
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0), // Padding interno geral
-        child: Column(
-          spacing: 12,
-          mainAxisSize: MainAxisSize.min, // Ocupa apenas o tamanho necessário
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- 1. CABEÇALHO (Avatar, Nome, Estrelas, Like) ---
-            Row(
-              spacing: 12,
-              children: [
-                // Avatar (Maior que no design anterior)
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/profile',
-                      arguments: widget.review.author.id,
-                    );
-                  },
-                  child: CircleAvatar(
-                    radius: 20, 
-                    backgroundColor: Colors.grey[800],
-                    backgroundImage: avatarUrl != null
-                        ? NetworkImage(avatarUrl)
-                        : null,
-                    child: avatarUrl == null
-                        ? const Icon(Icons.person, color: Colors.white)
-                        : null,
-                  ),
-                ),
-
-                // Nome do Usuário
-                Expanded(
-                  child: Text(
-                    widget.review.author.fullName != null && widget.review.author.fullName!.isNotEmpty ? widget.review.author.fullName! : "@${widget.review.author.username}",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500, // Fonte um pouco mais leve/moderna
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/review/detail', arguments: widget.review);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(15.0), // Bordas mais arredondadas conforme a foto
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0), // Padding interno geral
+          child: Column(
+            spacing: 12,
+            mainAxisSize: MainAxisSize.min, // Ocupa apenas o tamanho necessário
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- 1. CABEÇALHO (Avatar, Nome, Estrelas, Like) ---
+              Row(
+                spacing: 12,
+                children: [
+                  // Avatar (Maior que no design anterior)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: CircleAvatar(
+                      radius: 20, 
+                      backgroundColor: Colors.grey[800],
+                      backgroundImage: avatarUrl != null
+                          ? NetworkImage(avatarUrl)
+                          : null,
+                      child: avatarUrl == null
+                          ? const Icon(Icons.person, color: Colors.white)
+                          : null,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-
-                // Estrelas
-                if (widget.review.stars != null)
-                Row(
-                  children: _buildStarRating(widget.review.stars!),
-                ),
-
-                // Ícone de Coração
-                Icon(
-                  _isFavorited ? Icons.favorite : Icons.favorite_border,
-                  color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.grey[600],
-                  size: 20,
-                ),
-              ],
-            ),
-
-            // --- 2. TEXTO DA REVIEW ---
-            // Reutilizando sua lógica que já estava ótima
-            if (widget.review.content != null) _buildReviewText(),
-          ],
+      
+                  // Nome do Usuário
+                  Expanded(
+                    child: Text(
+                      widget.review.author.fullName != null && widget.review.author.fullName!.isNotEmpty ? widget.review.author.fullName! : "@${widget.review.author.username}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500, // Fonte um pouco mais leve/moderna
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+      
+                  // Estrelas
+                  if (widget.review.stars != null)
+                  Row(
+                    children: _buildStarRating(widget.review.stars!),
+                  ),
+      
+                  // Ícone de Coração
+                  Icon(
+                    _isFavorited ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorited ? const Color(0xFFCC4A4A) : Colors.grey[600],
+                    size: 20,
+                  ),
+                ],
+              ),
+      
+              // --- 2. TEXTO DA REVIEW ---
+              // Reutilizando sua lógica que já estava ótima
+              if (widget.review.content != null) _buildReviewText(),
+            ],
+          ),
         ),
       ),
     );

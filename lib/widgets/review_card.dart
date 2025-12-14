@@ -110,7 +110,7 @@ class _ReviewCardState extends State<ReviewCard> {
                         child: Text(
                           widget.review.type == "season"
                               ? "Temporada ${widget.review.seasonNumber}"
-                              : "T${widget.review.seasonNumber} Episódio ${widget.review.episodeNumber}",
+                              : "Temporada ${widget.review.seasonNumber} • Episódio ${widget.review.episodeNumber}",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,

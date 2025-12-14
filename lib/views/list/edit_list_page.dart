@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:provider/provider.dart';
+import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
+import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
@@ -10,19 +12,29 @@ import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_popular_card.dart';
+import 'package:watchers/widgets/unsaved_changes_dialog.dart';
 
-class CreateListPage extends StatefulWidget {
-  const CreateListPage({super.key});
+class EditListPage extends StatefulWidget {
+  const EditListPage({super.key});
 
   @override
-  State<CreateListPage> createState() => _CreateListPageState();
+  State<EditListPage> createState() => _EditListPageState();
 }
 
-class _CreateListPageState extends State<CreateListPage> {
+class _EditListPageState extends State<EditListPage> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
 
+  String initialTitle = "";
+  String initialDescription = "";
+  List<SerieModel> initialSeries = [];
+  bool initialIsPrivate = false;
+
   bool isPrivate = false;
+
+  bool didChanges = false;
+
+  String listId = "";
 
   void _createList() async {
     if (_titleController.text.trim().isEmpty) {
@@ -42,11 +54,22 @@ class _CreateListPageState extends State<CreateListPage> {
       return;
     }
 
-    await listsProvider.createList(
+    final initialSeriesIds = initialSeries.map((s) => s.id).toSet();
+    final removedSeriesIds = initialSeriesIds.difference(
+      listsProvider.listSeriesAdd.map((s) => s.id).toSet(),
+    );
+    final addedSeriesIds = listsProvider.listSeriesAdd
+        .map((s) => s.id)
+        .toSet()
+        .difference(initialSeriesIds);
+
+    await listsProvider.editList(
+      listId,
       _titleController.text.trim(),
       isPrivate,
       _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
-      listsProvider.listSeriesAdd,
+      addedSeriesIds.toList(),
+      removedSeriesIds.toList(),
     );
 
     if (listsProvider.errorMessage != null) {
@@ -58,11 +81,50 @@ class _CreateListPageState extends State<CreateListPage> {
       return;
     }
 
+    final Set<ListAdditionalDataSeries> oldSeriesLADS = listsProvider.currentListDetails?.additionalData.series.toSet() ?? {};
+
+    final addedSeriesLADS = oldSeriesLADS.where((lads) => addedSeriesIds.contains(lads.id.toString())).toSet().union(
+      listsProvider.listSeriesAdd
+        .where((s) => addedSeriesIds.contains(s.id) && !oldSeriesLADS.any((lads) => lads.id.toString() == s.id))
+        .map((s) => ListAdditionalDataSeries(id: int.parse(s.id), posterUrl: s.posterUrl))
+        .toSet()
+    ).toSet();
+
+    final removedSeriesLADS = oldSeriesLADS.where((lads) => removedSeriesIds.contains(lads.id.toString())).toSet();
+
+    if (listsProvider.currentListDetails != null) {
+      listsProvider.setNewDataForListDetails(
+        _titleController.text.trim(), 
+        isPrivate, 
+        _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(), 
+        addedSeriesLADS.toList(), 
+        removedSeriesLADS.toList()
+      );
+    }
+
     listsProvider.clearListSeriesAdd();
+    
     await userProvider.getCurrentUser();
 
     if (mounted) {
       Navigator.pop(context, true); // Retorna true indicando que criou lista
+    }
+  }
+
+  void _showDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => const UnsavedChangesDialog(),
+    );
+
+    if (result == true && mounted) {
+      setState(() {
+        didChanges = false;
+      });
+
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pop(); // Agora sai da tela de verdade
+      });
     }
   }
 
@@ -72,6 +134,26 @@ class _CreateListPageState extends State<CreateListPage> {
 
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final listsProvider = context.read<ListsProvider>();
+
+      listsProvider.clearListSeriesAdd();
+
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      setState(() {
+        _titleController.text = args['name'] ?? '';
+        initialTitle = args['name'] ?? '';
+        _descriptionController.text = args['description'] ?? '';
+        initialDescription = args['description'] ?? '';
+        listsProvider.setListSeriesAdd(args['series'] ?? []);
+        initialSeries = List.from(args['series'] ?? []);
+        listId = args['id'] ?? '';
+        isPrivate = args['isPrivate'] ?? false;
+        initialIsPrivate = args['isPrivate'] ?? false;
+      });
+    });
   }
 
   @override
@@ -87,19 +169,21 @@ class _CreateListPageState extends State<CreateListPage> {
     final listsProvider = context.watch<ListsProvider>();
 
     return PopScope(
-      canPop: true,
+      canPop: !didChanges,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (didPop) {
           listsProvider.clearListSeriesAdd();
           return;
         }
+
+        _showDialog();
       },
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           scrolledUnderElevation: 0,
           centerTitle: true,
-          title: Text("Nova Lista", style: AppTextStyles.bodyLarge.copyWith(fontSize: 18, fontWeight: FontWeight.w600),),
+          title: Text("Editar Lista", style: AppTextStyles.bodyLarge.copyWith(fontSize: 18, fontWeight: FontWeight.w600),),
         ),
         body: SingleChildScrollView(
           physics: ClampingScrollPhysics(),
@@ -111,12 +195,20 @@ class _CreateListPageState extends State<CreateListPage> {
               children: [
                 TextField(
                   controller: _titleController,
+                  onChanged: (value) {
+                    if (value.trim() != initialTitle && !didChanges) {
+                      setState(() {
+                        didChanges = true;
+                      });
+                    } 
+                  },
                   decoration: InputDecoration(
                     hintText: "Título da Lista",
                     fillColor: Color.fromARGB(196, 43, 43, 43),
                     filled: true,
                     isDense: true,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
+                    
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                       borderSide: BorderSide.none,
@@ -127,6 +219,13 @@ class _CreateListPageState extends State<CreateListPage> {
                   height: 120,
                   child: TextField(
                     controller: _descriptionController,
+                    onChanged: (value) {
+                      if (value.trim() != initialDescription && !didChanges) {
+                        setState(() {
+                          didChanges = true;
+                        });
+                      } 
+                    },
                     maxLines: null,
                     minLines: null,
                     expands: true,
@@ -137,7 +236,6 @@ class _CreateListPageState extends State<CreateListPage> {
                       fillColor: Color.fromARGB(196, 43, 43, 43),
                       filled: true,
                       isDense: true,
-                      
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
@@ -161,6 +259,12 @@ class _CreateListPageState extends State<CreateListPage> {
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
+                          if (!isPrivate != initialIsPrivate && !didChanges) {
+                            setState(() {
+                              didChanges = true;
+                            });
+                          }
+
                           setState(() {
                             isPrivate = !isPrivate;
                           });
@@ -214,59 +318,72 @@ class _CreateListPageState extends State<CreateListPage> {
                     color: Color.fromARGB(196, 43, 43, 43),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: listsProvider.listSeriesAdd.isEmpty
-                    ? Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                          "Nenhuma série adicionada. Clique no + para adicionar.\n\nVocê também poderá adicionar séries à sua lista após criá-la.",
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: tColorSecondary,
-                          ),
-                        ),
-                    )
-                    : GridView.builder(
-                        padding: EdgeInsets.all(12),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 2 / 3,
-                        ),
-                        itemCount: listsProvider.listSeriesAdd.length,
-                        itemBuilder: (context, index) {
-                          final series = listsProvider.listSeriesAdd[index];
-                          return Stack(
-                            children: [
-                              ImageCard(
-                                url: series.posterUrl,
-                                animation: null,
-                                borderRadius: BorderRadius.circular(10),
-                                onTap: () {},
+                  child: Selector<ListsProvider, List<SerieModel>>(
+                    selector: (context, provider) => provider.listSeriesAdd,
+                    builder: (context, listSeriesAdd, child) {
+                      if (initialSeries.length != listSeriesAdd.length && !didChanges) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            didChanges = true;
+                          });
+                        });
+                      }
+
+                      return listSeriesAdd.isEmpty
+                        ? Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                              "Nenhuma série adicionada. Clique no + para adicionar.\n\nVocê também poderá adicionar séries à sua lista após criá-la.",
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: tColorSecondary,
                               ),
-                              Positioned(
-                                top: 4,
-                                right: 4,
-                                child: Material(
-                                  color: Colors.red,
-                                  shape: const CircleBorder(),
-                                  clipBehavior: Clip.hardEdge,
-                                  child: InkWell(
-                                    onTap: () {
-                                      listsProvider.removeFromListSeriesAdd(series);
-                                    },
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(4.0),
-                                      child: Icon(Icons.close, color: Colors.white, size: 16),
+                            ),
+                        )
+                        : GridView.builder(
+                            padding: EdgeInsets.all(12),
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 2 / 3,
+                            ),
+                            itemCount: listSeriesAdd.length,
+                            itemBuilder: (context, index) {
+                              final series = listSeriesAdd[index];
+                              return Stack(
+                                children: [
+                                  ImageCard(
+                                    url: series.posterUrl,
+                                    animation: null,
+                                    borderRadius: BorderRadius.circular(10),
+                                    onTap: () {},
+                                  ),
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                    child: Material(
+                                      color: Colors.red,
+                                      shape: const CircleBorder(),
+                                      clipBehavior: Clip.hardEdge,
+                                      child: InkWell(
+                                        onTap: () {
+                                          listsProvider.removeFromListSeriesAdd(series);
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(4.0),
+                                          child: Icon(Icons.close, color: Colors.white, size: 16),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
+                                ],
+                              );
+                            },
                           );
-                        },
-                      ),
+                    }
+                  ),
                 ),
               ],
             ),
