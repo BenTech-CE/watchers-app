@@ -236,8 +236,13 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
   void changeRating(double newRating) async {
     final userProvider = context.read<UserProvider>();
 
-    // 1. Guarda o valor antigo para Rollback
     final previousRating = rating;
+
+    if (previousRating == newRating) {
+      newRating = 0; 
+    }
+
+    final sentRate = newRating == 0 ? null : newRating;
 
     // 2. Atualização Otimista (UI + Provider Local)
     setState(() {
@@ -250,7 +255,7 @@ class _SeriesOptionsSheetState extends State<SeriesOptionsSheet> {
     // 3. Monta o objeto Review preservando os outros dados (like, texto)
     ReviewModel review = ReviewModel(
       id: null, // Mantém ID se existir
-      stars: newRating, // O valor novo
+      stars: sentRate, // O valor novo
       content: userProvider
           .currentUserInteractionData(widget.scope)
           .reviewText, // Mantém o texto atual
