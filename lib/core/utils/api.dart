@@ -34,6 +34,10 @@ class Api {
   static final Uri trendingLists = Uri.parse('${baseUrl}lists/trending');
   static Uri listSeries(String id) => Uri.parse('${baseUrl}lists/$id/items');
   static Uri listDetails(String id) => Uri.parse('${baseUrl}lists/$id');
+  static Uri listLikes(String id) => Uri.parse('${baseUrl}lists/$id/likes');
+  static Uri listComments(String id) => Uri.parse('${baseUrl}lists/$id/comments');
+  static Uri listSingleComment(String listId, String commentId) =>
+      Uri.parse('${baseUrl}lists/$listId/comments/$commentId');
 
   // GLOBAL
   static final Uri searchEndpoint = Uri.parse('${baseUrl}app/search');
@@ -65,6 +69,12 @@ class Api {
       Uri.parse('${baseUrl}reviews/$seriesId');
   static Uri reviewByIdEndpoint(String reviewId) =>
       Uri.parse('${baseUrl}reviews/$reviewId');
+  static Uri reviewLikes(String reviewId) =>
+      Uri.parse('${baseUrl}reviews/$reviewId/likes');
+  static Uri reviewComments(String reviewId) =>
+      Uri.parse('${baseUrl}reviews/$reviewId/comments');
+  static Uri reviewSingleComment(String reviewId, String commentId) =>
+      Uri.parse('${baseUrl}reviews/$reviewId/comments/$commentId');
   static final Uri reviewsTrendingEndpoint = Uri.parse(
     '${baseUrl}reviews/trending',
   );

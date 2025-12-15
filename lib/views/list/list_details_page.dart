@@ -16,8 +16,10 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/utils/number.dart';
 import 'package:watchers/views/list/list_options_sheet.dart';
+import 'package:watchers/widgets/comment_card.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_series_skeleton.dart';
+import 'package:watchers/widgets/yes_no_dialog.dart';
 
 class ListDetailsPage extends StatefulWidget {
   const ListDetailsPage({super.key});
@@ -29,6 +31,8 @@ class ListDetailsPage extends StatefulWidget {
 class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  late TextEditingController _commentTextController;
 
   ListModel? listArg;
 
@@ -70,12 +74,15 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _animationController.dispose();
+    _commentTextController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+
+    _commentTextController = TextEditingController();
 
     _animationController = AnimationController( 
       vsync: this,
@@ -133,6 +140,99 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
     final randomBackground = additionalData != null && additionalData.series.isNotEmpty
         ? additionalData.series[0].backgroundUrl
         : null;
+
+    void _like() async {
+      final listsProvider = context.read<ListsProvider>();
+      final userProvider = context.read<UserProvider>();
+
+      if (additionalData == null || list == null) return;
+
+      if (additionalData!.userLiked) {
+        list!.likeCount -= 1;
+        additionalData!.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
+      } else {
+        list!.likeCount += 1;
+        additionalData!.likedBy.insert(0, ListLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
+      }
+      additionalData!.userLiked = !additionalData!.userLiked;
+
+      setState(() {});
+
+      if (additionalData!.userLiked) {
+        await listsProvider.like(list!.id.toString());
+      } else {
+        await listsProvider.unlike(list!.id.toString());
+      }
+
+      if (listsProvider.errorMessage != null && mounted) {
+        // Reverter mudança em caso de erro
+        if (additionalData!.userLiked) {
+          list!.likeCount -= 1;
+          additionalData!.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
+        } else {
+          list!.likeCount += 1;
+          additionalData!.likedBy.insert(0, ListLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
+        }
+        additionalData!.userLiked = !additionalData!.userLiked;
+
+        setState(() {});
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      }
+    }
+
+    void _comment() async {
+      if (additionalData == null || list == null) return;
+
+      final commentText = _commentTextController.text.trim();
+      if (commentText.isEmpty) return;
+
+      final newComment = await listsProvider.addComment(list!.id.toString(), commentText);
+
+      if (newComment != null && mounted) {
+        list!.commentCount += 1;
+        additionalData!.comments.insert(0, newComment);
+
+        _commentTextController.clear();
+        setState(() {});
+      }
+
+      if (listsProvider.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      }
+    }
+
+    void _deleteComment(int commentId) async {
+      if (additionalData == null || list == null) return;
+
+      final willDelete = await showDialog<bool>(
+        context: context,
+        builder: (context) => YesNoDialog(
+          title: "Excluir Comentário",
+          content: "Você tem certeza que deseja excluir este comentário?",
+          cta: "Excluir",
+        ),
+      );
+
+      if (willDelete == null || !willDelete) return;
+
+      await listsProvider.deleteComment(list!.id.toString(), commentId.toString());
+
+      if (listsProvider.errorMessage == null && mounted) {
+        list!.commentCount -= 1;
+        additionalData!.comments.removeWhere((c) => c.id == commentId);
+
+        setState(() {});
+      } else if (listsProvider.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(listsProvider.errorMessage!)));
+      }
+    }
 
     return list != null ? Scaffold(
       extendBodyBehindAppBar: true,
@@ -241,7 +341,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                             ),
                             Text(
                               list.description ?? "",
-                              style: AppTextStyles.bodyMedium
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontSize: 14
+                              )
                             ),                      
                             // Avatar
                             Row(
@@ -294,23 +396,27 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                             Row(
                               spacing: 24,
                               children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.favorite_outline,
-                                      size: 24,
-                                      color: Color(0xFF747474) //Color(0xFFCC4A4A),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      (list.likeCount ?? 0).toString(),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16
+                                GestureDetector(
+                                  onTap: _like,
+                                  behavior: HitTestBehavior.opaque,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        additionalData?.userLiked ?? false ? Icons.favorite : Icons.favorite_outline,
+                                        size: 24,
+                                        color: additionalData?.userLiked ?? false ? Color(0xFFCC4A4A) : Color(0xFF747474),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        (list?.likeCount ?? 0).toCompactString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Row(
                                   children: [
@@ -321,7 +427,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      "0", // Comentários não implementados ainda
+                                      (list.commentCount ?? 0).toCompactString(), // Comentários não implementados ainda
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -437,27 +543,27 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                              padding: EdgeInsets.fromLTRB(12, 0, 4, 0),
                               decoration: BoxDecoration(
                                 color: Colors.grey[900],
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Row(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(999),
-                                    child: CircleAvatar(
-                                      radius: 16,
-                                      backgroundColor: Colors.grey[700],
-                                      // Substituir pelo avatar do usuário logado
-                                      child: userProvider.currentUser?.avatarUrl != null
-                                          ? Image.network(userProvider.currentUser!.avatarUrl!)
-                                          : const Icon(Icons.person, color: Colors.white)
-                                    ),
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.grey[700],
+                                    backgroundImage: userProvider.currentUser?.avatarUrl != null
+                                        ? NetworkImage(userProvider.currentUser!.avatarUrl!)
+                                        : null,
+                                    child: userProvider.currentUser?.avatarUrl == null
+                                        ? const Icon(Icons.person, color: Colors.white, size: 16)
+                                        : null,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: TextField(
+                                      controller: _commentTextController,
                                       style: const TextStyle(color: Colors.white),
                                       decoration: InputDecoration(
                                         hintText: "Comente sobre a lista...",
@@ -470,10 +576,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(999),
-                                      onTap: () {
-                                        // Ação de enviar comentário (não implementada)
-                                      },
-                                      child: Padding(
+                                      onTap: listsProvider.isLoadingAction ? null : _comment,
+                                      child: listsProvider.isLoadingAction ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox.square(
+                                          dimension: 20,
+                                          child: CircularProgressIndicator(
+                                            color: tColorPrimary,
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      ) : Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Iconify(Ion.send_outline, color: tColorPrimary, size: 20)
                                       ),
@@ -481,7 +594,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                   ),
                                 ],
                               ),
-                            )
+                            ),
+                            if (additionalData != null)
+                              ...additionalData.comments.map((comment) => CommentCard(comment: comment, onPressDelete: () {
+                                _deleteComment(comment.id);
+                              },))
                           ]
                         )
                       )

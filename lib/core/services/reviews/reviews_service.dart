@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/global/comment_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/full_review_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
@@ -45,7 +46,7 @@ class ReviewsService {
         return reviews;
       } else {
         throw ReviewsServiceException(
-          'Erro ao buscar todas as resenhas: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -71,12 +72,111 @@ class ReviewsService {
         return FullReviewModel.fromJson(jsonResponse);
       } else {
         throw ReviewsServiceException(
-          'Erro ao buscar a resenha: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
     } catch (e) {
       throw ReviewsServiceException('Erro ao buscar a resenha: $e');
+    }
+  }
+
+  Future<void> likeReview(String reviewId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ReviewsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.reviewLikes(reviewId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ReviewsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ReviewsServiceException('Erro ao curtir a resenha: $e');
+    }
+  }
+
+  Future<void> unlikeReview(String reviewId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ReviewsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.reviewLikes(reviewId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ReviewsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ReviewsServiceException('Erro ao descurtir a resenha: $e');
+    }
+  }
+
+  Future<void> deleteComment(String reviewId, String commentId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ReviewsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.reviewSingleComment(reviewId, commentId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ReviewsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ReviewsServiceException('Erro ao deletar o comentário: $e');
+    }
+  }
+
+  Future<CommentModel> addComment(String reviewId, String content) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ReviewsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.reviewComments(reviewId),
+        headers: Headers.auth(authService),
+        body: jsonEncode({'content': content}),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        return CommentModel.fromJson(jsonResponse);
+      } else {
+        throw ReviewsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ReviewsServiceException('Erro ao adicionar o comentário: $e');
     }
   }
 }

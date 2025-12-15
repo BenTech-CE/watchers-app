@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/global/comment_model.dart';
 import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -292,6 +293,105 @@ class ListsService {
       }
     } catch (e) {
       throw ListsServiceException('Erro ao buscar os detalhes da lista: $e');
+    }
+  }
+
+  Future<void> likeList(String listId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.listLikes(listId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ListsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao curtir a lista: $e');
+    }
+  }
+
+  Future<void> unlikeList(String listId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.listLikes(listId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ListsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao descurtir a lista: $e');
+    }
+  }
+
+  Future<void> deleteComment(String listId, String commentId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.listSingleComment(listId, commentId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ListsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao deletar o comentário: $e');
+    }
+  }
+
+  Future<CommentModel> addComment(String listId, String content) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.listComments(listId),
+        headers: Headers.auth(authService),
+        body: jsonEncode({'content': content}),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        return CommentModel.fromJson(jsonResponse);
+      } else {
+        throw ListsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao adicionar o comentário: $e');
     }
   }
 }

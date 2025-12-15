@@ -4,6 +4,7 @@ import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/sizes.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:watchers/core/utils/number.dart';
 import 'package:watchers/widgets/image_card.dart';
 
 class ListPopularCard extends StatefulWidget {
@@ -242,7 +243,7 @@ class _ListPopularCardState extends State<ListPopularCard>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      widget.list.likeCount.toString(),
+                      widget.list.likeCount.toCompactString(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -259,7 +260,7 @@ class _ListPopularCardState extends State<ListPopularCard>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      widget.list.commentCount.toString(),
+                      widget.list.commentCount.toCompactString(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

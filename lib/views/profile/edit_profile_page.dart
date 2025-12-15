@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/ion.dart';
 import 'package:iconify_flutter/icons/lucide.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watchers/core/mocks/icons.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -329,7 +331,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
-        title: Text("Editar Perfil", style: AppTextStyles.bodyLarge.copyWith(fontSize: 22, fontWeight: FontWeight.w600),),
+        title: Text("Editar Perfil", style: AppTextStyles.bodyLarge.copyWith(fontSize: 18, fontWeight: FontWeight.w600),),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final authProvider = context.read<AuthProvider>();
+              await authProvider.signOut();
+              // A navegação é feita automaticamente pelo AuthWrapper
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.redAccent.withOpacity(0.1),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              // padding interno para alinhar bem o toque
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
+            // Usamos Row para controlar a ordem: Texto -> Espaço -> Ícone
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Importante para não esticar a Row
+              children: const [
+                Text(
+                  "Sair",
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(width: 8), // Espaço entre texto e ícone
+                Iconify(Ion.log_out, size: 20, color: Colors.redAccent),
+              ],
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

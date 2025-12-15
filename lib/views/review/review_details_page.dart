@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -12,6 +14,8 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:intl/intl.dart';
 import 'package:watchers/core/utils/number.dart';
+import 'package:watchers/widgets/comment_card.dart';
+import 'package:watchers/widgets/yes_no_dialog.dart';
 
 class ReviewDetailsPage extends StatefulWidget {
   const ReviewDetailsPage({super.key});
@@ -21,6 +25,8 @@ class ReviewDetailsPage extends StatefulWidget {
 }
 
 class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindingObserver {
+  late TextEditingController _commentTextController;
+
   ReviewModel? review;
   ReviewAdditionalData? additionalData;
 
@@ -45,6 +51,104 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
     _updateGradientOpacity();
   }
 
+  void _comment() async {
+    final reviewsProvider = context.read<ReviewsProvider>();
+    final userProvider = context.read<UserProvider>();
+
+    if (additionalData == null || review == null) return;
+
+    final commentText = _commentTextController.text.trim();
+    if (commentText.isEmpty) return;
+
+    final newComment = await reviewsProvider.addComment(review!.id.toString(), commentText);
+
+    if (newComment != null && mounted) {
+      additionalData!.commentCount += 1;
+      additionalData!.comments.insert(0, newComment);
+
+      _commentTextController.clear();
+      setState(() {});
+    }
+
+    if (reviewsProvider.errorMessage != null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(reviewsProvider.errorMessage!)));
+    }
+  }
+
+  void _deleteComment(int commentId) async {
+    final reviewsProvider = context.read<ReviewsProvider>();
+
+    if (additionalData == null || review == null) return;
+
+    final willDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => YesNoDialog(
+        title: "Excluir Comentário",
+        content: "Você tem certeza que deseja excluir este comentário?",
+        cta: "Excluir",
+      ),
+    );
+
+    if (willDelete == null || !willDelete) return;
+
+    await reviewsProvider.deleteComment(review!.id.toString(), commentId.toString());
+
+    if (reviewsProvider.errorMessage == null && mounted) {
+      additionalData!.commentCount -= 1;
+      additionalData!.comments.removeWhere((c) => c.id == commentId);
+
+      setState(() {});
+    } else if (reviewsProvider.errorMessage != null && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(reviewsProvider.errorMessage!)));
+    }
+  }
+
+  void _like() async {
+    final reviewsProvider = context.read<ReviewsProvider>();
+    final userProvider = context.read<UserProvider>();
+
+    if (additionalData == null || review == null) return;
+
+    if (additionalData!.userLiked) {
+      additionalData!.likeCount -= 1;
+      additionalData!.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
+    } else {
+      additionalData!.likeCount += 1;
+      additionalData!.likedBy.insert(0, ReviewLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
+    }
+    additionalData!.userLiked = !additionalData!.userLiked;
+
+    setState(() {});
+
+    if (additionalData!.userLiked) {
+      await reviewsProvider.like(review!.id.toString());
+    } else {
+      await reviewsProvider.unlike(review!.id.toString());
+    }
+
+    if (reviewsProvider.errorMessage != null && mounted) {
+      // Reverter mudança em caso de erro
+      if (additionalData!.userLiked) {
+        additionalData!.likeCount -= 1;
+        additionalData!.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
+      } else {
+        additionalData!.likeCount += 1;
+        additionalData!.likedBy.insert(0, ReviewLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
+      }
+      additionalData!.userLiked = !additionalData!.userLiked;
+
+      setState(() {});
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(reviewsProvider.errorMessage!)));
+    }
+  }
+
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
@@ -61,12 +165,15 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
     WidgetsBinding.instance.removeObserver(this);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _commentTextController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+
+    _commentTextController = TextEditingController();
   
     WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScroll);
@@ -107,6 +214,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
     final double cardHeight = cardWidth / aspectRatio;
 
     final userProvider = context.watch<UserProvider>();
+    final reviewsProvider = context.watch<ReviewsProvider>();
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
@@ -231,7 +339,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                             child: Text(
                                               review?.type == "season"
                                                   ? "Temporada ${review?.seasonNumber}"
-                                                  : "T${review?.seasonNumber} Episódio ${review?.episodeNumber}",
+                                                  : "Temporada ${review?.seasonNumber} • Episódio ${review?.episodeNumber}",
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12,
@@ -330,30 +438,37 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                             ),
                             Text(
                               review?.content ?? "",
-                              style: AppTextStyles.bodyMedium
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontSize: 14
+                              )
                             ),
                             if (additionalData?.createdAt != null)
                               _buildDateInfo(),
+                            if (additionalData != null)
                             Row(
                               spacing: 24,
                               children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.favorite_outline,
-                                      size: 24,
-                                      color: Color(0xFF747474) //Color(0xFFCC4A4A),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      (additionalData?.likeCount ?? 0).toString(),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: _like,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        additionalData?.userLiked ?? false ? Icons.favorite : Icons.favorite_outline,
+                                        size: 24,
+                                        color: additionalData?.userLiked ?? false ? Color(0xFFCC4A4A) : Color(0xFF747474),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        (additionalData?.likeCount ?? 0).toCompactString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Row(
                                   children: [
@@ -364,7 +479,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      "0", // Comentários não implementados ainda
+                                      (additionalData?.commentCount ?? 0).toCompactString(),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -434,27 +549,27 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                              padding: EdgeInsets.fromLTRB(12, 0, 4, 0),
                               decoration: BoxDecoration(
                                 color: Colors.grey[900],
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Row(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(999),
-                                    child: CircleAvatar(
-                                      radius: 16,
-                                      backgroundColor: Colors.grey[700],
-                                      // Substituir pelo avatar do usuário logado
-                                      child: userProvider.currentUser?.avatarUrl != null
-                                          ? Image.network(userProvider.currentUser!.avatarUrl!)
-                                          : const Icon(Icons.person, color: Colors.white)
-                                    ),
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.grey[700],
+                                    backgroundImage: userProvider.currentUser?.avatarUrl != null
+                                        ? NetworkImage(userProvider.currentUser!.avatarUrl!)
+                                        : null,
+                                    child: userProvider.currentUser?.avatarUrl == null
+                                        ? const Icon(Icons.person, color: Colors.white, size: 16)
+                                        : null,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: TextField(
+                                      controller: _commentTextController,
                                       style: const TextStyle(color: Colors.white),
                                       decoration: InputDecoration(
                                         hintText: "Comente sobre a resenha...",
@@ -467,10 +582,17 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(999),
-                                      onTap: () {
-                                        // Ação de enviar comentário (não implementada)
-                                      },
-                                      child: Padding(
+                                      onTap: reviewsProvider.isLoadingAction ? null : _comment,
+                                      child: reviewsProvider.isLoadingAction ? Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox.square(
+                                          dimension: 20,
+                                          child: CircularProgressIndicator(
+                                            color: tColorPrimary,
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      ) : Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Iconify(Ion.send_outline, color: tColorPrimary, size: 20)
                                       ),
@@ -478,7 +600,9 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                   ),
                                 ],
                               ),
-                            )
+                            ),
+                            if (additionalData != null)
+                              ...additionalData!.comments.map((comment) => CommentCard(comment: comment, onPressDelete: () { _deleteComment(comment.id); },))
                           ]
                         )
                       )

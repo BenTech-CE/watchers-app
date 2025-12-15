@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/global/comment_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/full_review_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
@@ -16,10 +17,12 @@ class ReviewsProvider with ChangeNotifier {
   String? _errorMessage;
   bool _isLoading = false;
   bool _isLoadingTrending = false;
+  bool _isLoadingAction = false;
 
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
   bool get isLoadingTrending => _isLoadingTrending;
+  bool get isLoadingAction => _isLoadingAction;
 
   List<ReviewModel> _trendingReviews = [];
   List<ReviewModel> get trendingReviews => _trendingReviews;
@@ -53,6 +56,63 @@ class ReviewsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> like(String id) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      await _reviewsService.likeReview(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingAction(false);
+    }
+    return;
+  }
+
+  Future<void> unlike(String id) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      await _reviewsService.unlikeReview(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingAction(false);
+    }
+    return;
+  }
+
+  Future<void> deleteComment(String id, String commentId) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      await _reviewsService.deleteComment(id, commentId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingAction(false);
+    }
+    return;
+  }
+
+  Future<CommentModel?> addComment(String id, String content) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      final comment = await _reviewsService.addComment(id, content);
+      return comment;
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+      return null;
+    } finally {
+      _setLoadingAction(false);
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
@@ -65,6 +125,11 @@ class ReviewsProvider with ChangeNotifier {
 
   void _setLoadingTrending(bool loading) {
     _isLoadingTrending = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingAction(bool loading) {
+    _isLoadingAction = loading;
     notifyListeners();
   }
 

@@ -157,11 +157,33 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           width: 100,
                           height: 100,
-                          child: ImageCard(
-                            url: displayUser?.avatarUrl,
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(99),
-                          ),
+                          child: Builder(builder: (context) {
+                            /*if (_pickedImage != null) {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.file(
+                                  File(_pickedImage!.path),
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            } else */if (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty) {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Image.network(
+                                  user!.avatarUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            } else {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(50),
+                                child: Container(
+                                  color: bColorPrimary,
+                                  child: Icon(Icons.person, size: 50, color: tColorSecondary),
+                                ),
+                              );
+                            }
+                          }),
                         ),
                       ],
                     ),
@@ -248,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            if (!userProvider.isLoadingUser && externalUser)
+            if (!userProvider.isLoadingUser && externalUser && authInfo.user?.id != displayUser?.id)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SizedBox(

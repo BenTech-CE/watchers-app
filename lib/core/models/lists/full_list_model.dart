@@ -1,3 +1,4 @@
+import 'package:watchers/core/models/global/comment_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 
 class FullListModel {
@@ -24,11 +25,15 @@ class ListAdditionalData {
   String createdAt;
   List<ListAdditionalDataSeries> series;
   List<ListLikedUser> likedBy;
+  List<CommentModel> comments;
+  bool userLiked;
 
   ListAdditionalData({
     required this.createdAt,
     required this.series,
-    required this.likedBy,
+    this.userLiked = false,
+    this.likedBy = const [],
+    this.comments = const [],
   });
 
   factory ListAdditionalData.fromJson(Map<String, dynamic> json) {
@@ -38,10 +43,15 @@ class ListAdditionalData {
     var likedByFromJson = json['liked_by'] as List;
     List<ListLikedUser> likedByList = likedByFromJson.map((i) => ListLikedUser.fromJson(i)).toList();
 
+    var commentsFromJson = json['comments'] as List;
+    List<CommentModel> commentsList = commentsFromJson.map((i) => CommentModel.fromJson(i)).toList();
+
     return ListAdditionalData(
       createdAt: json['created_at'],
       series: seriesList,
       likedBy: likedByList,
+      userLiked: json['user_liked'] ?? false,
+      comments: commentsList
     );
   }
 }

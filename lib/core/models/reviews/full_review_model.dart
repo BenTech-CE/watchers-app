@@ -1,3 +1,4 @@
+import 'package:watchers/core/models/global/comment_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
 
 class FullReviewModel {
@@ -23,28 +24,40 @@ class FullReviewModel {
 class ReviewAdditionalData {
   String backgroundUrl;
   int likeCount;
+  int commentCount;
   String createdAt;
   String updatedAt;
+  bool userLiked;
   List<ReviewLikedUser> likedBy;
+  List<CommentModel> comments;
 
   ReviewAdditionalData({
     required this.backgroundUrl,
     required this.likeCount,
     required this.createdAt,
     required this.updatedAt,
-    required this.likedBy,
+    required this.commentCount,
+    this.userLiked = false,
+    this.likedBy = const [],
+    this.comments = const [],
   });
 
   factory ReviewAdditionalData.fromJson(Map<String, dynamic> json) {
     var likedByFromJson = json['liked_by'] as List;
     List<ReviewLikedUser> likedByList = likedByFromJson.map((i) => ReviewLikedUser.fromJson(i)).toList();
 
+    var commentsFromJson = json['comments'] as List;
+    List<CommentModel> commentsList = commentsFromJson.map((i) => CommentModel.fromJson(i)).toList();
+
     return ReviewAdditionalData(
       backgroundUrl: json['background_url'],
       likeCount: json['like_count'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      userLiked: json['user_liked'] ?? false,
+      commentCount: json['comment_count'],
       likedBy: likedByList,
+      comments: commentsList
     );
   }
 }

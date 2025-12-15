@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/global/comment_model.dart';
 import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -13,11 +14,13 @@ class ListsProvider with ChangeNotifier {
 
   String? _errorMessage;
   bool _isLoading = false;
+  bool _isLoadingAction = false;
   bool _isLoadingTrending = false;
 
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
   bool get isLoadingTrending => _isLoadingTrending;
+  bool get isLoadingAction => _isLoadingAction;
 
   List<ListModel> _trendingLists = [];
   List<ListModel> get trendingLists => _trendingLists;
@@ -211,6 +214,63 @@ class ListsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> like(String id) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      await _listsService.likeList(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingAction(false);
+    }
+    return;
+  }
+
+  Future<void> unlike(String id) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      await _listsService.unlikeList(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingAction(false);
+    }
+    return;
+  }
+
+  Future<void> deleteComment(String id, String commentId) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      await _listsService.deleteComment(id, commentId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingAction(false);
+    }
+    return;
+  }
+
+  Future<CommentModel?> addComment(String id, String content) async {
+    _setLoadingAction(true);
+    try {
+      clearError();
+      final comment = await _listsService.addComment(id, content);
+      return comment;
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+      return null;
+    } finally {
+      _setLoadingAction(false);
+    }
+  }
+
   void _setCurrentListDetails(FullListModel? listDetails) {
     _currentListDetails = listDetails;
     notifyListeners();
@@ -223,6 +283,11 @@ class ListsProvider with ChangeNotifier {
 
   void _setLoadingTrending(bool loading) {
     _isLoadingTrending = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingAction(bool loading) {
+    _isLoadingAction = loading;
     notifyListeners();
   }
 

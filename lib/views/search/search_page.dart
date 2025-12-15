@@ -51,7 +51,6 @@ class _SearchPageState extends State<SearchPage> {
     "Séries",
     "Usuários",
     "Listas",
-    "Reviews",
   ];
   TypeFilterSearch _selectedFilter =
       TypeFilterSearch.all; // getTypeFilterSearch
@@ -517,7 +516,7 @@ class _SearchPageState extends State<SearchPage> {
                   spacing: 12.0,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: List.generate(
-                    listsProvider.trendingLists.length,
+                    listsProvider.trendingLists.length > 5 ? 5 : listsProvider.trendingLists.length,
                     (index) => SizedBox(
                       width: screenWidth * 0.25,
                       child: ListPopularCard(

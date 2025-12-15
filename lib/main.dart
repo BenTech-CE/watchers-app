@@ -169,6 +169,14 @@ class _AuthWrapperState extends State<AuthWrapper>
       ),
     );
 
+    // Escuta mudanças de autenticação para logout
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedOut && mounted) {
+        // Limpa a navegação e volta para o login
+        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      }
+    });
+
     // Fade in ao iniciar, depois verifica sessão
     _animationController.forward().then((_) {
       _refreshSessionAndCheckAuth();
