@@ -29,6 +29,7 @@ import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/series_card.dart';
 import 'package:watchers/widgets/stars_chart.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:watchers/widgets/yes_no_dialog.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -68,7 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
 
     if (image != null) {
-      showDialog(context: context, builder: (context) {
+      showDialog(context: context, barrierDismissible: false, builder: (context) {
         return ProfilePictureDialog(file: image,);
       });
     }
@@ -335,6 +336,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         actions: [
           TextButton(
             onPressed: () async {
+              final result = await showDialog<bool>(
+                context: context, builder: (context) {
+                  return YesNoDialog(title: "Sair da Conta", content: "Você deseja mesmo deixar o Watchers?", cta: "Sair");
+                });
+
+              if (result == null || result != true) {
+                return;
+              }
+
               final authProvider = context.read<AuthProvider>();
               await authProvider.signOut();
               // A navegação é feita automaticamente pelo AuthWrapper

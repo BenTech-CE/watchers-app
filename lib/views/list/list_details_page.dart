@@ -16,6 +16,7 @@ import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/utils/number.dart';
 import 'package:watchers/views/list/list_options_sheet.dart';
+import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/comment_card.dart';
 import 'package:watchers/widgets/image_card.dart';
 import 'package:watchers/widgets/list_series_skeleton.dart';
@@ -141,6 +142,75 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
         ? additionalData.series[0].backgroundUrl
         : null;
 
+    void _deleteList() async {
+      if (listArg == null) return;
+
+      bool isDeleting = false;
+
+      final willDelete = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.all(16),
+              titlePadding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              actionsPadding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              backgroundColor: const Color.fromARGB(255, 30, 30, 30),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text("Excluir Lista", style: AppTextStyles.titleLarge.copyWith(fontSize: 18)),
+              content: Text(
+                "Você tem certeza que deseja excluir a lista \"${listArg?.name}\"?",
+                style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+              ),
+              actions: [
+                Button(
+                  label: "Cancelar",
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  variant: ButtonVariant.secondary,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  disabled: isDeleting,
+                ),
+                Button(
+                  label: "Excluir",
+                  onPressed: () async {
+                    setDialogState(() => isDeleting = true);
+
+                    final listsProvider = dialogContext.read<ListsProvider>();
+                    await listsProvider.deleteList(listArg!.id.toString());
+
+                    if (listsProvider.errorMessage == null) {
+                      Navigator.pop(dialogContext, true);
+                    } else {
+                      setDialogState(() => isDeleting = false);
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        SnackBar(content: Text(listsProvider.errorMessage!)),
+                      );
+                    }
+                  },
+                  variant: ButtonVariant.primary,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  loading: isDeleting,
+                  disabled: isDeleting,
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      if (willDelete == null || !willDelete) return;
+
+      if (mounted) {
+        listsProvider.trendingLists.removeWhere((l) => l.id == listArg!.id);
+        userProvider.currentUser?.lists.removeWhere((l) => l.id == listArg!.id);
+        Navigator.pop(context);
+        Navigator.pop(context); // volta para a tela anterior
+      }
+    }
+
     void _like() async {
       final listsProvider = context.read<ListsProvider>();
       final userProvider = context.read<UserProvider>();
@@ -255,7 +325,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                   context: context,
                   showDragHandle: true,
                   isScrollControlled: true,
-                  builder: (BuildContext context) => ListOptionsSheet(),
+                  builder: (BuildContext context) => ListOptionsSheet(onPressDelete: _deleteList,),
                 );
               },
               icon: Icon(Icons.settings, color: tColorPrimary)

@@ -51,7 +51,7 @@ class ListsService {
         return list;
       } else {
         throw ListsServiceException(
-          'Erro ao criar a lista: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -92,7 +92,7 @@ class ListsService {
         return list;
       } else {
         throw ListsServiceException(
-          'Erro ao criar a lista: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -125,7 +125,7 @@ class ListsService {
         return lists;
       } else {
         throw ListsServiceException(
-          'Erro ao buscar todas as listas: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -158,7 +158,7 @@ class ListsService {
         return lists;
       } else {
         throw ListsServiceException(
-          'Erro ao buscar todas as listas: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -191,7 +191,7 @@ class ListsService {
         return series;
       } else {
         throw ListsServiceException(
-          'Erro ao buscar as séries da lista: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -224,7 +224,7 @@ class ListsService {
         return true;
       } else {
         throw ListsServiceException(
-          'Erro ao adicionar as séries na lista: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -257,7 +257,7 @@ class ListsService {
         return true;
       } else {
         throw ListsServiceException(
-          'Erro ao adicionar as séries na lista: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
@@ -287,7 +287,7 @@ class ListsService {
         return list;
       } else {
         throw ListsServiceException(
-          'Erro ao buscar os detalhes da lista: ${jsonResponse['error']}',
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }

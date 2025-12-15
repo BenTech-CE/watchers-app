@@ -11,8 +11,9 @@ class YesNoDialog extends StatefulWidget {
   final String title;
   final String content;
   final String cta;
+  bool loading;
 
-  const YesNoDialog({super.key, required this.title, required this.content, required this.cta});
+  YesNoDialog({super.key, required this.title, required this.content, required this.cta, this.loading = false});
 
   @override
   State<YesNoDialog> createState() => _YesNoDialogState();
@@ -43,12 +44,15 @@ class _YesNoDialogState extends State<YesNoDialog> {
           onPressed: () => Navigator.pop(context, false), 
           variant: ButtonVariant.secondary,
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          disabled: widget.loading,
         ),
         Button(
           label: widget.cta, 
           onPressed: () => Navigator.pop(context, true), 
           variant: ButtonVariant.primary,
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          loading: widget.loading,
+          disabled: widget.loading,
         ),
       ],
     );

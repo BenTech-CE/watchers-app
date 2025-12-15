@@ -22,8 +22,11 @@ import 'package:iconify_flutter/icons/oi.dart';
 import 'package:watchers/widgets/star_rating.dart';
 
 class ListOptionsSheet extends StatefulWidget {
+  final VoidCallback onPressDelete;
+
   const ListOptionsSheet({
     super.key,
+    required this.onPressDelete,
   });
 
   @override
@@ -105,10 +108,11 @@ class _ListOptionsSheetState extends State<ListOptionsSheet> {
             const LineSeparator(),
             
             _optionTile(
-              color: Colors.red,
+              color: Colors.redAccent,
               icon: Ion.android_delete,
               title: "Apagar Lista",
               onTap: () {
+                widget.onPressDelete();
               },
             ),
               
