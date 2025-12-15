@@ -271,6 +271,20 @@ class ListsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> deleteList(String id) async {
+    _setLoading(true);
+    try {
+      clearError();
+      await _listsService.deleteList(id);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+    return;
+  }
+
   void _setCurrentListDetails(FullListModel? listDetails) {
     _currentListDetails = listDetails;
     notifyListeners();

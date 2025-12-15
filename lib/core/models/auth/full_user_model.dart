@@ -18,6 +18,7 @@ class FullUserModel {
   List<ReviewModel> reviews;
   List<SerieModel> watchlist;
   List<StarDistributionModel> starDistribution;
+  bool isFollowing;
 
   FullUserModel({
     required this.id,
@@ -34,6 +35,7 @@ class FullUserModel {
     required this.reviews,
     required this.watchlist,
     required this.starDistribution,
+    this.isFollowing = false,
   });
 
   factory FullUserModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +69,7 @@ class FullUserModel {
               ?.map((e) => StarDistributionModel.fromJson(e))
               .toList() ??
           [],
+      isFollowing: json['is_following'] ?? false,
     );
   }
 }

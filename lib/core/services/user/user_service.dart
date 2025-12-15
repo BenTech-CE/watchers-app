@@ -374,8 +374,8 @@ class UserService {
       final response = await http.Response.fromStream(streamedResponse);
       client.close();
 
-      print('Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      //print('Status Code: ${response.statusCode}');
+      //print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
@@ -397,6 +397,62 @@ class UserService {
     } catch (e) {
       if (e is UserServiceException) rethrow;
       throw UserServiceException('Erro ao fazer upload do avatar: $e');
+    }
+  }
+
+  Future<void> followUser(String userId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.post(
+        Api.userFollowsEndpoint(userId),
+        headers: Headers.auth(authService),
+      );
+
+      //print('Status Code: ${response.statusCode}');
+      //print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return;
+      } else {
+        final jsonResponse = jsonDecode(response.body);
+        throw UserServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao seguir o usuário: $e');
+    }
+  }
+
+  Future<void> unfollowUser(String userId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.userFollowsEndpoint(userId),
+        headers: Headers.auth(authService),
+      );
+
+      //print('Status Code: ${response.statusCode}');
+      //print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        final jsonResponse = jsonDecode(response.body);
+        throw UserServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao deixar de seguir o usuário: $e');
     }
   }
 }

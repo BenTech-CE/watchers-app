@@ -123,6 +123,35 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
+    void followUnfollowUser() async {
+      if (displayUser == null) return;
+
+      final isFollowing = displayUser.isFollowing;
+      final userId = displayUser.id;
+
+      displayUser.isFollowing = !isFollowing;
+      displayUser.followerCount += isFollowing ? -1 : 1;
+      userProvider.currentUser?.followingCount += isFollowing ? -1 : 1;
+      setState(() {});
+
+      if (isFollowing) {
+        await userProvider.unfollowUser(userId);
+      } else {
+        await userProvider.followUser(userId);
+      }
+
+      if (userProvider.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(userProvider.errorMessage!)));
+
+        displayUser.isFollowing = isFollowing;
+        displayUser.followerCount += isFollowing ? 1 : -1;
+        userProvider.currentUser?.followingCount += isFollowing ? -1 : 1;
+        setState(() {});
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -276,10 +305,11 @@ class _ProfilePageState extends State<ProfilePage> {
               child: SizedBox(
                 width: double.infinity,
                 child: Button(
-                  label: "Seguir", 
-                  onPressed: () {},
+                  label: displayUser?.isFollowing == true ? "Seguindo" : "Seguir", 
+                  onPressed: followUnfollowUser,
                   padding: const EdgeInsets.symmetric(vertical: 0),
-                  trailingIcon: Iconify(Mdi.user_plus_outline, size: 20, color: tColorPrimary)
+                  variant: displayUser?.isFollowing == true ? ButtonVariant.secondary : ButtonVariant.primary,
+                  trailingIcon: Iconify(displayUser?.isFollowing == true ? Mdi.user_check_outline : Mdi.user_plus_outline, size: 20, color: tColorPrimary)
                 )
               ),
             ),

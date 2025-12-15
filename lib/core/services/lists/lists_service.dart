@@ -394,4 +394,28 @@ class ListsService {
       throw ListsServiceException('Erro ao adicionar o comentário: $e');
     }
   }
+
+  Future<void> deleteList(String listId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw ListsServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.delete(
+        Api.listDetails(listId),
+        headers: Headers.auth(authService),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode != 200) {
+        throw ListsServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw ListsServiceException('Erro ao deletar a lista: $e');
+    }
+  }
 }

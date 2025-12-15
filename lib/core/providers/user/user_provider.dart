@@ -327,6 +327,32 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<void> followUser(String userId) async {
+    _setLoadingChangeField(true);
+    try {
+      clearError();
+      await _userService.followUser(userId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingChangeField(false);
+    }
+  }
+
+  Future<void> unfollowUser(String userId) async {
+    _setLoadingChangeField(true);
+    try {
+      clearError();
+      await _userService.unfollowUser(userId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingChangeField(false);
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
