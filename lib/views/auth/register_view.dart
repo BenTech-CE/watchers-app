@@ -87,7 +87,7 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
     final success = await authProvider.signInWithGoogle();
 
     if (success && mounted) {
-      Navigator.pushReplacementNamed(context, '/onboarding/watched');
+      Navigator.pushReplacementNamed(context, '/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login com Google')),
@@ -107,7 +107,7 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
     );
 
     if (success && mounted) {
-      Navigator.pushReplacementNamed(context, '/onboarding/watched');
+      Navigator.pushReplacementNamed(context, '/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

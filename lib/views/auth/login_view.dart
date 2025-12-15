@@ -263,7 +263,8 @@ class _LoginViewState extends State<LoginView>
     if (success && mounted && authProvider.user != null) {
       // se a conta foi criada há menos de 3 minutos, é um novo usuário (POG)
       if (authProvider.user!.createdAt.difference(DateTime.now()).inMinutes.abs() < 3) {
-        Navigator.pushReplacementNamed(context, '/onboarding/watched');
+        Navigator.pushReplacementNamed(context, '/home');
+        
       } else {
         Navigator.pushReplacementNamed(context, '/home');
       }

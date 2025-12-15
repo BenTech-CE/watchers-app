@@ -149,7 +149,7 @@ class _FavoritedSeriesState extends State<FavoritedSeries> {
       Navigator.pop(context);
       return;
     }
-    Navigator.pushReplacementNamed(context, '/home');
+    Navigator.popUntil(context, ModalRoute.withName('/home'));
   }
 
   void _sendFavoriteSeries() async {

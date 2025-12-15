@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:watchers/core/providers/auth/auth_provider.dart';
 import 'package:watchers/views/home/home_page.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:watchers/views/home/preview.dart';
@@ -20,6 +22,19 @@ const String iconProfile =
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = context.read<AuthProvider>();
+
+      if (authProvider.user!.createdAt.difference(DateTime.now()).inMinutes.abs() < 1) {
+        Navigator.pushNamed(context, '/onboarding/watched');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
