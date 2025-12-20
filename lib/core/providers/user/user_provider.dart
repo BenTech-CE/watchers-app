@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
+import 'package:watchers/core/models/auth/profile_model.dart';
 import 'package:watchers/core/models/auth/user_diary_model.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
@@ -39,6 +40,9 @@ class UserProvider with ChangeNotifier {
   bool _isLoadingDeleteWatched = false;
   bool _isLoadingDeleteWatchlist = false;
 
+  bool _isLoadingFollowers = false;
+  bool _isLoadingFollowing = false;
+
   bool _isLoadingUser = false;
   bool get isLoadingUser => _isLoadingUser;
 
@@ -59,6 +63,9 @@ class UserProvider with ChangeNotifier {
   bool get isLoadingDeleteFavorites => _isLoadingDeleteFavorites;
   bool get isLoadingDeleteWatched => _isLoadingDeleteWatched;
   bool get isLoadingDeleteWatchlist => _isLoadingDeleteWatchlist;
+
+  bool get isLoadingFollowers => _isLoadingFollowers;
+  bool get isLoadingFollowing => _isLoadingFollowing;
 
   List<SerieModel> _seriesFavorites = [];
   List<SerieModel> get seriesFavorites => _seriesFavorites;
@@ -353,6 +360,36 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<List<ProfileModel>?> getUserFollowers(String userId) async {
+    _setLoadingFollowers(true);
+    try {
+      clearError();
+      return await _userService.getUserFollowers(userId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingFollowers(false);
+    }
+
+    return null;
+  }
+
+  Future<List<ProfileModel>?> getUserFollowing(String userId) async {
+    _setLoadingFollowing(true);
+    try {
+      clearError();
+      return await _userService.getUserFollowing(userId);
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingFollowing(false);
+    }
+
+    return null;
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
@@ -415,6 +452,16 @@ class UserProvider with ChangeNotifier {
 
   void _setLoadingChangeField(bool loading) {
     _isLoadingChangeField = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingFollowers(bool loading) {
+    _isLoadingFollowers = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingFollowing(bool loading) {
+    _isLoadingFollowing = loading;
     notifyListeners();
   }
 

@@ -256,38 +256,62 @@ class _ProfilePageState extends State<ProfilePage> {
                           Row(
                             spacing: 16,
                             children: [
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          "${displayUser?.followerCount.toCompactString() ?? 0}",
-                                      style: AppTextStyles.bodyLarge.copyWith(
-                                        fontWeight: FontWeight.bold,
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  Navigator.pushNamed(context, "/profile/follows", arguments: {
+                                    'userId': displayUser?.id,
+                                    'displayName': displayUser?.fullName ?? displayUser?.username ?? '',
+                                    'followerCount': displayUser?.followerCount,
+                                    'followingCount': displayUser?.followingCount,
+                                    'initialTab': 0,
+                                  });
+                                },
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            "${displayUser?.followerCount.toCompactString() ?? 0}",
+                                        style: AppTextStyles.bodyLarge.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text: " Seguidores",
-                                      style: AppTextStyles.bodyLarge,
-                                    ),
-                                  ],
+                                      TextSpan(
+                                        text: " Seguidores",
+                                        style: AppTextStyles.bodyLarge,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          "${displayUser?.followingCount.toCompactString() ?? 0}",
-                                      style: AppTextStyles.bodyLarge.copyWith(
-                                        fontWeight: FontWeight.bold,
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  Navigator.pushNamed(context, "/profile/follows", arguments: {
+                                    'userId': displayUser?.id,
+                                    'displayName': displayUser?.fullName ?? displayUser?.username ?? '',
+                                    'followerCount': displayUser?.followerCount,
+                                    'followingCount': displayUser?.followingCount,
+                                    'initialTab': 1,
+                                  });
+                                },
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            "${displayUser?.followingCount.toCompactString() ?? 0}",
+                                        style: AppTextStyles.bodyLarge.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text: " Seguindo",
-                                      style: AppTextStyles.bodyLarge,
-                                    ),
-                                  ],
+                                      TextSpan(
+                                        text: " Seguindo",
+                                        style: AppTextStyles.bodyLarge,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -417,9 +441,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
             ),
-            if (!userProvider.isLoadingUser && displayUser?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && !userProvider.isLoadingUser &&
+            (
+              externalUser == false ||
+              (externalUser == true && displayUser?.lists.isNotEmpty == true)
+            ))
             LineSeparator(),
-            if (!userProvider.isLoadingUser && displayUser?.lists.isNotEmpty == true)
+            if (!userProvider.isLoadingUser && !userProvider.isLoadingUser &&
+            (
+              externalUser == false ||
+              (externalUser == true && displayUser?.lists.isNotEmpty == true)
+            ))
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
               child: Row(
@@ -429,7 +461,34 @@ class _ProfilePageState extends State<ProfilePage> {
                     'Listas',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  _buildChevronAction(() {Navigator.pushNamed(context, "/profile/lists", arguments: externalUser);}, displayUser?.lists.length ?? 0),
+                  if (
+                    !userProvider.isLoadingUser &&
+                    externalUser == false &&
+                    (displayUser?.lists.isEmpty ?? true)
+                  )
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: Material(
+                      color: Color.fromARGB(89, 120, 120, 128),
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.hardEdge,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/list/create',
+                          );
+                        },
+                        child: Center(
+                          child: Icon(Icons.add, color: colorTertiary, size: 24),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (
+                    !userProvider.isLoadingUser &&
+                    displayUser?.lists.isNotEmpty == true
+                  ) _buildChevronAction(() {Navigator.pushNamed(context, "/profile/lists", arguments: externalUser);}, displayUser?.lists.length ?? 0),
                 ],
               ),
             ),

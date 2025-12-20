@@ -79,7 +79,7 @@ class _SkeletonReviewItem extends StatelessWidget {
           // spacing: sizePadding, // Se seu Flutter for < 3.24, use SizedBox no meio
           children: [
             // --- 1. Fake Poster (Esquerda) ---
-            _ShimmerShape(
+            ShimmerShape(
               animation: animation,
               width: serieCardSize,
               height: serieCardSize * 1.5,
@@ -96,7 +96,7 @@ class _SkeletonReviewItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   
                   // Título (Linha grossa)
-                  _ShimmerShape(
+                  ShimmerShape(
                     animation: animation,
                     width: double.infinity,
                     height: 20,
@@ -105,7 +105,7 @@ class _SkeletonReviewItem extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // Badge (Temporada/Episódio)
-                  _ShimmerShape(
+                  ShimmerShape(
                     animation: animation,
                     width: 100,
                     height: 16,
@@ -117,7 +117,7 @@ class _SkeletonReviewItem extends StatelessWidget {
                   Row(
                     children: [
                       // Avatar (Círculo)
-                      _ShimmerShape(
+                      ShimmerShape(
                         animation: animation,
                         width: 24,
                         height: 24,
@@ -125,7 +125,7 @@ class _SkeletonReviewItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       // Nome do usuário
-                      _ShimmerShape(
+                      ShimmerShape(
                         animation: animation,
                         width: 60,
                         height: 12,
@@ -133,7 +133,7 @@ class _SkeletonReviewItem extends StatelessWidget {
                       ),
                       const Spacer(),
                       // Estrelas (bloco pequeno)
-                      _ShimmerShape(
+                      ShimmerShape(
                         animation: animation,
                         width: 80,
                         height: 12,
@@ -145,21 +145,21 @@ class _SkeletonReviewItem extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Texto da Review (3 linhas simulando texto)
-                  _ShimmerShape(
+                  ShimmerShape(
                     animation: animation,
                     width: double.infinity,
                     height: 10,
                     borderRadius: 2,
                   ),
                   const SizedBox(height: 6),
-                  _ShimmerShape(
+                  ShimmerShape(
                     animation: animation,
                     width: double.infinity, // Linha cheia
                     height: 10,
                     borderRadius: 2,
                   ),
                   const SizedBox(height: 6),
-                  _ShimmerShape(
+                  ShimmerShape(
                     animation: animation,
                     width: screenWidth * 0.3, // Linha curta para parecer final de parágrafo
                     height: 10,
@@ -176,13 +176,13 @@ class _SkeletonReviewItem extends StatelessWidget {
 }
 
 /// Widget genérico que aplica a animação de shimmer em qualquer formato
-class _ShimmerShape extends StatelessWidget {
+class ShimmerShape extends StatelessWidget {
   final Animation<double> animation;
   final double width;
   final double height;
   final double borderRadius;
 
-  const _ShimmerShape({
+  const ShimmerShape({
     required this.animation,
     required this.width,
     required this.height,

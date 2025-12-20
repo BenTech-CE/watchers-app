@@ -27,6 +27,7 @@ import 'package:watchers/views/main_page.dart';
 import 'package:watchers/views/home/preview.dart';
 import 'package:watchers/views/profile/diary_page.dart';
 import 'package:watchers/views/profile/edit_profile_page.dart';
+import 'package:watchers/views/profile/profile_follows_page.dart';
 import 'package:watchers/views/profile/profile_lists_page.dart';
 import 'package:watchers/views/profile/profile_page.dart';
 import 'package:watchers/views/profile/profile_reviews_page.dart';
@@ -128,6 +129,7 @@ class MyApp extends StatelessWidget {
           '/profile/watchlist': (context) => const ProfileWatchlistPage(),
           '/profile/reviews': (context) => const ProfileReviewsPage(),
           '/profile/lists': (context) => const ProfileListsPage(),
+          '/profile/follows': (context) => const ProfileFollowsPage(),
           '/profile': (context) => const ProfilePage(),
         },
         home: const AuthWrapper(),

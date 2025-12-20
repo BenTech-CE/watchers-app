@@ -65,6 +65,8 @@ class Api {
       Uri.parse('${baseUrl}user/$id/diary');
   static Uri userFollowsEndpoint(String id) =>
       Uri.parse('${baseUrl}user/$id/followers');
+  static Uri userFollowingEndpoint(String id) =>
+      Uri.parse('${baseUrl}user/$id/following');
 
   // REVIEWS
   static Uri userReviewsSeries(String seriesId) =>

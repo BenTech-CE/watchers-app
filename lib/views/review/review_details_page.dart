@@ -301,17 +301,18 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                           spacing: 12,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              spacing: 16,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(bottom: 4),
-                                    child: SizedBox(
-                                      height: cardHeight - 4,
+                            IntrinsicHeight(
+                              child: Row(
+                                spacing: 16,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minHeight: cardHeight,
+                                      ),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -415,26 +416,26 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
                                       ),
                                     ),
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/series/detail', arguments: review?.series.id.toString());
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15),
-                                    child: CachedNetworkImage(
-                                      imageUrl: review?.series.posterUrl ?? "",
-                                      width: cardWidth,
-                                      height: cardHeight,
-                                      errorWidget: (context, url, error) => Container(
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(context, '/series/detail', arguments: review?.series.id.toString());
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: CachedNetworkImage(
+                                        imageUrl: review?.series.posterUrl ?? "",
                                         width: cardWidth,
                                         height: cardHeight,
-                                        color: Colors.transparent,
+                                        errorWidget: (context, url, error) => Container(
+                                          width: cardWidth,
+                                          height: cardHeight,
+                                          color: Colors.transparent,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             Text(
                               review?.content ?? "",
@@ -639,9 +640,9 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> with WidgetsBindi
 
   /// Helper para construir informação de data
   Widget _buildDateInfo() {
-    final createdAt = DateTime.parse(additionalData!.createdAt);
+    final createdAt = DateTime.parse(additionalData!.createdAt).toLocal();
     final updatedAt = additionalData?.updatedAt != null 
-        ? DateTime.parse(additionalData!.updatedAt!) 
+        ? DateTime.parse(additionalData!.updatedAt!).toLocal()
         : null;
     
     final wasEdited = updatedAt != null && 

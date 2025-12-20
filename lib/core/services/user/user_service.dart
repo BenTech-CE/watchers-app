@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
+import 'package:watchers/core/models/auth/profile_model.dart';
 import 'package:watchers/core/models/auth/user_diary_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
@@ -453,6 +454,72 @@ class UserService {
       }
     } catch (e) {
       throw UserServiceException('Erro ao deixar de seguir o usuário: $e');
+    }
+  }
+
+  Future<List<ProfileModel>> getUserFollowers(String userId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.userFollowsEndpoint(userId),
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<ProfileModel> followers = [];
+        for (var follower in jsonResponse["results"]) {
+          followers.add(ProfileModel.fromJson(follower));
+        }
+        return followers;
+      } else {
+        throw UserServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao buscar os seguidores do usuário: $e');
+    }
+  }
+
+  Future<List<ProfileModel>> getUserFollowing(String userId) async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw UserServiceException('Usuário não autenticado');
+      }
+
+      final response = await http.get(
+        Api.userFollowingEndpoint(userId),
+        headers: Headers.auth(authService),
+      );
+
+      // print('Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final List<ProfileModel> following = [];
+        for (var user in jsonResponse["results"]) {
+          following.add(ProfileModel.fromJson(user));
+        }
+        return following;
+      } else {
+        throw UserServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw UserServiceException('Erro ao buscar os usuários seguidos: $e');
     }
   }
 }

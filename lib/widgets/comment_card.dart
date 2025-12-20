@@ -19,30 +19,25 @@ class CommentCard extends StatefulWidget {
 }
 
 class _CommentCardState extends State<CommentCard> {
-  late DateTime createdAt;
-  late DateFormat formatter;
-
-  @override
-  void initState() {
-    super.initState();
-    
-    createdAt = DateTime.parse(widget.comment.createdAt);
+  String get formattedDate {
+    final createdAt = DateTime.parse(widget.comment.createdAt).toLocal();
     final now = DateTime.now();
 
     final today = DateTime(now.year, now.month, now.day);
     final dateToCheck = DateTime(createdAt.year, createdAt.month, createdAt.day);
-
     final difference = today.difference(dateToCheck).inDays;
+
+    DateFormat formatter;
 
     if (difference == 0) {
       formatter = DateFormat('HH:mm');
-      
     } else if (difference == 1) {
       formatter = DateFormat("'Ontem às' HH:mm");
-      
     } else {
       formatter = DateFormat('dd/MM/yyyy');
     }
+    
+    return formatter.format(createdAt);
   }
 
   @override
@@ -89,7 +84,7 @@ class _CommentCardState extends State<CommentCard> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  formatter.format(createdAt),
+                  formattedDate,
                   style: TextStyle(
                     color: tColorGray,
                     fontSize: 12,
