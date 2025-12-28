@@ -41,6 +41,7 @@ class Api {
 
   // GLOBAL
   static final Uri searchEndpoint = Uri.parse('${baseUrl}app/search');
+  static final Uri homeEndpoint = Uri.parse('${baseUrl}app/home');
 
   // USER
   static final Uri userSeriesFavoritesEnpoint = Uri.parse(

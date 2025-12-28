@@ -4,10 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/fa6_solid.dart';
 import 'package:provider/provider.dart';
+import 'package:watchers/core/models/global/home_model.dart';
 import 'package:watchers/core/models/lists/list_author_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
+import 'package:watchers/core/providers/global/search_provider.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/reviews/reviews_provider.dart';
 import 'package:watchers/core/providers/series/series_provider.dart';
@@ -33,11 +35,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchTrendingSeries();
-      _fetchTopRatedSeries();
-      _fetchTrendingLists();
-      _fetchTrendingReviews();
-      
+      _fetchInitialData();
     });
   }
 
@@ -46,7 +44,32 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _fetchTrendingSeries() async {
+  void _fetchInitialData() async {
+    final AppProvider appProvider = context.read<AppProvider>();
+
+    HomeModel? data = await appProvider.getHomeData();
+
+    if (data != null) {
+      final SeriesProvider seriesProvider = context.read<SeriesProvider>();
+      final ReviewsProvider reviewsProvider = context.read<ReviewsProvider>();
+      final ListsProvider listsProvider = context.read<ListsProvider>();
+
+      seriesProvider.setTrendingSeries(data.trending);
+      seriesProvider.setTopRatedSeries(data.topRated);
+      seriesProvider.setRecentSeries(data.recent);
+
+      reviewsProvider.setTrendingReviews(data.reviews);
+      listsProvider.setTrendingLists(data.lists);
+    } else {
+      if (appProvider.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(appProvider.errorMessage!)));
+      }
+    }
+  }
+
+  /*void _fetchTrendingSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
     await seriesProvider.getSeriesTrending();
@@ -94,7 +117,7 @@ class _HomePageState extends State<HomePage> {
         context,
       ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
     }
-  }
+  }*/
 
   Widget _buildChevronAction(VoidCallback onTap) {
     return Material(

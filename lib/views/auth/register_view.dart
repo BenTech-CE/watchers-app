@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
@@ -90,7 +91,11 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
       Navigator.pushReplacementNamed(context, '/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'Erro ao fazer login com Google')),
+        SnackBar(
+          content: Text(
+            authProvider.errorMessage ?? 'Erro ao fazer login com Google',
+          ),
+        ),
       );
     }
   }
@@ -99,7 +104,7 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
     final authProvider = context.read<AuthProvider>();
 
     if (authProvider.isLoading) return;
-    
+
     final success = await authProvider.signUp(
       email: _emailController.text.trim(),
       password: _passController.text,
@@ -149,8 +154,8 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
                   stops: [0.05, 0.4, _isKeyboardVisible ? 0.5 : 0.6, 1],
                 ),
               ),
-              child: Image.network(
-                "https://cdn.polyspeak.ai/speakmaster/4747b3658f61e5da7f14fddc670a15df.webp",
+              child: Image.asset(
+                "images/bgwatchers.webp",
                 width: double.infinity,
                 fit: BoxFit.contain,
               ),
@@ -245,29 +250,41 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
                                           TextInputWidget(
                                             label: "Digite seu nome de usuário",
                                             controller: _usernameController,
-                                            validator: FormValidators.validateUsername,
+                                            validator:
+                                                FormValidators.validateUsername,
                                           ),
                                           TextInputWidget(
                                             label: "Digite seu e-mail",
                                             controller: _emailController,
-                                            validator: FormValidators.validateEmail,
+                                            validator:
+                                                FormValidators.validateEmail,
                                           ),
                                           TextInputWidget(
                                             label: "Digite sua senha",
                                             controller: _passController,
                                             isPassword: true,
-                                            validator: FormValidators.notNull
+                                            validator: FormValidators.notNull,
                                           ),
                                           SizedBox(height: 8),
                                           SizedBox(
                                             height: 40,
                                             child: ElevatedButton(
                                               onPressed: () {
-                                                if (_formKey.currentState!.validate()) {
+                                                if (_formKey.currentState!
+                                                    .validate()) {
                                                   _handleRegister();
                                                 }
                                               },
-                                              child: authProvider.isLoading ? SizedBox.square(dimension: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Text("Entrar"),
+                                              child: authProvider.isLoading
+                                                  ? SizedBox.square(
+                                                      dimension: 18,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            color: Colors.white,
+                                                            strokeWidth: 2,
+                                                          ),
+                                                    )
+                                                  : Text("Cadastrar"),
                                             ),
                                           ),
                                           Row(
@@ -301,31 +318,36 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
-                                            height: 40,
-                                            child: OutlinedButton(
-                                              onPressed: _handleGoogleSignIn,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 18,
-                                                    width: 18,
-                                                    child: Image.asset(
-                                                      "assets/images/google.png",
-                                                      fit: BoxFit.contain,
+                                          if (!kIsWeb)
+                                            SizedBox(
+                                              height: 40,
+                                              child: OutlinedButton(
+                                                onPressed: _handleGoogleSignIn,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 18,
+                                                      width: 18,
+                                                      child: Image.asset(
+                                                        "assets/images/google.png",
+                                                        fit: BoxFit.contain,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text("Continuar com o Google", style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w700
-                                                  ),)
-                                                ],
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      "Continuar com o Google",
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
                                         ],
                                       ),
                                     ),

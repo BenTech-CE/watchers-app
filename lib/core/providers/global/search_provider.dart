@@ -1,14 +1,15 @@
 import 'package:flutter/foundation.dart';
+import 'package:watchers/core/models/global/home_model.dart';
 import 'package:watchers/core/models/global/search_model.dart';
 import 'package:watchers/core/models/global/type_filter_search.dart';
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/services/global/search_service.dart';
 
-class SearchProvider with ChangeNotifier {
-  final SearchService _searchService;
+class AppProvider with ChangeNotifier {
+  final AppService _appService;
 
-  SearchProvider({required AuthService authService})
-    : _searchService = SearchService(authService: authService);
+  AppProvider({required AuthService authService})
+    : _appService = AppService(authService: authService);
 
   String? _errorMessage;
   bool _isLoadingSearch = false;
@@ -29,8 +30,24 @@ class SearchProvider with ChangeNotifier {
     _setLoadingSearch(true);
     try {
       clearError();
-      _searchResults = await _searchService.getSearch(query, filter);
+      _searchResults = await _appService.search(query, filter);
       return _searchResults;
+    } catch (e) {
+      print(e);
+      _setError(e.toString());
+    } finally {
+      _setLoadingSearch(false);
+    }
+    return null;
+  }
+
+  Future<HomeModel?> getHomeData() async {
+    _setLoadingSearch(true);
+    try {
+      clearError();
+      final homeData = await _appService.fetchHomeData();
+
+      return homeData;
     } catch (e) {
       print(e);
       _setError(e.toString());

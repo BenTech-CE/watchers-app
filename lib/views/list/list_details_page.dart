@@ -6,11 +6,7 @@ import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/models/lists/full_list_model.dart';
 import 'package:watchers/core/models/lists/list_model.dart';
-import 'package:watchers/core/models/reviews/full_review_model.dart';
-import 'package:watchers/core/models/reviews/review_model.dart';
-import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/lists/lists_provider.dart';
-import 'package:watchers/core/providers/reviews/reviews_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
@@ -217,33 +213,33 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
 
       if (additionalData == null || list == null) return;
 
-      if (additionalData!.userLiked) {
-        list!.likeCount -= 1;
-        additionalData!.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
+      if (additionalData.userLiked) {
+        list.likeCount -= 1;
+        additionalData.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
       } else {
-        list!.likeCount += 1;
-        additionalData!.likedBy.insert(0, ListLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
+        list.likeCount += 1;
+        additionalData.likedBy.insert(0, ListLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
       }
-      additionalData!.userLiked = !additionalData!.userLiked;
+      additionalData.userLiked = !additionalData.userLiked;
 
       setState(() {});
 
-      if (additionalData!.userLiked) {
-        await listsProvider.like(list!.id.toString());
+      if (additionalData.userLiked) {
+        await listsProvider.like(list.id.toString());
       } else {
-        await listsProvider.unlike(list!.id.toString());
+        await listsProvider.unlike(list.id.toString());
       }
 
       if (listsProvider.errorMessage != null && mounted) {
         // Reverter mudança em caso de erro
-        if (additionalData!.userLiked) {
-          list!.likeCount -= 1;
-          additionalData!.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
+        if (additionalData.userLiked) {
+          list.likeCount -= 1;
+          additionalData.likedBy.removeWhere((user) => user.id == userProvider.currentUser!.id);
         } else {
-          list!.likeCount += 1;
-          additionalData!.likedBy.insert(0, ListLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
+          list.likeCount += 1;
+          additionalData.likedBy.insert(0, ListLikedUser(id: userProvider.currentUser!.id, avatarUrl: userProvider.currentUser!.avatarUrl));
         }
-        additionalData!.userLiked = !additionalData!.userLiked;
+        additionalData.userLiked = !additionalData.userLiked;
 
         setState(() {});
 
@@ -259,11 +255,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
       final commentText = _commentTextController.text.trim();
       if (commentText.isEmpty) return;
 
-      final newComment = await listsProvider.addComment(list!.id.toString(), commentText);
+      final newComment = await listsProvider.addComment(list.id.toString(), commentText);
 
       if (newComment != null && mounted) {
-        list!.commentCount += 1;
-        additionalData!.comments.insert(0, newComment);
+        list.commentCount += 1;
+        additionalData.comments.insert(0, newComment);
 
         _commentTextController.clear();
         setState(() {});
@@ -290,11 +286,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
 
       if (willDelete == null || !willDelete) return;
 
-      await listsProvider.deleteComment(list!.id.toString(), commentId.toString());
+      await listsProvider.deleteComment(list.id.toString(), commentId.toString());
 
       if (listsProvider.errorMessage == null && mounted) {
-        list!.commentCount -= 1;
-        additionalData!.comments.removeWhere((c) => c.id == commentId);
+        list.commentCount -= 1;
+        additionalData.comments.removeWhere((c) => c.id == commentId);
 
         setState(() {});
       } else if (listsProvider.errorMessage != null && mounted) {
@@ -311,7 +307,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
-          list.name ?? "",
+          list.name,
           style: AppTextStyles.bodyLarge.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -402,7 +398,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              list.name ?? "",
+                              list.name,
                               style: AppTextStyles.titleLarge
                                   .copyWith(
                                     fontWeight:
@@ -431,7 +427,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                     radius: 16, 
                                     backgroundColor: Colors.grey[800],
                                     backgroundImage: list.author.avatarUrl != null
-                                        ? NetworkImage(list!.author.avatarUrl!)
+                                        ? NetworkImage(list.author.avatarUrl!)
                                         : null,
                                     child: list.author.avatarUrl == null
                                         ? const Icon(Icons.person, color: Colors.white)
@@ -451,7 +447,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                       );
                                     },
                                     child: Text(
-                                      list.author.fullName != null && list!.author.fullName!.isNotEmpty ? list!.author.fullName! : "@${list!.author.username}",
+                                      list.author.fullName != null && list.author.fullName!.isNotEmpty ? list.author.fullName! : "@${list.author.username}",
                                       style: const TextStyle(
                                         color: tColorPrimary,
                                         fontSize: 16,
@@ -478,7 +474,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        (list?.likeCount ?? 0).toCompactString(),
+                                        list.likeCount.toCompactString(),
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -497,7 +493,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      (list.commentCount ?? 0).toCompactString(), // Comentários não implementados ainda
+                                      (list.commentCount).toCompactString(), // Comentários não implementados ainda
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -535,9 +531,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                   mainAxisSpacing: 12,
                                   childAspectRatio: 2 / 3,
                                 ),
-                                itemCount: additionalData!.series.length,
+                                itemCount: additionalData.series.length,
                                 itemBuilder: (context, index) {
-                                  final series = additionalData!.series[index];
+                                  final series = additionalData.series[index];
                                   return ImageCard(
                                     url: series.posterUrl,
                                     animation: _animation,
@@ -551,18 +547,18 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                   );
                                 },
                               ),
-                            if (additionalData != null && list!.likeCount > 0)
+                            if (additionalData != null && list.likeCount > 0)
                             const Text(
                               'Curtido por',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
-                            if (additionalData != null && list!.likeCount > 0)
+                            if (additionalData != null && list.likeCount > 0)
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 spacing: 8,
                                 children: [
-                                  for (ListLikedUser user in additionalData.likedBy ?? [])
+                                  for (ListLikedUser user in additionalData.likedBy)
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(
@@ -585,7 +581,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                         ),
                                       ),
                                     ),
-                                  if ((list.likeCount ?? 0) > 10)
+                                  if (list.likeCount > 10)
                                     Container(
                                       width: 40,
                                       height: 40,
@@ -595,7 +591,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> with WidgetsBindingOb
                                       ),
                                       child: Center(
                                         child: Text(
-                                          "+${(list!.likeCount - 10).toCompactString()}",
+                                          "+${(list.likeCount - 10).toCompactString()}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 12,

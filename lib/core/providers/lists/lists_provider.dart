@@ -285,6 +285,11 @@ class ListsProvider with ChangeNotifier {
     return;
   }
 
+  void setTrendingLists(List<ListModel> lists) {
+    _trendingLists = lists;
+    notifyListeners();
+  }
+
   void _setCurrentListDetails(FullListModel? listDetails) {
     _currentListDetails = listDetails;
     notifyListeners();

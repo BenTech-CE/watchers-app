@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:watchers/core/models/global/home_model.dart';
 import 'package:watchers/core/models/global/search_model.dart';
 import 'package:watchers/core/models/global/type_filter_search.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
@@ -7,24 +8,23 @@ import 'package:http/http.dart' as http;
 import 'package:watchers/core/services/auth/auth_service.dart';
 import 'package:watchers/core/utils/api.dart';
 
-class SearchServiceException implements Exception {
+class AppServiceException implements Exception {
   final String message;
   final String? code;
 
-  SearchServiceException(this.message, {this.code});
-
+  AppServiceException(this.message, {this.code}); 
   @override
   String toString() => message;
 }
 
-class SearchService {
+class AppService {
   final AuthService authService;
-  SearchService({required this.authService});
+  AppService({required this.authService});
 
-  Future<SearchModel> getSearch(String query, TypeFilterSearch filter) async {
+  Future<SearchModel> search(String query, TypeFilterSearch filter) async {
     try {
       if (!authService.isAuthenticated) {
-        throw SearchServiceException('Usuário não autenticado');
+        throw AppServiceException('Usuário não autenticado');
       }
 
       final body = jsonEncode({'query': query, 'filter': filter.name});
@@ -60,14 +60,44 @@ class SearchService {
       if (response.statusCode == 200) {
         return SearchModel.fromJson(jsonResponse);
       } else {
-        throw SearchServiceException(
-          'Erro ao fazer pesquisa de séries/listas/usuários: ${jsonResponse['error']}',
+        throw AppServiceException(
+          jsonResponse['error'],
           code: response.statusCode.toString(),
         );
       }
     } catch (e) {
-      throw SearchServiceException(
+      throw AppServiceException(
         'Erro ao fazer pesquisa de séries/listas/usuários: $e',
+      );
+    }
+  }
+
+  Future<HomeModel> fetchHomeData() async {
+    try {
+      if (!authService.isAuthenticated) {
+        throw AppServiceException('Usuário não autenticado');
+      }
+
+      final headers = Headers.auth(authService);
+
+      final response = await http.get(
+        Api.homeEndpoint,
+        headers: headers,
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return HomeModel.fromJson(jsonResponse);
+      } else {
+        throw AppServiceException(
+          jsonResponse['error'],
+          code: response.statusCode.toString(),
+        );
+      }
+    } catch (e) {
+      throw AppServiceException(
+        'Erro ao buscar dados iniciais: $e',
       );
     }
   }

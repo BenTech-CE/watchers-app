@@ -1,34 +1,21 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ion.dart';
-import 'package:iconify_flutter/icons/lucide.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:watchers/core/mocks/icons.dart';
 import 'package:watchers/core/models/auth/full_user_model.dart';
 import 'package:watchers/core/models/series/serie_model.dart';
 import 'package:watchers/core/providers/auth/auth_provider.dart';
-import 'package:watchers/core/providers/lists/lists_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
 import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
 import 'package:watchers/core/validators/validators.dart';
 import 'package:watchers/views/profile/profile_picture_dialog.dart';
-import 'package:watchers/views/search/search_page.dart';
-import 'package:watchers/widgets/card_skeleton.dart';
-import 'package:watchers/widgets/image_card.dart';
-import 'package:watchers/widgets/list_popular_card.dart';
-import 'package:watchers/widgets/list_series.dart';
-import 'package:watchers/widgets/review_card.dart';
 import 'package:watchers/widgets/series_card.dart';
-import 'package:watchers/widgets/stars_chart.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:watchers/widgets/yes_no_dialog.dart';
 
 class EditProfilePage extends StatefulWidget {

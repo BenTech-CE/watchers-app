@@ -87,16 +87,16 @@ class MyApp extends StatelessWidget {
           create: (_) => SeriesProvider(authService: authService),
         ),
         ChangeNotifierProvider(
-          create: (_) => ListsProvider(authService: authService),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SearchProvider(authService: authService),
-        ),
-        ChangeNotifierProvider(
           create: (_) => UserProvider(authService: authService),
         ),
         ChangeNotifierProvider(
+          create: (_) => ListsProvider(authService: authService),
+        ),
+        ChangeNotifierProvider(
           create: (_) => ReviewsProvider(authService: authService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AppProvider(authService: authService),
         ),
       ],
       child: MaterialApp(

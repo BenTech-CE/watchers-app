@@ -1,22 +1,13 @@
-import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/cil.dart';
-import 'package:iconify_flutter/icons/majesticons.dart';
-import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:provider/provider.dart';
 import 'package:watchers/core/models/global/user_interaction_model.dart';
 import 'package:watchers/core/models/reviews/review_model.dart';
-import 'package:watchers/core/models/series/full_serie_model.dart';
-import 'package:watchers/core/providers/reviews/reviews_provider.dart';
 import 'package:watchers/core/providers/user/user_provider.dart';
-import 'package:watchers/core/theme/colors.dart';
 import 'package:watchers/core/theme/texts.dart';
-import 'package:watchers/views/search/search_page.dart';
-import 'package:iconify_flutter/icons/oi.dart';
 import 'package:watchers/widgets/button.dart';
 import 'package:watchers/widgets/star_rating.dart';
 

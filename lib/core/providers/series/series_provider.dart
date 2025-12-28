@@ -154,6 +154,21 @@ class SeriesProvider with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
+  
+  void setTrendingSeries(List<SerieModel> series) {
+    _trendingSeries = series;
+    notifyListeners();
+  }
+
+  void setTopRatedSeries(List<SerieModel> series) {
+    _topRatedSeries = series;
+    notifyListeners();
+  }
+
+  void setRecentSeries(List<SerieModel> series) {
+    _recentsSeries = series;
+    notifyListeners();
+  }
 
   void _setLoadingTrending(bool loading) {
     _isLoadingTrending = loading;

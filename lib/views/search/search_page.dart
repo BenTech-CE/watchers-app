@@ -59,7 +59,7 @@ class _SearchPageState extends State<SearchPage> {
   bool _isSearching = false;
   Timer? _debounceTimer;
 
-  void _fetchRecentsSeries() async {
+  /*void _fetchRecentsSeries() async {
     final SeriesProvider seriesProvider = context.read<SeriesProvider>();
 
     await seriesProvider.getSeriesRecents();
@@ -69,7 +69,7 @@ class _SearchPageState extends State<SearchPage> {
         context,
       ).showSnackBar(SnackBar(content: Text(seriesProvider.errorMessage!)));
     }
-  }
+  }*/
 
   @override
   void initState() {
@@ -97,9 +97,9 @@ class _SearchPageState extends State<SearchPage> {
       _onSearchChanged();
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    /*WidgetsBinding.instance.addPostFrameCallback((_) async {
       _fetchRecentsSeries();
-    });
+    });*/
   }
 
   void _onSearchChanged() {
@@ -129,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
       _isSearching = true;
     });
 
-    final SearchProvider searchProvider = context.read<SearchProvider>();
+    final AppProvider searchProvider = context.read<AppProvider>();
 
     try {
       final results = await searchProvider.getSearch(query, _selectedFilter);
@@ -241,7 +241,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Column _buildSearching() {
-    final SearchProvider searchProvider = context.read<SearchProvider>();
+    final AppProvider searchProvider = context.read<AppProvider>();
 
     return Column(
       children: [

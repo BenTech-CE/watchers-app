@@ -118,6 +118,11 @@ class ReviewsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setTrendingReviews(List<ReviewModel> reviews) {
+    _trendingReviews = reviews;
+    notifyListeners();
+  }
+
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
