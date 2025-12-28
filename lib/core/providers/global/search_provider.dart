@@ -12,10 +12,12 @@ class AppProvider with ChangeNotifier {
     : _appService = AppService(authService: authService);
 
   String? _errorMessage;
+  bool _isLoadingHome = false;
   bool _isLoadingSearch = false;
 
   String? get errorMessage => _errorMessage;
   bool get isLoadingSearch => _isLoadingSearch;
+  bool get isLoadingHome => _isLoadingHome;
 
   SearchModel _searchResults = const SearchModel(
     series: [],
@@ -42,7 +44,7 @@ class AppProvider with ChangeNotifier {
   }
 
   Future<HomeModel?> getHomeData() async {
-    _setLoadingSearch(true);
+    _setLoadingHome(true);
     try {
       clearError();
       final homeData = await _appService.fetchHomeData();
@@ -52,7 +54,7 @@ class AppProvider with ChangeNotifier {
       print(e);
       _setError(e.toString());
     } finally {
-      _setLoadingSearch(false);
+      _setLoadingHome(false);
     }
     return null;
   }
@@ -64,6 +66,11 @@ class AppProvider with ChangeNotifier {
 
   void _setLoadingSearch(bool loading) {
     _isLoadingSearch = loading;
+    notifyListeners();
+  }
+
+  void _setLoadingHome(bool loading) {
+    _isLoadingHome = loading;
     notifyListeners();
   }
 

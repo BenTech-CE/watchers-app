@@ -141,6 +141,8 @@ class _HomePageState extends State<HomePage> {
     final ReviewsProvider reviewsProvider = context.watch<ReviewsProvider>();
     final ListsProvider listsProvider = context.watch<ListsProvider>();
 
+    final appProvider = context.watch<AppProvider>();
+
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
@@ -181,9 +183,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 6),
-            if (seriesProvider.isLoadingTrending)
+            if (appProvider.isLoadingHome)
               const ListSeriesSkeleton(itemCount: 10),
-            if (seriesProvider.trendingSeries.isNotEmpty && seriesProvider.isLoadingTrending == false)
+            if (seriesProvider.trendingSeries.isNotEmpty && appProvider.isLoadingHome == false)
               ListSeries(series: seriesProvider.trendingSeries.sublist(0, 10)),
             SizedBox(height: 12),
             Padding(
@@ -204,7 +206,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0), 
-              child: reviewsProvider.isLoadingTrending
+              child: appProvider.isLoadingHome
                 ? ListReviewsSkeleton(itemCount: 3)
                 : Column(
                     spacing: 12,
@@ -233,7 +235,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0), 
-              child: listsProvider.isLoadingTrending
+              child: appProvider.isLoadingHome
                 ? ListReviewsSkeleton(itemCount: 3)
                 : Column(
                     spacing: 12,
