@@ -155,7 +155,7 @@ class _RegisterViewMaelState extends State<RegisterViewMael>
                 ),
               ),
               child: Image.asset(
-                "images/bgwatchers.webp",
+                "assets/images/bgwatchers.webp",
                 width: double.infinity,
                 fit: BoxFit.contain,
               ),

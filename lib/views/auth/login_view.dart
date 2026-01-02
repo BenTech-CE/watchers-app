@@ -181,7 +181,7 @@ class _LoginViewState extends State<LoginView>
                 ),
               ),
               child: Image.asset(
-                "images/bgwatchers.webp",
+                "assets/images/bgwatchers.webp",
                 width: double.infinity,
                 fit: BoxFit.contain,
               ),
