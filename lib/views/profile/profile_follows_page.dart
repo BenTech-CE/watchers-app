@@ -225,7 +225,7 @@ class _ProfileFollowsPageState extends State<ProfileFollowsPage> with TickerProv
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),),
-                trailing: SizedBox(
+                trailing: userProvider.currentUser?.id != user.id ? SizedBox(
                   width: 105,
                   height: 30,
                   child: Button(
@@ -238,7 +238,7 @@ class _ProfileFollowsPageState extends State<ProfileFollowsPage> with TickerProv
                     variant: user.isFollowing == true ? ButtonVariant.secondary : ButtonVariant.primary,
                     trailingIcon: Iconify(user.isFollowing == true ? Mdi.user_check_outline : Mdi.user_plus_outline, size: 20, color: tColorPrimary)
                   ),
-                ),
+                ) : null,
                 leading: CircleAvatar(
                   radius: 20,
                   backgroundColor: Colors.grey[800],
